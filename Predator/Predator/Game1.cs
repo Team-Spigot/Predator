@@ -116,7 +116,7 @@ namespace Predator
 			Content.RootDirectory = "Content";
 			Window.Title = "Preditor";
 			WindowSize = new Point(1024, 768);
-			Fullscreen = true;
+			Fullscreen = false;
 		}
 
 		/// <summary>

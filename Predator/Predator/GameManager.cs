@@ -196,6 +196,11 @@ namespace Predator
 		{
 			player.Update(gameTime);
 
+			foreach (Enemy e in EnemyList1)
+			{
+				e.Update(gameTime);
+			}
+
 			if (!LevelLoaded)
 			{
 				SpawnTiles(0);
@@ -218,6 +223,11 @@ namespace Predator
 			spriteBatch.Begin();
 			{
 				player.Draw(gameTime, spriteBatch);
+
+				foreach (Enemy e in EnemyList1)
+				{
+					e.Draw(gameTime, spriteBatch);
+				}
 			}
 			spriteBatch.End();
 
@@ -260,6 +270,10 @@ namespace Predator
 					if (tiles[x, y] > 0 && tiles[x, y] < 70)
 					{
 						mapTiles.Add(new Rectangle(x * 50, y * 50, 50, 50));
+					}
+					else if (tiles[x, y] == 71)
+					{
+						EnemyList1.Add(new Enemy(new Vector2(x * 50, y * 50), 1.5f, Enemy.MovementType.RAT, Color.White, playerAnimationSet, player, mapTiles, mapBoarders));
 					}
 					else if (tiles[x, y] == 70)
 					{

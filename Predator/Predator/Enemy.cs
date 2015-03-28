@@ -18,6 +18,7 @@ namespace Predator
 			BOUNCE,
 			BOSSBOUNCE,
 			BOSSHEAD,
+			RAT,
 			NONE
 		}
 
@@ -38,7 +39,7 @@ namespace Predator
 			: base(position, color, animationSetList)
 		{
 			this.myGame = myGame;
-			SetAnimation("IDLE");
+			SetAnimation("IDLE" + 1);
 
 			if (movementType == MovementType.BOSSHEAD)
 			{
@@ -70,7 +71,7 @@ namespace Predator
 
 			if (movementType != MovementType.HORIZONTAL)
 			{
-				playerCollisions = new Rectangle((int)Position.X, (int)Position.Y - 20, animationSetList[0].frameSize.X, animationSetList[0].frameSize.Y + 20);
+				playerCollisions = new Rectangle((int)Position.X, (int)Position.Y, animationSetList[0].frameSize.X, animationSetList[0].frameSize.Y);
 			}
 			else
 			{
@@ -87,7 +88,7 @@ namespace Predator
 			{
 				Direction = new Vector2((_Player.GetPosition.X + (_Player.PositionCenter.X)) - (Position.X + (PositionCenter.X)), (_Player.GetPosition.Y + (_Player.PositionCenter.Y)) - (Position.Y + (PositionCenter.Y)));
 			}
-			else if (_MovementType == MovementType.HORIZONTAL || _MovementType == MovementType.BOUNCE || _MovementType == MovementType.BOSSBOUNCE)
+			else if (_MovementType == MovementType.HORIZONTAL || _MovementType == MovementType.BOUNCE || _MovementType == MovementType.BOSSBOUNCE || _MovementType == MovementType.RAT)
 			{
 				Direction.X = (_Player.GetPosition.X + (_Player.PositionCenter.X)) - (Position.X + (PositionCenter.X));
 			}
@@ -96,7 +97,7 @@ namespace Predator
 				Direction = Vector2.Zero;
 			}
 
-			if (_MovementType != MovementType.BOSSHEAD && Collision.Magnitude(Direction) <= 200)
+			if (Collision.Magnitude(Direction) <= 200)
 			{
 				if (_MovementType != MovementType.FLY)
 				{
@@ -121,7 +122,7 @@ namespace Predator
 
 				if (_MovementType != MovementType.BOUNCE || _MovementType != MovementType.BOSSBOUNCE)
 				{
-					SetAnimation("CHASE");
+					SetAnimation("WALK1");
 				}
 
 				Position += Direction;
@@ -135,7 +136,7 @@ namespace Predator
 			{
 				if (_MovementType != MovementType.BOUNCE || _MovementType != MovementType.BOSSBOUNCE)
 				{
-					SetAnimation("IDLE");
+					SetAnimation("IDLE1");
 				}
 			}
 
@@ -194,11 +195,11 @@ namespace Predator
 				{
 					isJumping = true;
 					Position.Y -= GravityForce * 1.03f;
-					SetAnimation("CHASE");
+					SetAnimation("JUMP1");
 				}
 				if (canFall)
 				{
-					SetAnimation("FALLING");
+					SetAnimation("FALL1");
 				}
 			}
 
