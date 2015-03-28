@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using VoidEngine;
 
-namespace Preditor
+namespace Predator
 {
 	public static class Maps
 	{

@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using VoidEngine;
 
-namespace Preditor
+namespace Predator
 {
 	public class Player : Sprite
 	{

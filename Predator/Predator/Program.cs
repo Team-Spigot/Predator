@@ -1,6 +1,6 @@
 using System;
 
-namespace Preditor
+namespace Predator
 {
 #if WINDOWS || XBOX
     static class Program

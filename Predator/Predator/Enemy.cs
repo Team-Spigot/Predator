@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using VoidEngine;
 
-namespace Preditor
+namespace Predator
 {
 	public class Enemy : Player
 	{

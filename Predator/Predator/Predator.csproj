@@ -7,8 +7,8 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Preditor</RootNamespace>
-    <AssemblyName>Preditor</AssemblyName>
+    <RootNamespace>Predator</RootNamespace>
+    <AssemblyName>Predator</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
@@ -124,9 +124,10 @@
     <Content Include="GameThumbnail.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PreditorContent\PreditorContent.contentproj">
-      <Name>PreditorContent</Name>
+    <ProjectReference Include="..\PredatorContent\PredatorContent.contentproj">
+      <Name>PredatorContent</Name>
       <XnaReferenceType>Content</XnaReferenceType>
+      <Project>{75375C7F-59D4-4A63-82A3-06EB1AC29893}</Project>
     </ProjectReference>
     <ProjectReference Include="..\VoidEngine\VoidEngine.csproj">
       <Project>{CF9853A6-A986-4FAD-A2E6-6FE5307EDF2F}</Project>
