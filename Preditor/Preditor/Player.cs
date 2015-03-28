@@ -29,26 +29,36 @@ namespace Preditor
 			/// </summary>
 			public float maxMana;
 			/// <summary>
-			/// The ammount of time the mana recharges after.
+			/// The amount of time it takes the mana to start recharging.
 			/// </summary>
 			public float manaRechargeTime;
 			/// <summary>
-			/// The ammount of time the mana takes to charge at.
+			/// The default amount of time it takes the mana to start recharging.
 			/// </summary>
-			public float manaInterval;
+			public float defaultManaRechargeTime;
+			/// <summary>
+			/// The amount of mana it will rechage every second.
+			/// </summary>
+			public float manaRechargeInterval;
+			/// <summary>
+			/// The ammount of mana it will decrease by.
+			/// </summary>
+			public float manaDecreaseAmount;
 
 			/// <summary>
 			/// Creates the Mana struct.
 			/// </summary>
 			/// <param name="maxMana">The maxium ammount of mana.</param>
-			/// <param name="manaRechargeTime">The ammout of time the mana recharges after.</param>
-			/// <param name="manaInterval">The ammount of time the mana takes to charge at.</param>
-			public Mana(float maxMana, float manaRechargeTime, float manaInterval)
+			/// <param name="manaRechargeTime">The amount of time it takes the mana to start recharging.</param>
+			/// <param name="manaRechargeInterval">The ammount of time the mana takes to charge at.</param>
+			public Mana(float maxMana, float defaultManaRechargeTime, float manaRechargeInterval, float manaDecreaseAmount)
 			{
 				this.mana = maxMana;
 				this.maxMana = maxMana;
-				this.manaRechargeTime = manaRechargeTime;
-				this.manaInterval = manaInterval;
+				this.manaRechargeTime = defaultManaRechargeTime;
+				this.defaultManaRechargeTime = defaultManaRechargeTime;
+				this.manaRechargeInterval = manaRechargeInterval;
+				this.manaDecreaseAmount = manaDecreaseAmount;
 			}
 		}
 
@@ -58,7 +68,14 @@ namespace Preditor
 		public Game1 myGame;
 
 		public bool Dead = false;
-		public float Lives = 3;
+		public int Lives = 3;
+		public int Level
+		{
+			get;
+			set;
+		}
+
+		internal float manaRechargeTick = 10;
 
 		#region Movement and Collision
 		/// <summary>
@@ -188,10 +205,11 @@ namespace Preditor
 			: base(position, color, animationSetList)
 		{
 			myGame = game;
-			Scale = 0.34f;
+			//Scale = 0.34f;
+			Level = 1;
 
 			#region Set Animation Factors
-			Offset = new Vector2(20, 5);
+			//Offset = new Vector2(20, 5);
 			#endregion
 
 			#region Set Projectile Factors
@@ -204,13 +222,13 @@ namespace Preditor
 
 			#region Set Movement and Collision Factors
 			MovementKeys = movementKeys;
-			Speed = 2.6f;
+			Speed = 5.2f;
 			GravityForce = gravity;
 			DefaultGravityForce = gravity;
-			SetAnimation("IDLE");
+			SetAnimation("IDLE" + Level);
 			isFalling = true;
 			canFall = true;
-			playerCollisions = new Rectangle((int)Position.X, (int)Position.Y, 20, 43);
+			playerCollisions = new Rectangle((int)Position.X, (int)Position.Y, 50, 100);
 			#endregion
 		}
 
@@ -240,20 +258,8 @@ namespace Preditor
 			playerCollisions.Y = (int)Position.Y;
 			#endregion
 
-			#region Movement
-			#region Detect Keys
-			InputMethod(MovementKeys);
-			#endregion
-
 			#region Detect Collision
-			/* foreach (Rectangle r in myGame.gameManager.platformRectangles)
-			{
-				CheckCollision(playerCollisions, r);
-			}
-			foreach (Rectangle r in myGame.gameManager.mapSegments)
-			{
-				CheckCollision(playerCollisions, r);
-			}
+			/*
 			if (myGame.gameManager.level != 7 && (playerCollisions.TouchLeftOf(myGame.gameManager.mapSegments[1]) || playerCollisions.TouchTopOf(myGame.gameManager.mapSegments[1]) || playerCollisions.TouchRightOf(myGame.gameManager.mapSegments[1]) || playerCollisions.TouchBottomOf(myGame.gameManager.mapSegments[1])))
 			{
 				myGame.gameManager.wonLevel = true;
@@ -311,10 +317,7 @@ namespace Preditor
 			{
 				ProjectileList.RemoveRange(0, ProjectileList.Count);
 			}
-			Lives = MathHelper.Clamp(Lives, 0, 3);
-			#endregion
-
-			UpdateGravity();
+			Lives = (int)MathHelper.Clamp(Lives, 0, 3);
 			#endregion
 
 			#region Do Projectiles
@@ -337,77 +340,51 @@ namespace Preditor
 			#region Do Animations
 			if (isJumping || (isFalling && Direction.Y < DefaultGravityForce))
 			{
-				SetAnimation("JUMP");
+				SetAnimation("JUMP" + Level);
 			}
-			if (CurrentAnimation.name == "IDLE")
+			if (CurrentAnimation.name == "IDLE" + Level)
 			{
-				Offset = new Vector2(10, 5);
+				//Offset = new Vector2(10, 5);
 			}
-			if (CurrentAnimation.name == "SHOOT")
+			if (CurrentAnimation.name == "ATK" + Level)
 			{
-				Offset = new Vector2(10, 5);
+				//Offset = new Vector2(10, 5);
 			}
-			if (CurrentAnimation.name == "JUMP")
-			{
-				if (isFlipped)
-				{
-					Offset = new Vector2(15, 5);
-				}
-				else
-				{
-					Offset = new Vector2(25, 5);
-				}
-			}
-			if (CurrentAnimation.name == "WALK")
+			if (CurrentAnimation.name == "JUMP" + Level)
 			{
 				if (isFlipped)
 				{
-					Offset = new Vector2(0, 5);
+					//Offset = new Vector2(15, 5);
 				}
 				else
 				{
-					Offset = new Vector2(13, 5);
+					//Offset = new Vector2(25, 5);
+				}
+			}
+			if (CurrentAnimation.name == "WALK" + Level)
+			{
+				if (isFlipped)
+				{
+					//Offset = new Vector2(0, 5);
+				}
+				else
+				{
+					//Offset = new Vector2(13, 5);
 				}
 			}
 			#endregion
 
-			#region Mana
-			if (_Mana.mana < _Mana.maxMana)
+			#region Updates
+			InputMethod(MovementKeys);
+			UpdateGravity();
+			UpdateMana();
+			foreach (Rectangle r in myGame.gameManager.mapTiles)
 			{
-				if (!HasShotProjectile)
-				{
-					_Mana.manaRechargeTime -= myGame.elapsedTime;
-				}
-
-				if (_Mana.mana <= 0)
-				{
-					CanShootProjectile = false;
-				}
-				else if (_Mana.mana >= 0)
-				{
-					CanShootProjectile = true;
-				}
-
-				if (_Mana.manaRechargeTime <= 0 && _Mana.mana < _Mana.maxMana && !HasShotProjectile)
-				{
-					_Mana.manaInterval -= myGame.elapsedTime;
-
-					if (_Mana.manaInterval <= 0)
-					{
-						_Mana.mana += 9.5f;
-						_Mana.manaInterval = 500;
-					}
-				}
-
-				if (_Mana.mana >= _Mana.maxMana || (HasShotProjectile && CanShootProjectile))
-				{
-					_Mana.manaRechargeTime = 5000;
-				}
-
-				if (_Mana.mana > _Mana.maxMana)
-				{
-					_Mana.mana = _Mana.maxMana;
-				}
+				CheckCollision(playerCollisions, r);
+			}
+			foreach (Rectangle r in myGame.gameManager.mapBoarders)
+			{
+				CheckCollision(playerCollisions, r);
 			}
 			#endregion
 
@@ -437,7 +414,7 @@ namespace Preditor
 		{
 			foreach (Projectile p in ProjectileList)
 			{
-				p.Draw(gameTime, spriteBatch);
+				//p.Draw(gameTime, spriteBatch);
 			}
 
 			base.Draw(gameTime, spriteBatch);
@@ -452,6 +429,47 @@ namespace Preditor
 			return playerCollisions;
 		}
 
+		public virtual void UpdateMana()
+		{
+			if (_Mana.mana < _Mana.maxMana)
+			{
+				if (!HasShotProjectile)
+				{
+					_Mana.manaRechargeTime -= myGame.elapsedTime;
+				}
+
+				if (_Mana.mana <= 0)
+				{
+					CanShootProjectile = false;
+				}
+				else if (_Mana.mana >= 0)
+				{
+					CanShootProjectile = true;
+				}
+
+				if (_Mana.manaRechargeTime <= 0 && _Mana.mana < _Mana.maxMana && !HasShotProjectile)
+				{
+					manaRechargeTick -= myGame.elapsedTime;
+
+					if (manaRechargeTick <= 0)
+					{
+						_Mana.mana += _Mana.manaRechargeInterval;
+						manaRechargeTick = 10;
+					}
+				}
+
+				if (_Mana.mana >= _Mana.maxMana || (HasShotProjectile && CanShootProjectile))
+				{
+					_Mana.manaRechargeTime = _Mana.defaultManaRechargeTime;
+				}
+
+				if (_Mana.mana > _Mana.maxMana)
+				{
+					_Mana.mana = _Mana.maxMana;
+				}
+			}
+		}
+
 		/// <summary>
 		/// Makes the player shoot a projectile.
 		/// </summary>
@@ -461,9 +479,9 @@ namespace Preditor
 			if (CreateNewProjectile && CanShootProjectile && _Mana.mana >= _Mana.maxMana / shootFactor - 1)
 			{
 				_Mana.mana -= shootFactor;
-				Projectile projectile = new Projectile(new Vector2(Position.X - 5, Position.Y + 11), Color.White, ProjectileAnimationSet, this, myGame);
-				ProjectileList.Add(projectile);
-				projectile.Fire();
+				//Projectile projectile = new Projectile(new Vector2(Position.X - 5, Position.Y + 11), Color.White, ProjectileAnimationSet, this, myGame);
+				//ProjectileList.Add(projectile);
+				//projectile.Fire();
 				//myGame.gameManager.shootSFX.Play(1f, 0f, 0f);
 				HasShotProjectile = true;
 			}
@@ -489,14 +507,14 @@ namespace Preditor
 			if (myGame.keyboardState.IsKeyDown(keyList[0]))
 			{
 				Direction.X = -Speed;
-				SetAnimation("WALK");
+				SetAnimation("WALK" + Level);
 				FlipSprite(Axis.Y);
 				isMoving = true;
 			}
 			if (myGame.keyboardState.IsKeyDown(keyList[2]))
 			{
 				Direction.X = Speed;
-				SetAnimation("WALK");
+				SetAnimation("WALK" + Level);
 				FlipSprite(Axis.NONE);
 				isMoving = true;
 			}
@@ -505,9 +523,9 @@ namespace Preditor
 				Direction.X = 0f;
 				isMoving = false;
 
-				if (isGrounded && (CurrentAnimation.name != "SHOOT"))
+				if (isGrounded && (CurrentAnimation.name != "ATK" + Level))
 				{
-					SetAnimation("IDLE");
+					SetAnimation("IDLE" + Level);
 				}
 			}
 			if (!myGame.CheckKey(keyList[5]))
@@ -518,7 +536,7 @@ namespace Preditor
 			{
 				if (CanShootProjectile)
 				{
-					SetAnimation("SHOOT");
+					SetAnimation("ATK" + Level);
 					ShootBeam(20);
 				}
 			}
@@ -533,7 +551,7 @@ namespace Preditor
 		{
 			if (rectangle1.TouchTopOf(rectangle2))
 			{
-				Position.Y = rectangle2.Top - rectangle1.Height - 2f;
+				Position.Y = rectangle2.Top - rectangle1.Height;
 				Direction.Y = 0f;
 				isGrounded = true;
 				canFall = false;
@@ -541,11 +559,11 @@ namespace Preditor
 			}
 			if (rectangle1.TouchLeftOf(rectangle2))
 			{
-				Position.X = rectangle2.Left - rectangle1.Width - 2f;
+				Position.X = rectangle2.Left - rectangle1.Width;
 			}
 			if (rectangle1.TouchRightOf(rectangle2))
 			{
-				Position.X = rectangle2.Right + 2f;
+				Position.X = rectangle2.Right;
 			}
 			if (rectangle1.TouchBottomOf(rectangle2))
 			{

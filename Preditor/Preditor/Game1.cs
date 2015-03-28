@@ -22,7 +22,9 @@ namespace Preditor
 			MENU,
 			OPTIONS,
 			GAME,
-			LOSE
+			LOSE,
+			WIN,
+			CREDITS
 		}
 		public enum Ratio
 		{
@@ -36,8 +38,18 @@ namespace Preditor
 		public KeyboardState keyboardState, previousKeyboardState;
 
 		#region Screen Properties
-		public Point WindowSize;
-		public Point Resolution = new Point(1024, 768);
+		public Point WindowSize
+		{
+			get
+			{
+				return new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
+			}
+			set
+			{
+				graphics.PreferredBackBufferWidth = value.X;
+				graphics.PreferredBackBufferHeight = value.Y;
+			}
+		}
 		public Ratio ratio
 		{
 			get;
@@ -65,7 +77,30 @@ namespace Preditor
 		public GameLevels currentGameLevel;
 		#endregion
 
-		public float elapsedTime, previousElapsedTime;
+		public float elapsedTime
+		{
+			get;
+			set;
+		}
+
+		public Random random;
+
+		public string seed = "Lilly is my kitten and she will destroy us all!!!";
+
+		public int seedToInt32
+		{
+			get
+			{
+				int tempInt = 0;
+
+				for (int i = 0; i < seed.Length; i++)
+				{
+					tempInt += Convert.ToInt32(Convert.ToChar(seed[i]));
+				}
+
+				return tempInt;
+			}
+		}
 
 		#region Fonts
 		public SpriteFont segoeUIBold;
@@ -80,10 +115,8 @@ namespace Preditor
 			graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "Content";
 			Window.Title = "Preditor";
-			graphics.PreferredBackBufferWidth = (int)Resolution.X;
-			graphics.PreferredBackBufferHeight = (int)Resolution.Y;
-			WindowSize = new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
-			Fullscreen = true;
+			WindowSize = new Point(1024, 768);
+			Fullscreen = false;
 		}
 
 		/// <summary>
@@ -94,10 +127,9 @@ namespace Preditor
 		/// </summary>
 		protected override void Initialize()
 		{
+			random = new Random(Convert.ToChar(seedToInt32));
+
 			// TODO: Add your initialization logic here
-
-			SetCurrentLevel(GameLevels.GAME);
-
 			base.Initialize();
 		}
 
@@ -110,6 +142,23 @@ namespace Preditor
 			// Create a new SpriteBatch, which can be used to draw textures.
 			spriteBatch = new SpriteBatch(GraphicsDevice);
 
+			segoeUIRegular = Content.Load<SpriteFont>(@"fonts\segoeuiregular");
+			segoeUIMono = Content.Load<SpriteFont>(@"fonts\segoeuimono");
+			segoeUIMonoDebug = Content.Load<SpriteFont>(@"fonts\segoeuimonodebug");
+			segoeUIBold = Content.Load<SpriteFont>(@"fonts\segoeuibold");
+			segoeUIItalic = Content.Load<SpriteFont>(@"fonts\segoeuiitalic");
+
+			splashScreenManager = new SplashScreenManager(this);
+			menuManager = new MenuManager(this);
+			gameManager = new GameManager(this);
+			loseManager = new LoseManager(this);
+
+			Components.Add(splashScreenManager);
+			Components.Add(menuManager);
+			Components.Add(gameManager);
+			Components.Add(loseManager);
+
+			SetCurrentLevel(GameLevels.SPLASH);
 			// TODO: use this.Content to load your game content here
 		}
 
@@ -130,14 +179,18 @@ namespace Preditor
 		protected override void Update(GameTime gameTime)
 		{
 			// Allows the game to exit
-			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
 			{
 				this.Exit();
 			}
 
+			keyboardState = Keyboard.GetState();
+
 			// TODO: Add your update logic here
 
 			base.Update(gameTime);
+
+			previousKeyboardState = keyboardState;
 		}
 
 		/// <summary>
@@ -176,6 +229,7 @@ namespace Preditor
 			if (currentGameLevel != level)
 			{
 				currentGameLevel = level;
+
 				splashScreenManager.Enabled = false;
 				splashScreenManager.Visible = false;
 				menuManager.Enabled = false;
@@ -209,6 +263,10 @@ namespace Preditor
 				case GameLevels.LOSE:
 					loseManager.Enabled = true;
 					loseManager.Visible = true;
+					break;
+				case GameLevels.WIN:
+					break;
+				case GameLevels.CREDITS:
 					break;
 				default:
 					break;
