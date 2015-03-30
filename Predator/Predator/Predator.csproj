@@ -109,9 +109,11 @@
   <ItemGroup>
     <Compile Include="Enemy.cs" />
     <Compile Include="GameManager.cs" />
+    <Compile Include="HealthBar.cs" />
     <Compile Include="LoseManager.cs" />
     <Compile Include="Maps.cs" />
     <Compile Include="MenuManager.cs" />
+    <Compile Include="Tiles.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Projectile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

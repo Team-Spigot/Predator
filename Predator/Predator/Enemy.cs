@@ -22,8 +22,6 @@ namespace Predator
 			NONE
 		}
 
-		public int HP;
-
 		public MovementType _MovementType;
 
 		public Player _Player;

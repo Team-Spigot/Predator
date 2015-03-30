@@ -69,6 +69,9 @@ namespace Predator
 
 		public bool Dead = false;
 		public int Lives = 3;
+		public int HP = 100;
+		public int HPMax = -100;
+
 		public int Level
 		{
 			get;
@@ -207,6 +210,7 @@ namespace Predator
 			myGame = game;
 			//Scale = 0.34f;
 			Level = 1;
+			HP = 100;
 
 			#region Set Animation Factors
 			//Offset = new Vector2(20, 5);
@@ -228,7 +232,7 @@ namespace Predator
 			SetAnimation("IDLE" + Level);
 			isFalling = true;
 			canFall = true;
-			playerCollisions = new Rectangle((int)Position.X, (int)Position.Y, 50, 100);
+			playerCollisions = new Rectangle((int)Position.X, (int)Position.Y, animationSetList[0].frameSize.X, animationSetList[0].frameSize.Y);
 			#endregion
 		}
 
@@ -256,6 +260,20 @@ namespace Predator
 			#region Updating Player Collision Points.
 			playerCollisions.X = (int)Position.X;
 			playerCollisions.Y = (int)Position.Y;
+			#endregion
+
+			#region Updates
+			InputMethod(MovementKeys);
+			UpdateGravity();
+			foreach (Rectangle r in myGame.gameManager.mapTiles)
+			{
+				CheckCollision(playerCollisions, r);
+			}
+			foreach (Rectangle r in myGame.gameManager.mapBoarders)
+			{
+				CheckCollision(playerCollisions, r);
+			}
+			UpdateMana();
 			#endregion
 
 			#region Detect Collision
@@ -374,19 +392,6 @@ namespace Predator
 			}
 			#endregion
 
-			#region Updates
-			InputMethod(MovementKeys);
-			UpdateGravity();
-			UpdateMana();
-			foreach (Rectangle r in myGame.gameManager.mapTiles)
-			{
-				CheckCollision(playerCollisions, r);
-			}
-			foreach (Rectangle r in myGame.gameManager.mapBoarders)
-			{
-				CheckCollision(playerCollisions, r);
-			}
-			#endregion
 
 			foreach (Projectile p in ProjectileList)
 			{
@@ -396,6 +401,15 @@ namespace Predator
 					ProjectileList.RemoveAt(0);
 					break;
 				}
+			}
+
+			if (HP < 0)
+			{
+				HP = 0;
+			}
+			if (HP > HPMax)
+			{
+				HP = HPMax;
 			}
 
 			base.Update(gameTime);
@@ -500,9 +514,9 @@ namespace Predator
 		{
 			if ((myGame.keyboardState.IsKeyDown(keyList[4]) || myGame.keyboardState.IsKeyDown(keyList[1])) && (!isJumping && !canFall))
 			{
+				Direction.Y = -DefaultGravityForce;
 				isJumping = true;
 				//Position.Y -= GravityForce * 5.5f;
-				Direction.Y = -DefaultGravityForce;
 			}
 			if (myGame.keyboardState.IsKeyDown(keyList[0]))
 			{
@@ -552,7 +566,7 @@ namespace Predator
 			if (rectangle1.TouchTopOf(rectangle2))
 			{
 				Position.Y = rectangle2.Top - rectangle1.Height;
-				Direction.Y = 0f;
+				//Direction.Y = 0f;
 				isGrounded = true;
 				canFall = false;
 				GravityForce = DefaultGravityForce;
@@ -567,7 +581,7 @@ namespace Predator
 			}
 			if (rectangle1.TouchBottomOf(rectangle2))
 			{
-				Position.Y = rectangle1.Bottom - 25f;
+				Position.Y = rectangle1.Bottom;
 				isJumping = false;
 				canFall = true;
 				isFalling = true;
@@ -583,8 +597,8 @@ namespace Predator
 			{
 				if (GravityForce > -DefaultGravityForce)
 				{
-					Direction.Y -= GravityForce;
-					GravityForce -= 0.07f;
+					Direction.Y = -GravityForce;
+					GravityForce -= 0.039f;
 				}
 				if (GravityForce <= 0f)
 				{
@@ -595,20 +609,11 @@ namespace Predator
 
 			if (!isJumping)
 			{
-				Direction.Y += GravityForce;
+				Direction.Y = GravityForce;
 				GravityForce += 0.10f;
 			}
 
 			Direction.Y = MathHelper.Clamp(Direction.Y, -GravityForce - 1f, GravityForce);
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="newPosition"></param>
-		public void SetPosition(Vector2 newPosition)
-		{
-			Position = newPosition;
 		}
 	}
 }

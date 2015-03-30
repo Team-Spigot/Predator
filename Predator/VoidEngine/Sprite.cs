@@ -136,7 +136,7 @@ namespace VoidEngine
 		public float Scale
 		{
 			get;
-			protected set;
+			set;
 		}
 		#endregion
 		#region Movement
@@ -169,6 +169,17 @@ namespace VoidEngine
 			get
 			{
 				return Position;
+			}
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		public Vector2 SetPosition
+		{
+			set
+			{
+				Position.X = value.X;
+				Position.Y = value.Y;
 			}
 		}
 		/// <summary>
