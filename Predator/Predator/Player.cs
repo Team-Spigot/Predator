@@ -93,6 +93,9 @@ namespace Predator
 			set;
 		}
 
+		public float DirectionModifier;
+		public int JumpBackTimer = 1600;
+
 		internal float manaRechargeTick = 10;
 
 		#region Movement and Collision
@@ -304,6 +307,8 @@ namespace Predator
 			UpdateMana();
 			#endregion
 
+			JumpBackTimer -= gameTime.ElapsedGameTime.Milliseconds;
+
 			#region Detect Collision
 			foreach (Enemy e in myGame.gameManager.EnemyList1)
 			{
@@ -311,40 +316,39 @@ namespace Predator
 				{
 					if (Position.X + PositionCenter.X > e.Position.X + e.PositionCenter.X)
 					{
-						Direction.X = 3;
 						jumpingBackRight = true;
+						Direction.Y = -DefaultGravityForce;
+						isJumping = true;
 					}
 					else if (Position.X + PositionCenter.X < e.Position.X + e.PositionCenter.X)
 					{
-						Direction.X = -3;
 						jumpingBackLeft = true;
+						Direction.Y = -DefaultGravityForce;
+						isJumping = true;
 					}
 
 					MainHP -= 0.03f;
 				}
-			}
-			if (jumpingBackLeft)
-			{
-				Position.X -= 10;
-				Direction.X -= 2;
-				Direction.Y = -DefaultGravityForce;
-				isJumping = true;
 
-				if (Direction.X <= -3)
+				if (jumpingBackLeft)
 				{
-					jumpingBackLeft = false;
+					Direction.X -= 4;
+
+					if (JumpBackTimer <= 0)
+					{
+						jumpingBackLeft = false;
+						JumpBackTimer = 1600;
+					}
 				}
-			}
-			else if (jumpingBackRight)
-			{
-				Position.X += 10;
-				Direction.X += 2;
-				Direction.Y = -DefaultGravityForce;
-				isJumping = true;
-
-				if (Direction.X >= 3)
+				if (jumpingBackRight)
 				{
-					jumpingBackRight = false;
+					Direction.X += 4;
+
+					if (JumpBackTimer <= 0)
+					{
+						jumpingBackRight = false;
+						JumpBackTimer = 1600;
+					}
 				}
 			}
 			if (Dead == true)
