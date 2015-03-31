@@ -79,6 +79,8 @@ namespace Predator
 
 		public override void Update(GameTime gameTime)
 		{
+			PositionCenter = new Vector2((CurrentAnimation.frameSize.X / 2), (CurrentAnimation.frameSize.Y / 2));
+
 			playerCollisions.X = (int)Position.X;
 			playerCollisions.Y = (int)Position.Y;
 
@@ -234,8 +236,6 @@ namespace Predator
 
 				LastFrameTime = 0;
 			}
-
-			PositionCenter = new Vector2((CurrentAnimation.frameSize.X / 2), (CurrentAnimation.frameSize.Y / 2));
 		}
 
 		protected override void CheckCollision(Rectangle rectangle1, Rectangle rectangle2)

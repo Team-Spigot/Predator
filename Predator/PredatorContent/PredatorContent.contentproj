@@ -98,22 +98,23 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="images\gui\health1.png">
-      <Name>health1</Name>
+    <Compile Include="images\gui\healthOHFG.png">
+      <Name>healthOHFG</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="images\gui\health2.png">
-      <Name>health2</Name>
+    <Compile Include="images\gui\healthBG.png">
+      <Name>healthBG</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="images\gui\health3.png">
-      <Name>health3</Name>
+    <Compile Include="images\gui\healthFG.png">
+      <Name>healthFG</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="images\gui\healthOHBG.png">
+      <Name>healthOHBG</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

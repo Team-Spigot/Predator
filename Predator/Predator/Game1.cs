@@ -85,23 +85,6 @@ namespace Predator
 
 		public Random random;
 
-		public string seed = "Lilly is my kitten and she will destroy us all!!!";
-
-		public int seedToInt32
-		{
-			get
-			{
-				int tempInt = 0;
-
-				for (int i = 0; i < seed.Length; i++)
-				{
-					tempInt += Convert.ToInt32(Convert.ToChar(seed[i]));
-				}
-
-				return tempInt;
-			}
-		}
-
 		#region Fonts
 		public SpriteFont segoeUIBold;
 		public SpriteFont segoeUIItalic;
@@ -127,8 +110,6 @@ namespace Predator
 		/// </summary>
 		protected override void Initialize()
 		{
-			random = new Random(Convert.ToChar(seedToInt32));
-
 			// TODO: Add your initialization logic here
 			base.Initialize();
 		}

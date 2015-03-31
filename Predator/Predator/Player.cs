@@ -69,8 +69,23 @@ namespace Predator
 
 		public bool Dead = false;
 		public int Lives = 3;
-		public int HP = 100;
-		public int HPMax = -100;
+		public int HP
+		{
+			get
+			{
+				return (int)MainHP;
+			}
+		}
+		public float MainHP
+		{
+			get;
+			protected set;
+		}
+		public float HPMax
+		{
+			get;
+			protected set;
+		}
 
 		public int Level
 		{
@@ -137,6 +152,14 @@ namespace Predator
 		/// The center of the player;
 		/// </summary>
 		public Vector2 PositionCenter;
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool jumpingBackLeft;
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool jumpingBackRight;
 		#endregion
 
 		#region Projectiles
@@ -210,7 +233,8 @@ namespace Predator
 			myGame = game;
 			//Scale = 0.34f;
 			Level = 1;
-			HP = 100;
+			MainHP = 100;
+			HPMax = 100;
 
 			#region Set Animation Factors
 			//Offset = new Vector2(20, 5);
@@ -257,6 +281,10 @@ namespace Predator
 		/// <param name="gameTime">To keep track of run time.</param>
 		public override void Update(GameTime gameTime)
 		{
+			Position += Direction;
+
+			PositionCenter = new Vector2(playerCollisions.Width / 2, playerCollisions.Height / 2);
+
 			#region Updating Player Collision Points.
 			playerCollisions.X = (int)Position.X;
 			playerCollisions.Y = (int)Position.Y;
@@ -277,60 +305,48 @@ namespace Predator
 			#endregion
 
 			#region Detect Collision
-			/*
-			if (myGame.gameManager.level != 7 && (playerCollisions.TouchLeftOf(myGame.gameManager.mapSegments[1]) || playerCollisions.TouchTopOf(myGame.gameManager.mapSegments[1]) || playerCollisions.TouchRightOf(myGame.gameManager.mapSegments[1]) || playerCollisions.TouchBottomOf(myGame.gameManager.mapSegments[1])))
+			foreach (Enemy e in myGame.gameManager.EnemyList1)
 			{
-				myGame.gameManager.wonLevel = true;
-				Position = Vector2.Zero;
-			}
-			if (Position.Y >= myGame.gameManager.camera.Position.Y + myGame.gameManager.camera.Size.Y)
-			{
-				Dead = true;
-				Lives -= 1;
-			}
-			if (Lives <= 0)
-			{
-				myGame.SetCurrentLevel(Game1.GameLevels.LOSE);
+				if (playerCollisions.TouchLeftOf(e.playerCollisions) || playerCollisions.TouchTopOf(e.playerCollisions) || playerCollisions.TouchRightOf(e.playerCollisions) || playerCollisions.TouchBottomOf(e.playerCollisions))
+				{
+					if (Position.X + PositionCenter.X > e.Position.X + e.PositionCenter.X)
+					{
+						Direction.X = 3;
+						jumpingBackRight = true;
+					}
+					else if (Position.X + PositionCenter.X < e.Position.X + e.PositionCenter.X)
+					{
+						Direction.X = -3;
+						jumpingBackLeft = true;
+					}
 
-				SetPosition(new Vector2(0, 0));
-			}
-			foreach (Enemy e in myGame.gameManager.cEnemyList)
-			{
-				if (playerCollisions.TouchLeftOf(e.playerCollisions) || playerCollisions.TouchTopOf(e.playerCollisions) || playerCollisions.TouchRightOf(e.playerCollisions) || playerCollisions.TouchBottomOf(e.playerCollisions))
-				{
-					Dead = true;
-					Lives -= 1;
+					MainHP -= 0.03f;
 				}
 			}
-			foreach (Enemy e in myGame.gameManager.sEnemyList)
+			if (jumpingBackLeft)
 			{
-				if (playerCollisions.TouchLeftOf(e.playerCollisions) || playerCollisions.TouchTopOf(e.playerCollisions) || playerCollisions.TouchRightOf(e.playerCollisions) || playerCollisions.TouchBottomOf(e.playerCollisions))
+				Position.X -= 10;
+				Direction.X -= 2;
+				Direction.Y = -DefaultGravityForce;
+				isJumping = true;
+
+				if (Direction.X <= -3)
 				{
-					Dead = true;
-					Lives -= 1;
+					jumpingBackLeft = false;
 				}
 			}
-			foreach (Enemy e in myGame.gameManager.tEnemyList)
+			else if (jumpingBackRight)
 			{
-				if (playerCollisions.TouchLeftOf(e.playerCollisions) || playerCollisions.TouchTopOf(e.playerCollisions) || playerCollisions.TouchRightOf(e.playerCollisions) || playerCollisions.TouchBottomOf(e.playerCollisions))
+				Position.X += 10;
+				Direction.X += 2;
+				Direction.Y = -DefaultGravityForce;
+				isJumping = true;
+
+				if (Direction.X >= 3)
 				{
-					Dead = true;
-					Lives -= 1;
+					jumpingBackRight = false;
 				}
 			}
-			if (myGame.gameManager.BossCreated && !myGame.gameManager.bhEnemy.Dead)
-			{
-				if (playerCollisions.TouchLeftOf(myGame.gameManager.bflEnemy.GetPlayerRectangles()) || playerCollisions.TouchTopOf(myGame.gameManager.bflEnemy.GetPlayerRectangles()) || playerCollisions.TouchRightOf(myGame.gameManager.bflEnemy.GetPlayerRectangles()) || playerCollisions.TouchBottomOf(myGame.gameManager.bflEnemy.GetPlayerRectangles()))
-				{
-					Dead = true;
-					Lives -= 1;
-				}
-				if (playerCollisions.TouchLeftOf(myGame.gameManager.bfrEnemy.GetPlayerRectangles()) || playerCollisions.TouchTopOf(myGame.gameManager.bfrEnemy.GetPlayerRectangles()) || playerCollisions.TouchRightOf(myGame.gameManager.bfrEnemy.GetPlayerRectangles()) || playerCollisions.TouchBottomOf(myGame.gameManager.bfrEnemy.GetPlayerRectangles()))
-				{
-					Dead = true;
-					Lives -= 1;
-				}
-			} */
 			if (Dead == true)
 			{
 				ProjectileList.RemoveRange(0, ProjectileList.Count);
@@ -392,7 +408,6 @@ namespace Predator
 			}
 			#endregion
 
-
 			foreach (Projectile p in ProjectileList)
 			{
 				if (!p.visible)
@@ -403,20 +418,25 @@ namespace Predator
 				}
 			}
 
+			if (myGame.keyboardState.IsKeyDown(Keys.P))
+			{
+				MainHP += 1;
+			}
+			if (myGame.keyboardState.IsKeyDown(Keys.L))
+			{
+				MainHP -= 1;
+			}
+
 			if (HP < 0)
 			{
-				HP = 0;
+				MainHP = 0;
 			}
 			if (HP > HPMax)
 			{
-				HP = HPMax;
+				MainHP = HPMax;
 			}
 
 			base.Update(gameTime);
-
-			Position += Direction;
-
-			PositionCenter = new Vector2(playerCollisions.Width / 2, playerCollisions.Height / 2);
 		}
 
 		/// <summary>
@@ -598,7 +618,7 @@ namespace Predator
 				if (GravityForce > -DefaultGravityForce)
 				{
 					Direction.Y = -GravityForce;
-					GravityForce -= 0.039f;
+					GravityForce -= 0.03f;
 				}
 				if (GravityForce <= 0f)
 				{

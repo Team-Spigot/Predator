@@ -39,15 +39,19 @@ namespace Predator
 		/// <summary>
 		/// 
 		/// </summary>
-		public Texture2D health1Texture;
+		public Texture2D healthBGTexture;
 		/// <summary>
 		/// 
 		/// </summary>
-		public Texture2D health2Texture;
+		public Texture2D healthFGTexture;
 		/// <summary>
 		/// 
 		/// </summary>
-		public Texture2D health3Texture;
+		public Texture2D healthOverheadBGTexture;
+		/// <summary>
+		/// 
+		/// </summary>
+		public Texture2D healthOverheadFGTexture;
 		#endregion
 
 		#region Lists & Objects
@@ -120,6 +124,10 @@ namespace Predator
 		/// 
 		/// </summary>
 		public HealthBar playerHealthBar;
+		/// <summary>
+		/// 
+		/// </summary>
+		public List<Sprite.AnimationSet> playerHealthBarAnimationSetList;
 		#endregion
 
 		#region Level & Transition Stuff
@@ -194,6 +202,7 @@ namespace Predator
 			movementKeys = new List<Keys>();
 
 			healthBarAnimationSetList = new List<Sprite.AnimationSet>();
+			playerHealthBarAnimationSetList = new List<Sprite.AnimationSet>();
 
 			EnemyList1 = new List<Enemy>();
 
@@ -208,9 +217,10 @@ namespace Predator
 			line = Game.Content.Load<Texture2D>(@"images\other\line");
 			playerTemp = Game.Content.Load<Texture2D>(@"images\player\temp");
 			tempTileTexture = Game.Content.Load<Texture2D>(@"images\tiles\temp");
-			health1Texture = Game.Content.Load<Texture2D>(@"images\gui\health1");
-			health2Texture = Game.Content.Load<Texture2D>(@"images\gui\health2");
-			health3Texture = Game.Content.Load<Texture2D>(@"images\gui\health3");
+			healthFGTexture = Game.Content.Load<Texture2D>(@"images\gui\healthFG");
+			healthBGTexture = Game.Content.Load<Texture2D>(@"images\gui\healthBG");
+			healthOverheadFGTexture = Game.Content.Load<Texture2D>(@"images\gui\healthOHFG");
+			healthOverheadBGTexture = Game.Content.Load<Texture2D>(@"images\gui\healthOHBG");
 
 			camera = new Camera(myGame.GraphicsDevice.Viewport, new Point(1024, 768), 1f);
 			camera.Position = Vector2.Zero;
@@ -251,7 +261,8 @@ namespace Predator
 			playerAnimationSet.Add(new Sprite.AnimationSet("DIE-2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(210, 050), 16000));
 			playerAnimationSet.Add(new Sprite.AnimationSet("GAIN2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(245, 050), 16000));
 
-			healthBarAnimationSetList.Add(new Sprite.AnimationSet("IDLE", health3Texture, new Point(200, 50), new Point(1, 1), new Point(0, 0), 16000));
+			healthBarAnimationSetList.Add(new Sprite.AnimationSet("IDLE", healthFGTexture, new Point(190, 16), new Point(1, 1), new Point(0, 0), 16000));
+			playerHealthBarAnimationSetList.Add(new Sprite.AnimationSet("IDLE", healthOverheadFGTexture, new Point(44, 3), new Point(1, 1), new Point(0, 0), 16000));
 
 			movementKeys.Add(Keys.A);
 			movementKeys.Add(Keys.W);
@@ -264,10 +275,9 @@ namespace Predator
 
 			player = new Player(new Vector2(200, 256), movementKeys, 1.75f, mana, Color.White, playerAnimationSet, myGame);
 
-			healthBar = new HealthBar(new Vector2(15, 15), Color.White, healthBarAnimationSetList, player);
+			healthBar = new HealthBar(new Vector2(20, 25), Color.White, healthBarAnimationSetList, player);
 
-			playerHealthBar = new HealthBar(new Vector2(player.GetPosition.X - 32.5f, player.GetPosition.Y - 25), Color.White, healthBarAnimationSetList, player);
-			playerHealthBar.Scale = 0.5f;
+			playerHealthBar = new HealthBar(new Vector2(player.GetPosition.X - ((48 - 35) / 2), player.GetPosition.Y - 10), Color.White, playerHealthBarAnimationSetList, player);
 
 			debugLabel = new Label(Vector2.Zero, myGame.segoeUIMonoDebug, 1f, Color.Black, "");
 		
@@ -287,18 +297,9 @@ namespace Predator
 				camera.Position = player.GetPosition;
 			}
 
-			if (myGame.keyboardState.IsKeyDown(Keys.P))
-			{
-				player.HP += (int)1.03f;
-			}
-			if (myGame.keyboardState.IsKeyDown(Keys.L))
-			{
-				player.HP -= (int)1.03f;
-			}
-
 			healthBar.Update(gameTime);
 			playerHealthBar.Update(gameTime);
-			playerHealthBar.SetPosition = new Vector2(player.GetPosition.X - 32.5f, player.GetPosition.Y - 25);
+			playerHealthBar.SetPosition = new Vector2(player.GetPosition.X - ((44 - 35) / 2), player.GetPosition.Y - 7);
 
 			foreach (Enemy e in EnemyList1)
 			{
@@ -317,7 +318,12 @@ namespace Predator
 				LevelLoaded = true;
 			}
 
-			debugStrings[0] = "Player || canFall=" + player.canFall + " isJumping=" + player.isJumping + " isFalling=" + player.isFalling + " GravityForce=" + player.GravityForce + " Direction=(" + player.GetDirection.X + "," + player.GetDirection.Y + ") HP=" + player.HP;
+			debugStrings[0] = "Player || canFall=" + player.canFall + " isJumping=" + player.isJumping + " isFalling=" + player.isFalling + " GravityForce=" + player.GravityForce + "";
+			debugStrings[1] = "Direction=(" + player.GetDirection.X + "," + player.GetDirection.Y + ") HP=" + player.HP + " PositionCenter=(" + player.PositionCenter.X + "," + player.PositionCenter.Y + ")";
+			if (EnemyList1.Count > 0)
+			{
+				debugStrings[2] = "Enemy1 || PositionCenter=(" + EnemyList1[0].PositionCenter.X + "," + EnemyList1[0].PositionCenter.Y + ")";
+			}
 
 			debugLabel.Update(gameTime, debugStrings[0] + "\n" + 
 										debugStrings[1] + "\n" + 
@@ -344,7 +350,7 @@ namespace Predator
 			spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null, null, camera.GetTransformation());
 			{
 				player.Draw(gameTime, spriteBatch);
-				spriteBatch.Draw(health2Texture, new Vector2(player.GetPosition.X - 32.5f, player.GetPosition.Y - 25), new Rectangle(0, 0, 200, 50), Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 0f);
+				spriteBatch.Draw(healthOverheadBGTexture, new Vector2(player.GetPosition.X - ((50 - 35) / 2), player.GetPosition.Y - 12), Color.White);
 
 				playerHealthBar.Draw(gameTime, spriteBatch);
 
@@ -362,8 +368,7 @@ namespace Predator
 
 			spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null);
 			{
-				spriteBatch.Draw(health1Texture, new Vector2(15, 15), Color.White);
-				spriteBatch.Draw(health2Texture, new Vector2(15, 15), Color.White);
+				spriteBatch.Draw(healthBGTexture, new Vector2(15, 15), Color.White);
 
 				healthBar.Draw(gameTime, spriteBatch);
 
@@ -415,14 +420,14 @@ namespace Predator
 						mapTiles.Add(new Rectangle(x * 35, y * 35, 35, 35));
 						tileObjects.Add(new Tiles(new Vector2(x * 35, y * 35), myGame, (int)tiles[x, y], tileAnimationSets));
 					}
+					else if (tiles[x, y] == 70)
+					{
+						player.SetPosition = new Vector2(x * 35, y * 35);
+					}
 					else if (tiles[x, y] == 71)
 					{
 						Enemy tempEnemy1 = new Enemy(new Vector2(x * 35, y * 35), 1.5f, Enemy.MovementType.RAT, Color.White, playerAnimationSet, player, mapTiles, mapBoarders);
 						EnemyList1.Add(tempEnemy1);
-					}
-					else if (tiles[x, y] == 70)
-					{
-						player.SetPosition = new Vector2(x * 35, y * 35);
 					}
 				}
 			}
