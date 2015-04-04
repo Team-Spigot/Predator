@@ -28,7 +28,7 @@ namespace Predator
 
 		public override void Update(GameTime gameTime)
 		{
-			double ratio = ((double)player.HP / (double)player.HPMax);
+			double ratio = ((double)player.HP / (double)player.MaxHP);
 			barwidth = (int)(CurrentAnimation.frameSize.X * ratio);
 
 			if (ratio <= .5)

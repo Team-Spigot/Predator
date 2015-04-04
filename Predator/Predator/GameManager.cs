@@ -52,6 +52,10 @@ namespace Predator
 		/// 
 		/// </summary>
 		public Texture2D healthOverheadFGTexture;
+		/// <summary>
+		/// 
+		/// </summary>
+		public Texture2D projectileTexture;
 		#endregion
 
 		#region Lists & Objects
@@ -65,17 +69,9 @@ namespace Predator
 			set;
 		}
 		/// <summary>
-		/// Gets or sets the map tiles list.
-		/// </summary>
-		public List<Rectangle> mapTiles
-		{
-			get;
-			set;
-		}
-		/// <summary>
 		/// 
 		/// </summary>
-		public List<Tiles> tileObjects
+		public List<Tile> tileObjects
 		{
 			get;
 			set;
@@ -105,9 +101,13 @@ namespace Predator
 		/// </summary>
 		public List<Sprite.AnimationSet> playerAnimationSet;
 		/// <summary>
+		/// 
+		/// </summary>
+		public List<Sprite.AnimationSet> projectileAnimationSet;
+		/// <summary>
 		/// The player's movement keys.
 		/// </summary>
-		public List<Keys> movementKeys;
+		public Keys[,] movementKeys = new Keys[4, 15];
 		/// <summary>
 		/// The mana of the player.
 		/// </summary>
@@ -168,7 +168,7 @@ namespace Predator
 
 		#region Debug Stuff
 		Label debugLabel;
-		string[] debugStrings =  new string[10];
+		string[] debugStrings = new string[10];
 		#endregion
 
 		/// <summary>
@@ -192,17 +192,17 @@ namespace Predator
 		public override void Initialize()
 		{
 			// TODO: Add your initialization code here
-			mapTiles = new List<Rectangle>();
 			mapBoarders = new List<Rectangle>();
 
-			tileObjects = new List<Tiles>();
+			tileObjects = new List<Tile>();
 			tileAnimationSets = new List<Sprite.AnimationSet>();
 
 			playerAnimationSet = new List<Sprite.AnimationSet>();
-			movementKeys = new List<Keys>();
 
 			healthBarAnimationSetList = new List<Sprite.AnimationSet>();
 			playerHealthBarAnimationSetList = new List<Sprite.AnimationSet>();
+
+			projectileAnimationSet = new List<Sprite.AnimationSet>();
 
 			EnemyList1 = new List<Enemy>();
 
@@ -221,66 +221,73 @@ namespace Predator
 			healthBGTexture = Game.Content.Load<Texture2D>(@"images\gui\healthBG");
 			healthOverheadFGTexture = Game.Content.Load<Texture2D>(@"images\gui\healthOHFG");
 			healthOverheadBGTexture = Game.Content.Load<Texture2D>(@"images\gui\healthOHBG");
-
-			camera = new Camera(myGame.GraphicsDevice.Viewport, new Point(1024, 768), 1f);
-			camera.Position = Vector2.Zero;
+			projectileTexture = Game.Content.Load<Texture2D>(@"images\player\attackTemp");
 
 			mapBoarders.Add(new Rectangle(-5, 0, 5, 768));
 
-			tileAnimationSets.Add(new Sprite.AnimationSet("1", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(0, 0), 16000));
-			tileAnimationSets.Add(new Sprite.AnimationSet("2", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(35, 0), 16000));
-			tileAnimationSets.Add(new Sprite.AnimationSet("3", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(70, 0), 16000));
-			tileAnimationSets.Add(new Sprite.AnimationSet("4", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(105, 0), 16000));
-			tileAnimationSets.Add(new Sprite.AnimationSet("5", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(0, 35), 16000));
-			tileAnimationSets.Add(new Sprite.AnimationSet("6", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(35, 35), 16000));
-			tileAnimationSets.Add(new Sprite.AnimationSet("7", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(70, 35), 16000));
-			tileAnimationSets.Add(new Sprite.AnimationSet("8", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(105, 35), 16000));
-			tileAnimationSets.Add(new Sprite.AnimationSet("9", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(0, 70), 16000));
-			tileAnimationSets.Add(new Sprite.AnimationSet("10", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(35, 70), 16000));
-			tileAnimationSets.Add(new Sprite.AnimationSet("11", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(70, 70), 16000));
-			tileAnimationSets.Add(new Sprite.AnimationSet("12", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(105, 70), 16000));
-			tileAnimationSets.Add(new Sprite.AnimationSet("13", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(0, 105), 16000));
-			tileAnimationSets.Add(new Sprite.AnimationSet("14", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(35, 105), 16000));
-			tileAnimationSets.Add(new Sprite.AnimationSet("15", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(70, 105), 16000));
-			tileAnimationSets.Add(new Sprite.AnimationSet("16", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(105, 105), 16000));
+			tileAnimationSets.Add(new Sprite.AnimationSet("0", tempTileTexture, new Point(0, 0), new Point(1, 1), new Point(0, 0), 1600, false));
+			tileAnimationSets.Add(new Sprite.AnimationSet("1", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(0, 0), 1600, false));
+			tileAnimationSets.Add(new Sprite.AnimationSet("2", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(35, 0), 1600, false));
+			tileAnimationSets.Add(new Sprite.AnimationSet("3", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(70, 0), 1600, false));
+			tileAnimationSets.Add(new Sprite.AnimationSet("4", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(105, 0), 1600, false));
+			tileAnimationSets.Add(new Sprite.AnimationSet("5", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(0, 35), 1600, false));
+			tileAnimationSets.Add(new Sprite.AnimationSet("6", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(35, 35), 1600, false));
+			tileAnimationSets.Add(new Sprite.AnimationSet("7", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(70, 35), 1600, false));
+			tileAnimationSets.Add(new Sprite.AnimationSet("8", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(105, 35), 1600, false));
+			tileAnimationSets.Add(new Sprite.AnimationSet("9", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(0, 70), 1600, false));
+			tileAnimationSets.Add(new Sprite.AnimationSet("10", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(35, 70), 1600, false));
+			tileAnimationSets.Add(new Sprite.AnimationSet("11", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(70, 70), 1600, false));
+			tileAnimationSets.Add(new Sprite.AnimationSet("12", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(105, 70), 1600, false));
+			tileAnimationSets.Add(new Sprite.AnimationSet("13", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(0, 105), 1600, false));
+			tileAnimationSets.Add(new Sprite.AnimationSet("14", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(35, 105), 1600, false));
+			tileAnimationSets.Add(new Sprite.AnimationSet("15", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(70, 105), 1600, false));
+			tileAnimationSets.Add(new Sprite.AnimationSet("16", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(105, 105), 1600, false));
 
-			playerAnimationSet.Add(new Sprite.AnimationSet("IDLE1", playerTemp, new Point(35, 50), new Point(1, 1), new Point(000, 000), 16000));
-			playerAnimationSet.Add(new Sprite.AnimationSet("WALK1", playerTemp, new Point(35, 50), new Point(1, 1), new Point(035, 000), 16000));
-			playerAnimationSet.Add(new Sprite.AnimationSet("JUMP1", playerTemp, new Point(35, 50), new Point(1, 1), new Point(070, 000), 16000));
-			playerAnimationSet.Add(new Sprite.AnimationSet("FALL1", playerTemp, new Point(35, 50), new Point(1, 1), new Point(105, 000), 16000));
-			playerAnimationSet.Add(new Sprite.AnimationSet("HURT1", playerTemp, new Point(35, 50), new Point(1, 1), new Point(140, 000), 16000));
-			playerAnimationSet.Add(new Sprite.AnimationSet("ATK-1", playerTemp, new Point(35, 50), new Point(1, 1), new Point(175, 000), 16000));
-			playerAnimationSet.Add(new Sprite.AnimationSet("DIE-1", playerTemp, new Point(35, 50), new Point(1, 1), new Point(210, 000), 16000));
-			playerAnimationSet.Add(new Sprite.AnimationSet("GAIN1", playerTemp, new Point(35, 50), new Point(1, 1), new Point(245, 000), 16000));
-			playerAnimationSet.Add(new Sprite.AnimationSet("IDLE2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(000, 050), 16000));
-			playerAnimationSet.Add(new Sprite.AnimationSet("WALK2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(035, 050), 16000));
-			playerAnimationSet.Add(new Sprite.AnimationSet("JUMP2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(070, 050), 16000));
-			playerAnimationSet.Add(new Sprite.AnimationSet("FALL2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(105, 050), 16000));
-			playerAnimationSet.Add(new Sprite.AnimationSet("HURT2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(140, 050), 16000));
-			playerAnimationSet.Add(new Sprite.AnimationSet("ATK-2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(175, 050), 16000));
-			playerAnimationSet.Add(new Sprite.AnimationSet("DIE-2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(210, 050), 16000));
-			playerAnimationSet.Add(new Sprite.AnimationSet("GAIN2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(245, 050), 16000));
+			playerAnimationSet.Add(new Sprite.AnimationSet("IDLE1", playerTemp, new Point(35, 50), new Point(1, 1), new Point(000, 000), 1600, true));
+			playerAnimationSet.Add(new Sprite.AnimationSet("WALK1", playerTemp, new Point(35, 50), new Point(1, 1), new Point(035, 000), 1600, true));
+			playerAnimationSet.Add(new Sprite.AnimationSet("JUMP1", playerTemp, new Point(35, 50), new Point(1, 1), new Point(070, 000), 1600, true));
+			playerAnimationSet.Add(new Sprite.AnimationSet("FALL1", playerTemp, new Point(35, 50), new Point(1, 1), new Point(105, 000), 1600, true));
+			playerAnimationSet.Add(new Sprite.AnimationSet("HURT1", playerTemp, new Point(35, 50), new Point(1, 1), new Point(140, 000), 1600, true));
+			playerAnimationSet.Add(new Sprite.AnimationSet("ATK-1", playerTemp, new Point(35, 50), new Point(1, 1), new Point(175, 000), 1600, true));
+			playerAnimationSet.Add(new Sprite.AnimationSet("DIE-1", playerTemp, new Point(35, 50), new Point(1, 1), new Point(210, 000), 1600, true));
+			playerAnimationSet.Add(new Sprite.AnimationSet("GAIN1", playerTemp, new Point(35, 50), new Point(1, 1), new Point(245, 000), 1600, true));
+			playerAnimationSet.Add(new Sprite.AnimationSet("IDLE2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(000, 050), 1600, true));
+			playerAnimationSet.Add(new Sprite.AnimationSet("WALK2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(035, 050), 1600, true));
+			playerAnimationSet.Add(new Sprite.AnimationSet("JUMP2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(070, 050), 1600, true));
+			playerAnimationSet.Add(new Sprite.AnimationSet("FALL2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(105, 050), 1600, true));
+			playerAnimationSet.Add(new Sprite.AnimationSet("HURT2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(140, 050), 1600, true));
+			playerAnimationSet.Add(new Sprite.AnimationSet("ATK-2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(175, 050), 1600, true));
+			playerAnimationSet.Add(new Sprite.AnimationSet("DIE-2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(210, 050), 1600, true));
+			playerAnimationSet.Add(new Sprite.AnimationSet("GAIN2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(245, 050), 1600, true));
 
-			healthBarAnimationSetList.Add(new Sprite.AnimationSet("IDLE", healthFGTexture, new Point(190, 16), new Point(1, 1), new Point(0, 0), 16000));
-			playerHealthBarAnimationSetList.Add(new Sprite.AnimationSet("IDLE", healthOverheadFGTexture, new Point(44, 3), new Point(1, 1), new Point(0, 0), 16000));
+			projectileAnimationSet.Add(new Sprite.AnimationSet("IDLE", projectileTexture, new Point(40, 24), new Point(3, 1), new Point(0, 0), 100, false));
 
-			movementKeys.Add(Keys.A);
-			movementKeys.Add(Keys.W);
-			movementKeys.Add(Keys.D);
-			movementKeys.Add(Keys.S);
-			movementKeys.Add(Keys.Space);
-			movementKeys.Add(Keys.E);
+			healthBarAnimationSetList.Add(new Sprite.AnimationSet("IDLE", healthFGTexture, new Point(190, 16), new Point(1, 1), new Point(0, 0), 16000, false));
+			playerHealthBarAnimationSetList.Add(new Sprite.AnimationSet("IDLE", healthOverheadFGTexture, new Point(44, 3), new Point(1, 1), new Point(0, 0), 16000, false));
 
-			mana = new Player.Mana(0, 0, 0, 0);
+			movementKeys[0, 0] = Keys.A;
+			movementKeys[0, 1] = Keys.W;
+			movementKeys[0, 2] = Keys.D;
+			movementKeys[0, 3] = Keys.S;
+			movementKeys[0, 4] = Keys.Space;
+			movementKeys[0, 5] = Keys.E;
+			movementKeys[1, 0] = Keys.Left;
+			movementKeys[1, 1] = Keys.Up;
+			movementKeys[1, 2] = Keys.Right;
+			movementKeys[1, 3] = Keys.Down;
 
-			player = new Player(new Vector2(200, 256), movementKeys, 1.75f, mana, Color.White, playerAnimationSet, myGame);
+			mana = new Player.Mana(0, 0.4f, 1.0f, 0);
+
+			player = new Player(new Vector2(100, 100), movementKeys, myGame.keyboardState, 100f, mana, Color.White, playerAnimationSet, projectileAnimationSet);
+
+			camera = new Camera(myGame.GraphicsDevice.Viewport, new Point(1024, 768), 1f);
 
 			healthBar = new HealthBar(new Vector2(20, 25), Color.White, healthBarAnimationSetList, player);
 
 			playerHealthBar = new HealthBar(new Vector2(player.GetPosition.X - ((48 - 35) / 2), player.GetPosition.Y - 10), Color.White, playerHealthBarAnimationSetList, player);
 
-			debugLabel = new Label(Vector2.Zero, myGame.segoeUIMonoDebug, 1f, Color.Black, "");
-		
+			debugLabel = new Label(new Vector2(0, 60), myGame.segoeUIMonoDebug, 1f, Color.Black, "");
+
 			base.LoadContent();
 		}
 
@@ -290,7 +297,17 @@ namespace Predator
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		public override void Update(GameTime gameTime)
 		{
-			player.Update(gameTime);
+			if (!LevelLoaded)
+			{
+				SpawnTiles(0);
+
+				LevelLoaded = true;
+
+				player.SetTileList = tileObjects;
+			}
+
+			player.UpdateKeyboardState(gameTime, myGame.keyboardState);
+			player.Update(gameTime, EnemyList1, tileObjects, mapBoarders);
 
 			if (camera.IsInView(player.GetPosition, new Vector2(player.CurrentAnimation.frameSize.X, player.CurrentAnimation.frameSize.Y)))
 			{
@@ -303,37 +320,45 @@ namespace Predator
 
 			foreach (Enemy e in EnemyList1)
 			{
-				e.Update(gameTime);
+				if (LevelLoaded)
+				{
+					e.UpdateEnemy(gameTime, player, tileObjects, mapBoarders);
+				}
 			}
 
-			foreach (Tiles t in tileObjects)
+			foreach (Tile t in tileObjects)
 			{
 				t.Update(gameTime);
 			}
 
-			if (!LevelLoaded)
+			debugStrings[0] = "Player || JumpTime=" + player.JumpTime + " isGrounded=" + player.isGrounded + " TouchTop=" + player.TouchTop;
+			debugStrings[1] = "       || isShooting=" + player.isShooting + " canShoot=" + player.CanShoot + " manaRechangeTimer=" + player.GetMana.manaRechargeTime;
+			debugStrings[2] = "       || Position=(" + player.GetPosition.X + "," + player.GetPosition.Y + ")";
+			if (player.ProjectileList.Count > 0)
 			{
-				SpawnTiles(0);
-
-				LevelLoaded = true;
+				debugStrings[3] = "Project|| Start=(" + player.ProjectileList[0].GetStartPosition.X + "," + player.ProjectileList[0].GetStartPosition.Y + ") Position=(" + player.GetPosition.X + "," + player.GetPosition.Y + ")";
 			}
-
-			debugStrings[0] = "Player || canFall=" + player.canFall + " isJumping=" + player.isJumping + " isFalling=" + player.isFalling + " GravityForce=" + player.GravityForce + "";
-			debugStrings[1] = "Direction=(" + player.GetDirection.X + "," + player.GetDirection.Y + ") HP=" + player.HP + " PositionCenter=(" + player.PositionCenter.X + "," + player.PositionCenter.Y + ")";
+			debugStrings[4] = "Boundin|| BoundingBoxes=(" + player.BoundingCollisions.X + "," + player.BoundingCollisions.Y + "," + player.BoundingCollisions.Width + "," + player.BoundingCollisions.Height + ")";
+			debugStrings[5] = "Collisi|| Test=(" + player.test.X + "," + player.test.Y + "," + player.test.Width + "," + player.test.Height + ")";
 			if (EnemyList1.Count > 0)
 			{
-				debugStrings[2] = "Enemy1 || PositionCenter=(" + EnemyList1[0].PositionCenter.X + "," + EnemyList1[0].PositionCenter.Y + ")";
+				debugStrings[5] = "Enemy1 || isJumping=" + EnemyList1[0].isJumping + " wasJumping=" + EnemyList1[0].wasJumping + " isGrounded=" + EnemyList1[0].isGrounded + " isJumping2=" + EnemyList1[0].isJumping2 + "JumpDelayTimer=" + EnemyList1[0].JumpDelayTimer;
 			}
 
-			debugLabel.Update(gameTime, debugStrings[0] + "\n" + 
-										debugStrings[1] + "\n" + 
-										debugStrings[2] + "\n" + 
-										debugStrings[3] + "\n" + 
-										debugStrings[4] + "\n" + 
-										debugStrings[5] + "\n" + 
-										debugStrings[6] + "\n" + 
-										debugStrings[7] + "\n" + 
-										debugStrings[8] + "\n" + 
+			if (myGame.keyboardState.IsKeyDown(Keys.Y))
+			{
+				EnemyList1[0].isJumping2 = true;
+			}
+
+			debugLabel.Update(gameTime, debugStrings[0] + "\n" +
+										debugStrings[1] + "\n" +
+										debugStrings[2] + "\n" +
+										debugStrings[3] + "\n" +
+										debugStrings[4] + "\n" +
+										debugStrings[5] + "\n" +
+										debugStrings[6] + "\n" +
+										debugStrings[7] + "\n" +
+										debugStrings[8] + "\n" +
 										debugStrings[9]);
 
 			// TODO: Add your update code here
@@ -359,7 +384,7 @@ namespace Predator
 					e.Draw(gameTime, spriteBatch);
 				}
 
-				foreach (Tiles t in tileObjects)
+				foreach (Tile t in tileObjects)
 				{
 					t.Draw(gameTime, spriteBatch);
 				}
@@ -372,24 +397,49 @@ namespace Predator
 
 				healthBar.Draw(gameTime, spriteBatch);
 
+				debugLabel.Draw(gameTime, spriteBatch);
+
 				spriteBatch.Draw(line, new Rectangle(0, 0, myGame.WindowSize.X, myGame.WindowSize.X), new Color(0, 0, 0, TransitionAlpha));
 			}
 			spriteBatch.End();
 
 			spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null, null, camera.GetTransformation());
 			{
-				for (int i = 0; i < mapTiles.Count; i++)
+				foreach (Tile t in tileObjects)
 				{
-					spriteBatch.Draw(line, new Rectangle(mapTiles[i].X, mapTiles[i].Y, mapTiles[i].Width, 1), Color.Red);
-					spriteBatch.Draw(line, new Rectangle(mapTiles[i].X, mapTiles[i].Y, 1, 15), new Color(i % 0.999f, i % 0.999f, i % 0.999f));
+					if (t.tileCollisions == Tile.TileCollisions.Impassable)
+					{
+						spriteBatch.Draw(line, new Rectangle(t.Collisions.X, t.Collisions.Y, t.Collisions.Width, 1), Color.White);
+						spriteBatch.Draw(line, new Rectangle(t.Collisions.X + t.Collisions.Width - 1, t.Collisions.Y, 1, t.Collisions.Height), Color.White);
+						spriteBatch.Draw(line, new Rectangle(t.Collisions.X, t.Collisions.Y + t.Collisions.Height - 1, t.Collisions.Width, 1), Color.White);
+						spriteBatch.Draw(line, new Rectangle(t.Collisions.X, t.Collisions.Y, 1, t.Collisions.Height), Color.White);
+					}
+					if (t.tileCollisions == Tile.TileCollisions.Platform)
+					{
+						spriteBatch.Draw(line, new Rectangle(t.Collisions.X, t.Collisions.Y, t.Collisions.Width, 1), Color.Blue);
+					}
 				}
 
-				debugLabel.Draw(gameTime, spriteBatch);
+				foreach (Enemy e in EnemyList1)
+				{
+					spriteBatch.Draw(line, new Rectangle(e.test.X, e.test.Y, e.test.Width, 1), Color.Red);
+					spriteBatch.Draw(line, new Rectangle(e.test.X + e.test.Width - 1, e.test.Y, 1, e.test.Height), Color.Red);
+					spriteBatch.Draw(line, new Rectangle(e.test.X, e.test.Y + e.test.Height - 1, e.test.Width, 1), Color.Red);
+					spriteBatch.Draw(line, new Rectangle(e.test.X, e.test.Y, 1, e.test.Height), Color.Red);
+					spriteBatch.Draw(line, new Rectangle(e.BoundingCollisions.X, e.BoundingCollisions.Y, e.BoundingCollisions.Width, 1), Color.Magenta);
+					spriteBatch.Draw(line, new Rectangle(e.BoundingCollisions.X + e.BoundingCollisions.Width - 1, e.BoundingCollisions.Y, 1, e.BoundingCollisions.Height), Color.Magenta);
+					spriteBatch.Draw(line, new Rectangle(e.BoundingCollisions.X, e.BoundingCollisions.Y + e.BoundingCollisions.Height - 1, e.BoundingCollisions.Width, 1), Color.Magenta);
+					spriteBatch.Draw(line, new Rectangle(e.BoundingCollisions.X, e.BoundingCollisions.Y, 1, e.BoundingCollisions.Height), Color.Magenta);
+				}
 
-				spriteBatch.Draw(line, new Rectangle(player.GetPlayerRectangles().X, player.GetPlayerRectangles().Y, player.GetPlayerRectangles().Width, 1), Color.Lime);
-				spriteBatch.Draw(line, new Rectangle(player.GetPlayerRectangles().X + player.GetPlayerRectangles().Width, player.GetPlayerRectangles().Y, 1, player.GetPlayerRectangles().Height), Color.Lime);
-				spriteBatch.Draw(line, new Rectangle(player.GetPlayerRectangles().X, player.GetPlayerRectangles().Y + player.GetPlayerRectangles().Height, player.GetPlayerRectangles().Width, 1), Color.Lime);
-				spriteBatch.Draw(line, new Rectangle(player.GetPlayerRectangles().X, player.GetPlayerRectangles().Y, 1, player.GetPlayerRectangles().Height), Color.Lime);
+				spriteBatch.Draw(line, new Rectangle(player.BoundingCollisions.X, player.BoundingCollisions.Y, player.BoundingCollisions.Width, 1), Color.Lime);
+				spriteBatch.Draw(line, new Rectangle(player.BoundingCollisions.X + player.BoundingCollisions.Width - 1, player.BoundingCollisions.Y, 1, player.BoundingCollisions.Height), Color.Lime);
+				spriteBatch.Draw(line, new Rectangle(player.BoundingCollisions.X, player.BoundingCollisions.Y + player.BoundingCollisions.Height - 1, player.BoundingCollisions.Width, 1), Color.Lime);
+				spriteBatch.Draw(line, new Rectangle(player.BoundingCollisions.X, player.BoundingCollisions.Y, 1, player.BoundingCollisions.Height), Color.Lime);
+				spriteBatch.Draw(line, new Rectangle(player.test.X, player.test.Y, player.test.Width, 1), Color.Blue);
+				spriteBatch.Draw(line, new Rectangle(player.test.X + player.test.Width - 1, player.test.Y, 1, player.test.Height), Color.Blue);
+				spriteBatch.Draw(line, new Rectangle(player.test.X, player.test.Y + player.test.Height - 1, player.test.Width, 1), Color.Blue);
+				spriteBatch.Draw(line, new Rectangle(player.test.X, player.test.Y, 1, player.test.Height), Color.Blue);
 			}
 			spriteBatch.End();
 
@@ -415,22 +465,34 @@ namespace Predator
 			{
 				for (int y = 0; y < Size.Y; y++)
 				{
-					if (tiles[x, y] > 0 && tiles[x, y] < 70)
-					{
-						mapTiles.Add(new Rectangle(x * 35, y * 35, 35, 35));
-						tileObjects.Add(new Tiles(new Vector2(x * 35, y * 35), myGame, (int)tiles[x, y], tileAnimationSets));
-					}
-					else if (tiles[x, y] == 70)
+					if (tiles[x, y] == 70)
 					{
 						player.SetPosition = new Vector2(x * 35, y * 35);
 					}
 					else if (tiles[x, y] == 71)
 					{
-						Enemy tempEnemy1 = new Enemy(new Vector2(x * 35, y * 35), 1.5f, Enemy.MovementType.RAT, Color.White, playerAnimationSet, player, mapTiles, mapBoarders);
+						Enemy tempEnemy1 = new Enemy(new Vector2(x * 35, y * 35), 1.5f, Enemy.MovementType.RAT, Color.White, playerAnimationSet, player);
 						EnemyList1.Add(tempEnemy1);
+					}
+
+					if (tiles[x, y] > 69)
+					{
+						tiles[x, y] = 0;
+					}
+
+					if (tiles[x, y] == 0)
+					{
+						tileObjects.Add(new Tile(new Vector2(x * 35, y * 35), (int)tiles[x, y], Tile.TileCollisions.Passable, new Rectangle(x * 35, y * 35, 35, 35), Color.White, tileAnimationSets));
+					}
+
+					if (tiles[x, y] > 0)
+					{
+						tileObjects.Add(new Tile(new Vector2(x * 35, y * 35), (int)tiles[x, y], Tile.TileCollisions.Impassable, new Rectangle(x * 35, y * 35, 35, 35), Color.White, tileAnimationSets));
 					}
 				}
 			}
+
+			camera.Position = player.GetPosition;
 		}
 	}
 }
