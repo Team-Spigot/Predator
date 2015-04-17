@@ -18,4 +18,3 @@ namespace Predator
 	}
 #endif
 }
-

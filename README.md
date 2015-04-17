@@ -1,4 +1,3 @@
-
 # Predator
 ---
 
@@ -8,10 +7,10 @@ The game takes place in a post apocalyptic city. You start off as any of three m
 
 ## Game Details
 ---
-Code Language: **C# XNA**   
-Genre: **Action Platformer**   
-Engine: **[Void Engine](https://github.com/TZCraft-NSR/VoidEngine)**   
-Graphic Artists: **Josh Standley**, **Jonathan Fullmer**, and **Josh Branter**   
-Coders: **Jonah Shinevlt**, **Devon Whitney**, **Nichole Long**, and **Nire Inicana**   
-Producer: **Jonah Shinevlt**   
-Team Leader: **Nire Inicana**   
+Code Language: **C# XNA**
+Genre: **Action Platformer**
+Engine: **[Void Engine](https://github.com/TZCraft-NSR/VoidEngine)**
+Graphic Artists: **Josh Standley**, **Jonathan Fullmer**, and **Josh Branter**
+Coders: **Jonah Shinevlt**, **Devon Whitney**, **Nichole Long**, and **Nire Inicana**
+Producer: **Jonah Shinevlt**
+Team Leader: **Nire Inicana**
