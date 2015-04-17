@@ -16,28 +16,40 @@ namespace Predator
 	/// </summary>
 	public class Game1 : Microsoft.Xna.Framework.Game
 	{
+		/// <summary>
+		/// The levels of the game.
+		/// </summary>
 		public enum GameLevels
 		{
 			SPLASH,
 			MENU,
 			OPTIONS,
 			GAME,
+			MAP,
+			STATS,
 			LOSE,
 			WIN,
 			CREDITS
 		}
-		public enum Ratio
-		{
-			WIDESCREEN,
-			NORMAL
-		}
 
+		/// <summary>
+		/// The GraphicsDeviceManager for the game.
+		/// </summary>
 		public GraphicsDeviceManager graphics;
+		/// <summary>
+		/// The main SpriteBatch of the game.
+		/// </summary>
 		SpriteBatch spriteBatch;
 
+		/// <summary>
+		/// The KeyboardState of the game.
+		/// </summary>
 		public KeyboardState keyboardState, previousKeyboardState;
 
 		#region Screen Properties
+		/// <summary>
+		/// Gets or sets the window size.
+		/// </summary>
 		public Point WindowSize
 		{
 			get
@@ -50,11 +62,9 @@ namespace Predator
 				graphics.PreferredBackBufferHeight = value.Y;
 			}
 		}
-		public Ratio ratio
-		{
-			get;
-			set;
-		}
+		/// <summary>
+		/// Gets or sets if the game IsFullScreen.
+		/// </summary>
 		public bool Fullscreen
 		{
 			get
@@ -69,21 +79,39 @@ namespace Predator
 		#endregion
 
 		#region Game Levels
+		/// <summary>
+		/// The SplashScreenManager for the game.
+		/// </summary>
 		public SplashScreenManager splashScreenManager;
+		/// <summary>
+		/// The GameManager for the game.
+		/// </summary>
 		public GameManager gameManager;
-		public MenuManager menuManager;
+		/// <summary>
+		/// The MainMenuManager for the game.
+		/// </summary>
+        public MainMenuManager mainMenuManager;
+		/// <summary>
+		/// The OptionsManager for the game.
+		/// </summary>
 		//public OptionsManager optionsManager;
+		/// <summary>
+		/// The MapScreenManager for the game.
+		/// </summary>
+		public MapScreenManager mapScreenManager;
+		/// <summary>
+		/// The StatManager for the game.
+		/// </summary>
+		public StatManager statManager;
+		/// <summary>
+		/// The LoseManager for the game.
+		/// </summary>
 		public LoseManager loseManager;
+		/// <summary>
+		/// The GameLevels for the game.
+		/// </summary>
 		public GameLevels currentGameLevel;
 		#endregion
-
-		public float elapsedTime
-		{
-			get;
-			set;
-		}
-
-		public Random random;
 
 		#region Fonts
 		public SpriteFont segoeUIBold;
@@ -93,6 +121,9 @@ namespace Predator
 		public SpriteFont segoeUIRegular;
 		#endregion
 
+		/// <summary>
+		/// Creates the game.
+		/// </summary>
 		public Game1()
 		{
 			graphics = new GraphicsDeviceManager(this);
@@ -100,6 +131,7 @@ namespace Predator
 			Window.Title = "Preditor";
 			WindowSize = new Point(1024, 768);
 			Fullscreen = false;
+			IsMouseVisible = true;
 		}
 
 		/// <summary>
@@ -130,16 +162,29 @@ namespace Predator
 			segoeUIItalic = Content.Load<SpriteFont>(@"fonts\segoeuiitalic");
 
 			splashScreenManager = new SplashScreenManager(this);
-			menuManager = new MenuManager(this);
+			mainMenuManager = new MainMenuManager(this);
 			gameManager = new GameManager(this);
+			mapScreenManager = new MapScreenManager(this);
+			statManager = new StatManager(this);
 			loseManager = new LoseManager(this);
 
 			Components.Add(splashScreenManager);
-			Components.Add(menuManager);
+			Components.Add(mainMenuManager);
 			Components.Add(gameManager);
+			Components.Add(mapScreenManager);
+			Components.Add(statManager);
 			Components.Add(loseManager);
 
-			SetCurrentLevel(GameLevels.SPLASH);
+			mapScreenManager.Enabled = false;
+			mapScreenManager.Visible = false;
+
+			mainMenuManager.Enabled = false;
+			mainMenuManager.Visible = false;
+
+			statManager.Enabled = false;
+			mainMenuManager.Visible = false;
+
+			SetCurrentLevel(GameLevels.MENU);
 			// TODO: use this.Content to load your game content here
 		}
 
@@ -213,12 +258,16 @@ namespace Predator
 
 				splashScreenManager.Enabled = false;
 				splashScreenManager.Visible = false;
-				menuManager.Enabled = false;
-				menuManager.Visible = false;
+				mainMenuManager.Enabled = false;
+				mainMenuManager.Visible = false;
 				gameManager.Enabled = false;
 				gameManager.Visible = false;
 				//optionsManager.Enabled = false;
 				//optionsManager.Visible = false;
+				mapScreenManager.Enabled = false;
+				mapScreenManager.Visible = false;
+				statManager.Enabled = false;
+				statManager.Visible = false;
 				loseManager.Enabled = false;
 				loseManager.Visible = false;
 			}
@@ -230,8 +279,8 @@ namespace Predator
 					splashScreenManager.Visible = true;
 					break;
 				case GameLevels.MENU:
-					menuManager.Enabled = true;
-					menuManager.Visible = true;
+					mainMenuManager.Enabled = true;
+					mainMenuManager.Visible = true;
 					break;
 				case GameLevels.OPTIONS:
 					//optionsManager.Enabled = true;
@@ -240,6 +289,16 @@ namespace Predator
 				case GameLevels.GAME:
 					gameManager.Enabled = true;
 					gameManager.Visible = true;
+					break;
+				case GameLevels.MAP:
+					gameManager.Visible = true;
+					mapScreenManager.Enabled = true;
+					mapScreenManager.Visible = true;
+					break;
+				case GameLevels.STATS:
+					gameManager.Visible = true;
+					statManager.Enabled = true;
+					statManager.Visible = true;
 					break;
 				case GameLevels.LOSE:
 					loseManager.Enabled = true;
