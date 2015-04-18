@@ -8,8 +8,9 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
-using VoidEngine;
-
+using VoidEngine.VGame;
+using VoidEngine.VGUI;
+using VoidEngine.Helpers;
 
 namespace Predator
 {
@@ -50,7 +51,7 @@ namespace Predator
 
 		Button level1Button;
 		Button level2Button;
-		Button level3Button;
+		//Button level3Button;
 		Button backButton;
 		Button hudBackButton;
 
@@ -92,7 +93,6 @@ namespace Predator
 		{
 			myGame = game;
 			spriteBatch = new SpriteBatch(myGame.GraphicsDevice);
-			mapBackground = Game.Content.Load<Texture2D>(@"images\map\mapScreen");
 			Initialize();
 		}
 
@@ -111,12 +111,15 @@ namespace Predator
 
 		protected override void LoadContent()
 		{
-			line = Game.Content.Load<Texture2D>(@"images\other\line");
-			buttonTexture = Game.Content.Load<Texture2D>(@"images\map\mapButtonTest");
-			hudBackButtonTexture = Game.Content.Load<Texture2D>(@"images\map\mapButtonTest");
-			backButtonTexture = Game.Content.Load<Texture2D>(@"images\map\mapButtonTest");
+			spriteBatch = new SpriteBatch(myGame.GraphicsDevice);
 
-			mapHudTexture = Game.Content.Load<Texture2D>(@"images\map\mapHud");
+			line = Game.Content.Load<Texture2D>(@"images\other\line");
+			mapBackground = Game.Content.Load<Texture2D>(@"images\gui\map\mapScreen");
+			buttonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\mapButtonTest");
+			hudBackButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\mapButtonTest");
+			backButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\mapButtonTest");
+
+			mapHudTexture = Game.Content.Load<Texture2D>(@"images\gui\map\mapHud");
 
 			camera = new Camera(myGame.GraphicsDevice.Viewport, new Point(2048, 1536), 1f);
 			camera.Position = new Vector2(512, 256);
@@ -232,12 +235,14 @@ namespace Predator
 						Speed = 0.0f;
 					}
 					break;
+				/*
 				case 3:
 					if (camera.Position.X - level3Button.GetPosition.X >= 150 && camera.Position.Y - level1Button.GetPosition.Y <= 50)
 					{
 						Speed = 0.0f;
 					}
 					break;
+				*/
 			}
 			if (levelPullUp == false)
 			{

@@ -9,39 +9,14 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
-using VoidEngine;
-
+using VoidEngine.VGame;
+using VoidEngine.Helpers;
 
 namespace Predator
 {
 	public class Player : Sprite
 	{
-		#region Lists
-		/// <summary>
-		/// Gets or sets the boundires of the map.
-		/// </summary>
-		protected List<Rectangle> MapBoundries
-		{
-			get;
-			set;
-		}
-		/// <summary>
-		/// Gets or sets the tiles of the map.
-		/// </summary>
-		public List<Tile> TileList
-		{
-			get;
-			protected set;
-		}
-		/// <summary>
-		/// Gets or sets the enemies of the map.
-		/// </summary>
-		public List<Enemy> EnemyList
-		{
-			get;
-			protected set;
-		}
-		#endregion
+		protected Game1 myGame;
 
 		#region Player Stats
 		/// <summary>
@@ -373,9 +348,10 @@ namespace Predator
 		/// <param name="color">The Color to mask the player with.</param>
 		/// <param name="animationSetList">The AnimationSet the player has.</param>
 		/// <param name="ProjectileAnimationSet">The AnimationSet of the projectile.</param>
-		public Player(Vector2 position, Keys[,] movementKeys, float HP, Color color, List<AnimationSet> animationSetList, List<AnimationSet> ProjectileAnimationSet)
+		public Player(Vector2 position, Keys[,] movementKeys, float HP, Color color, List<AnimationSet> animationSetList, List<AnimationSet> ProjectileAnimationSet, Game1 myGame)
 			: base(position, color, animationSetList)
 		{
+			this.myGame = myGame;
 			Level = 1;
 			MainHP = HP;
 			MaxHP = HP;
@@ -386,9 +362,6 @@ namespace Predator
 			PDefense = 2;
 			PExp = 0;
 			statPoints = 0;
-
-			this.TileList = TileList;
-			this.MapBoundries = MapBoundries;
 
 			this.ProjectileAnimationSet = ProjectileAnimationSet;
 
@@ -448,12 +421,8 @@ namespace Predator
 		/// <param name="EnemyList">The Enemy list.</param>
 		/// <param name="TileList">The list of Tiles.</param>
 		/// <param name="MapBoundries">The list of Rectangles that make up the boundries of the world.</param>
-		public void Update(GameTime gameTime, List<Enemy> EnemyList, List<Tile> TileList, List<Rectangle> MapBoundries)
+		public override void Update(GameTime gameTime)
 		{
-			this.EnemyList = EnemyList;
-			this.TileList = TileList;
-			this.MapBoundries = MapBoundries;
-
 			GetInput();
 
 			HandleAnimations(gameTime);
@@ -466,7 +435,7 @@ namespace Predator
 
 			foreach (Projectile p in ProjectileList)
 			{
-				p.Update(gameTime, this, EnemyList, TileList, MapBoundries);
+				p.Update(gameTime);
 			}
 
 			if (LvlUp == true)
@@ -716,7 +685,7 @@ namespace Predator
 		{
 			if (isShooting && CanShoot)
 			{
-				ProjectileList.Add(new Projectile(Position, Color.White, ProjectileAnimationSet, this));
+				ProjectileList.Add(new Projectile(Position, Color.White, ProjectileAnimationSet, myGame));
 
 				CanShoot = false;
 			}
@@ -749,9 +718,9 @@ namespace Predator
 
 		protected virtual void HandleEnemyCollisions(GameTime gameTime)
 		{
-			if (EnemyList != null)
+			if (myGame.gameManager.EnemyList != null)
 			{
-				foreach (Enemy e in EnemyList)
+				foreach (Enemy e in myGame.gameManager.EnemyList)
 				{
 					if (BoundingCollisions.TouchLeftOf(e.BoundingCollisions) || BoundingCollisions.TouchRightOf(e.BoundingCollisions))
 					{
@@ -791,7 +760,7 @@ namespace Predator
 			// Reset flag to search for ground collision.
 			isGrounded = false;
 
-			foreach (Tile t in TileList)
+			foreach (Tile t in myGame.gameManager.tileObjects)
 			{
 				if (BoundingCollisions.TouchTopOf(t.Collisions) && t.tileCollisions != Tile.TileCollisions.Passable)
 				{
@@ -818,7 +787,7 @@ namespace Predator
 				}
 			}
 
-			foreach (Rectangle r in MapBoundries)
+			foreach (Rectangle r in myGame.gameManager.MapBoundries)
 			{
 				if (r.TouchBottomOf(BoundingCollisions))
 				{

@@ -8,8 +8,9 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
-using VoidEngine;
-
+using VoidEngine.VGUI;
+using VoidEngine.VGame;
+using VoidEngine.Helpers;
 
 namespace Predator
 {
@@ -75,7 +76,7 @@ namespace Predator
 		/// The Enemy list.
 		/// Enemy: UNKNOWN
 		/// </summary>
-		public List<Enemy> EnemyList1 = new List<Enemy>();
+		public List<Enemy> EnemyList = new List<Enemy>();
 		#endregion
 		#region Tile Stuff
 		/// <summary>
@@ -195,7 +196,6 @@ namespace Predator
 			: base(game)
 		{
 			myGame = game;
-			spriteBatch = new SpriteBatch(myGame.GraphicsDevice);
 
 			// TODO: Construct any child components here
 			Initialize();
@@ -217,14 +217,16 @@ namespace Predator
 		/// </summary>
 		protected override void LoadContent()
 		{
+			spriteBatch = new SpriteBatch(myGame.GraphicsDevice);
+
 			#region Texture Loading
 			line = Game.Content.Load<Texture2D>(@"images\other\line");
 			playerTemp = Game.Content.Load<Texture2D>(@"images\player\temp");
 			tempTileTexture = Game.Content.Load<Texture2D>(@"images\tiles\temp");
-			healthFGTexture = Game.Content.Load<Texture2D>(@"images\gui\healthFG");
-			healthBGTexture = Game.Content.Load<Texture2D>(@"images\gui\healthBG");
-			healthOverheadFGTexture = Game.Content.Load<Texture2D>(@"images\gui\healthOHFG");
-			healthOverheadBGTexture = Game.Content.Load<Texture2D>(@"images\gui\healthOHBG");
+			healthFGTexture = Game.Content.Load<Texture2D>(@"images\gui\game\healthFG");
+			healthBGTexture = Game.Content.Load<Texture2D>(@"images\gui\game\healthBG");
+			healthOverheadFGTexture = Game.Content.Load<Texture2D>(@"images\gui\game\healthOHFG");
+			healthOverheadBGTexture = Game.Content.Load<Texture2D>(@"images\gui\game\healthOHBG");
 			projectileTexture = Game.Content.Load<Texture2D>(@"images\player\attackTemp");
 			particleTex = Game.Content.Load<Texture2D>(@"images\other\testParticle");
 			#endregion
@@ -267,7 +269,7 @@ namespace Predator
 			playerAnimationSet.Add(new Sprite.AnimationSet("DIE-2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(210, 050), 1600, true));
 			playerAnimationSet.Add(new Sprite.AnimationSet("GAIN2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(245, 050), 1600, true));
 			#endregion
-			particalAnimationSet.Add(new Sprite.AnimationSet("IDLE", particleTex, new Point(particleTex.Width, particleTex.Height), Point.Zero, Point.Zero, 1600, false));
+			ParticalAnimationSet.Add(new Sprite.AnimationSet("IDLE", particleTex, new Point(particleTex.Width, particleTex.Height), Point.Zero, Point.Zero, 1600, false));
 
 			projectileAnimationSet.Add(new Sprite.AnimationSet("IDLE", projectileTexture, new Point(40, 24), new Point(3, 1), new Point(0, 0), 50, false));
 
@@ -287,7 +289,7 @@ namespace Predator
 			movementKeys[1, 2] = Keys.Right;
 			movementKeys[1, 3] = Keys.Down;
 
-			player = new Player(new Vector2(100, 100), movementKeys, 100f, Color.White, playerAnimationSet, projectileAnimationSet);
+			player = new Player(new Vector2(100, 100), movementKeys, 100f, Color.White, playerAnimationSet, projectileAnimationSet, myGame);
 
 			healthBar = new HealthBar(new Vector2(20, 25), Color.White, healthBarAnimationSetList, player);
 
@@ -388,7 +390,7 @@ namespace Predator
 			{
 				#region Update Player Stuff
 				player.UpdateKeyboardState(gameTime, myGame.keyboardState);
-				player.Update(gameTime, EnemyList1, tileObjects, MapBoundries);
+				player.Update(gameTime);
 				healthBar.Update(gameTime);
 				playerHealthBar.Update(gameTime);
 				playerHealthBar.SetPosition = new Vector2(player.GetPosition.X - ((44 - 35) / 2), player.GetPosition.Y - 7);
@@ -404,28 +406,28 @@ namespace Predator
 					}
 					else
 					{
-						e.Update(gameTime, player, tileObjects, MapBoundries);
+						EnemyList[i].Update(gameTime);
 
 						if (EnemyList[i].isHit)
 						{
-							ParticleSystem.CreateParticles(e.PositionCenter - new Vector2(0, 15), particleTex, rng, particleList, particalAnimationSet, 230, 255, 0, 0, 0, 0, 5, 10, (int)bloodx, (int)bloody, 100, 250, 3, 5, 200, 255);
-							e.isHit = false;
+							ParticleSystem.CreateParticles(EnemyList[i].PositionCenter - new Vector2(0, 15), particleTex, random, ParticleList, ParticalAnimationSet, 230, 255, 0, 0, 0, 0, 5, 10, (int)BloodMinRadius, (int)BloodMaxRadius, 100, 250, 3, 5, 200, 255);
+							EnemyList[i].isHit = false;
 						}
 					}
 				}
 				#endregion
 
 				#region Update Particle stuff
-				for (int i = 0; i < particleList.Count; i++)
+				for (int i = 0; i < ParticleList.Count; i++)
 				{
-					if (particleList[i].deleteMe)
+					if (ParticleList[i].deleteMe)
 					{
-						particleList.RemoveAt(i);
+						ParticleList.RemoveAt(i);
 						i--;
 					}
 					else
 					{
-						particleList[i].Update(gameTime);
+						ParticleList[i].Update(gameTime);
 					}
 				}
 				#endregion
@@ -444,7 +446,6 @@ namespace Predator
 			{
 				debugStrings[0] = "Player || JumpTime=" + player.JumpTime + " isGrounded=" + player.isGrounded;
 				debugStrings[1] = "       || Position=(" + player.GetPosition.X + "," + player.GetPosition.Y + ")";
-				debugStrings[2] = "Color  || Color=(" + washColor.R + "," + washColor.G + "," + washColor.B + "," + washColor.A;
 
 				debugLabel.Text = debugStrings[0] + "\n" +
 								  debugStrings[1] + "\n" +
@@ -472,7 +473,7 @@ namespace Predator
 		{
 			spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null, null, camera.GetTransformation());
 			{
-				foreach (Enemy e in EnemyList1)
+				foreach (Enemy e in EnemyList)
 				{
 					e.Draw(gameTime, spriteBatch);
 				}
@@ -488,7 +489,7 @@ namespace Predator
 
 				player.Draw(gameTime, spriteBatch);
 
-				foreach (Particle p in particleList)
+				foreach (Particle p in ParticleList)
 				{
 					p.Draw(gameTime, spriteBatch);
 				}
@@ -531,7 +532,7 @@ namespace Predator
 						spriteBatch.Draw(line, new Rectangle(r.X, r.Y, 1, r.Height), Color.White);
 					}
 
-					foreach (Enemy e in EnemyList1)
+					foreach (Enemy e in EnemyList)
 					{
 						spriteBatch.Draw(line, new Rectangle(e.test.X, e.test.Y, e.test.Width, 1), Color.Red);
 						spriteBatch.Draw(line, new Rectangle(e.test.Right - 1, e.test.Y, 1, e.test.Height), Color.Red);
@@ -589,7 +590,7 @@ namespace Predator
 					else if (tiles[x, y] == 71)
 					{
 						Enemy tempEnemy1 = new Enemy(new Vector2(x * 35, y * 35), Enemy.EnemyType.RAT, Color.White, playerAnimationSet, myGame);
-						EnemyList1.Add(tempEnemy1);
+						EnemyList.Add(tempEnemy1);
 					}
 
 					if (tiles[x, y] > 69)

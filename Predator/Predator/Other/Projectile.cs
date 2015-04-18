@@ -9,14 +9,16 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
-using VoidEngine;
+using VoidEngine.VGame;
+using VoidEngine.VGUI;
 
 namespace Predator
 {
 	public class Projectile : Sprite
 	{
+		Game1 myGame;
+
 		public Rectangle projectileRectangle;
-		Player player;
 
 		Vector2 startPosition;
 		public Vector2 GetStartPosition
@@ -45,39 +47,31 @@ namespace Predator
 			set;
 		}
 
-		List<Tile> TileList;
-		List<Rectangle> MapBorders;
-
-		List<Enemy> EnemiesList;
-
-		public Projectile(Vector2 startPosition, Color color, List<AnimationSet> animationSetList, Player player)
+		public Projectile(Vector2 startPosition, Color color, List<AnimationSet> animationSetList, Game1 myGame)
 			: base(startPosition, color, animationSetList)
 		{
 			this.startPosition = startPosition;
 			Position = startPosition;
 			color = Color.White;
 			AnimationSets = animationSetList;
-			this.player = player;
 			visible = true;
+
+			this.myGame = myGame;
 
 			SetAnimation("IDLE");
 
-			if (player.isFlipped)
+			if (myGame.gameManager.player.isFlipped)
 			{
 				Position.X = startPosition.X - animationSetList[0].frameSize.X;
 			}
 			else
 			{
-				Position.X = startPosition.X + player.BoundingCollisions.Width;
+				Position.X = startPosition.X + myGame.gameManager.player.BoundingCollisions.Width;
 			}
 		}
 
 		public void Update(GameTime gameTime, Player player, List<Enemy> EnemyList, List<Tile> TileList, List<Rectangle> RectangleList)
 		{
-			this.TileList = TileList;
-			this.EnemiesList = EnemyList;
-			this.MapBorders = RectangleList;
-
 			if (Vector2.Distance(startPosition, Position) > maxDistance)
 			{
 				//visible = false;
@@ -116,7 +110,7 @@ namespace Predator
 			//Speed = 3;
 			maxDistance = 125;
 
-			DirectionX = player.Velocity.X;
+			DirectionX = myGame.gameManager.player.Velocity.X;
 
 			visible = true;
 

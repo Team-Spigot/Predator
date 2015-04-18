@@ -8,7 +8,8 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
-using VoidEngine;
+using VoidEngine.VGame;
+using VoidEngine.VGUI;
 
 
 namespace Predator
@@ -20,8 +21,6 @@ namespace Predator
     {
         Game1 myGame;
         SpriteBatch spriteBatch;
-
-
 
         public int levelSelect = 0; //when zoomed in the hud is always the same(same start button) so when you first click on the level it will set this value so when you click on the start it will load the level using a switch
         // level 1 = 1, level 2 = 2... etc.
@@ -41,7 +40,6 @@ namespace Predator
             : base(game)
         {
             myGame = game;
-            spriteBatch = new SpriteBatch(myGame.GraphicsDevice);
             menuBackground = Game.Content.Load<Texture2D>(@"images\tiles\temp");
             Initialize();
         }
@@ -62,13 +60,11 @@ namespace Predator
         }
 
         protected override void LoadContent()
-        {
-            plusTexture = Game.Content.Load<Texture2D>(@"images\gui\plusBtn");
-            minusTexture = Game.Content.Load<Texture2D>(@"images\gui\minusBtn");
+		{
+			spriteBatch = new SpriteBatch(myGame.GraphicsDevice);
 
-
-            //camera = new Camera(myGame.GraphicsDevice.Viewport, new Point(2048, 1536), 1f);
-            //camera.Position = new Vector2(512, 256);
+            plusTexture = Game.Content.Load<Texture2D>(@"images\gui\statsMenu\plusBtn");
+            minusTexture = Game.Content.Load<Texture2D>(@"images\gui\statsMenu\minusBtn");
 
             //plus button
             buttonAnimationSet.Add(new Sprite.AnimationSet("IDLE", plusTexture, new Point(100, 100), new Point(1, 1), new Point(0, 0), 16000, false));
@@ -121,14 +117,14 @@ namespace Predator
 
         public override void Draw(GameTime gameTime)
         {
-            base.Draw(gameTime);
-
             spriteBatch.Begin();
             {
                 plusButton.Draw(gameTime, spriteBatch);
                 minusButton.Draw(gameTime, spriteBatch);
             }
-            spriteBatch.End();
+			spriteBatch.End();
+
+			base.Draw(gameTime);
         }
     }
 }

@@ -86,23 +86,25 @@ namespace Predator
 		/// </summary>
 		protected override void LoadContent()
 		{
-			menuBackground = Game.Content.Load<Texture2D>(@"images\mainMenu\mainMenu");
-			startTexture = Game.Content.Load<Texture2D>(@"images\mainMenu\startButton");
-			quitTexture = Game.Content.Load<Texture2D>(@"images\mainMenu\quitButton");
+			spriteBatch = new SpriteBatch(myGame.GraphicsDevice);
+
+			menuBackground = Game.Content.Load<Texture2D>(@"images\gui\mainMenu\mainMenu");
+			startTexture = Game.Content.Load<Texture2D>(@"images\gui\mainMenu\startButton");
+			quitTexture = Game.Content.Load<Texture2D>(@"images\gui\mainMenu\quitButton");
 
 			#region Animation Sets
 			//start button
-			buttonAnimationSet.Add(new Sprite.AnimationSet("IDLE", startTexture, new Point(100, 50), new Point(1, 1), new Point(0, 0), 16000, false));
-			buttonAnimationSet.Add(new Sprite.AnimationSet("HOVER", startTexture, new Point(100, 50), new Point(1, 1), new Point(100, 0), 16000, false));
-			buttonAnimationSet.Add(new Sprite.AnimationSet("PRESSED", startTexture, new Point(100, 50), new Point(1, 1), new Point(200, 0), 16000, false));
+			startButtonAnimationSet.Add(new Sprite.AnimationSet("IDLE", startTexture, new Point(100, 50), new Point(1, 1), new Point(0, 0), 16000, false));
+			startButtonAnimationSet.Add(new Sprite.AnimationSet("HOVER", startTexture, new Point(100, 50), new Point(1, 1), new Point(100, 0), 16000, false));
+			startButtonAnimationSet.Add(new Sprite.AnimationSet("PRESSED", startTexture, new Point(100, 50), new Point(1, 1), new Point(200, 0), 16000, false));
 			//quit button
-			buttonAnimationSet2.Add(new Sprite.AnimationSet("IDLE", quitTexture, new Point(100, 50), new Point(1, 1), new Point(0, 0), 16000, false));
-			buttonAnimationSet2.Add(new Sprite.AnimationSet("HOVER", quitTexture, new Point(100, 50), new Point(1, 1), new Point(100, 0), 16000, false));
-			buttonAnimationSet2.Add(new Sprite.AnimationSet("PRESSED", quitTexture, new Point(100, 50), new Point(1, 1), new Point(200, 0), 16000, false));
+			quitButtonAnimationSet.Add(new Sprite.AnimationSet("IDLE", quitTexture, new Point(100, 50), new Point(1, 1), new Point(0, 0), 16000, false));
+			quitButtonAnimationSet.Add(new Sprite.AnimationSet("HOVER", quitTexture, new Point(100, 50), new Point(1, 1), new Point(100, 0), 16000, false));
+			quitButtonAnimationSet.Add(new Sprite.AnimationSet("PRESSED", quitTexture, new Point(100, 50), new Point(1, 1), new Point(200, 0), 16000, false));
 			#endregion
 
-			startButton = new Button(new Vector2((myGame.WindowSize.X - 100) / 2, 300), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, buttonAnimationSet);
-			quitButton = new Button(new Vector2((myGame.WindowSize.X - 100) / 2, 550), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, buttonAnimationSet2);
+			startButton = new Button(new Vector2((myGame.WindowSize.X - 100) / 2, 300), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, startButtonAnimationSet);
+			quitButton = new Button(new Vector2((myGame.WindowSize.X - 100) / 2, 550), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, quitButtonAnimationSet);
 
 			base.LoadContent();
 		}
@@ -125,8 +127,6 @@ namespace Predator
 			{
 				Game.Exit();
 			}
-
-			buttonsase.Update(gameTime);
 		}
 
 		public override void Draw(GameTime gameTime)

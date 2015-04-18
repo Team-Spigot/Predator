@@ -5,7 +5,8 @@ using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using VoidEngine;
+using VoidEngine.VGame;
+using VoidEngine.Helpers;
 
 namespace Predator
 {
@@ -22,19 +23,9 @@ namespace Predator
 		}
 
 		/// <summary>
-		/// Gets the current game.
-		/// </summary>
-		Game1 myGame;
-
-		/// <summary>
 		///
 		/// </summary>
 		public EnemyType movementType;
-
-		/// <summary>
-		/// The player value.
-		/// </summary>
-		protected Player player;
 
 		/// <summary>
 		/// Gets the
@@ -63,6 +54,8 @@ namespace Predator
 			GroundDragFactor = 0.46f;
 			AirDragFactor = 0.50f;
 
+			this.myGame = myGame;
+
 			SetAnimation("IDLE" + Level);
 
 			#region Set default variables
@@ -84,12 +77,8 @@ namespace Predator
 			inbounds = new Rectangle(left, top, width, height);
 		}
 
-		public virtual void Update(GameTime gameTime, Player player, List<Tile> TileList, List<Rectangle> RectangleList)
+		public override void Update(GameTime gameTime)
 		{
-			this.TileList = TileList;
-			this.MapBoundries = RectangleList;
-			this.player = player;
-
 			HandleAnimations(gameTime);
 
 			ApplyPhysics(gameTime);
@@ -118,8 +107,8 @@ namespace Predator
 			if (HP <= 1)
 			{
 				isDead = true;
-				myGame.gameManager.bloodx = 0;
-				myGame.gameManager.bloody = 360;
+				myGame.gameManager.BloodMinRadius = 0;
+				myGame.gameManager.BloodMaxRadius = 360;
 				if (HP <= 0)
 				{
 					MainHP = 0;
@@ -129,7 +118,7 @@ namespace Predator
 
 		protected override void HandleEnemyCollisions(GameTime gameTime)
 		{
-			foreach (Projectile p in player.ProjectileList)
+			foreach (Projectile p in myGame.gameManager.player.ProjectileList)
 			{
 				if (BoundingCollisions.TouchLeftOf(p.projectileRectangle) || BoundingCollisions.TouchRightOf(p.projectileRectangle))
 				{
@@ -155,15 +144,15 @@ namespace Predator
 
 					if (p.projectileRectangle.TouchLeftOf(BoundingCollisions))
 					{
-						myGame.gameManager.bloodx = 330;
-						myGame.gameManager.bloody = 350;
+						myGame.gameManager.BloodMinRadius = 330;
+						myGame.gameManager.BloodMaxRadius = 350;
 						isHit = true;
 						MainHP -= myGame.gameManager.player.Damage;
 					}
 					if (p.projectileRectangle.TouchRightOf(BoundingCollisions))
 					{
-						myGame.gameManager.bloodx = 180;
-						myGame.gameManager.bloody = 200;
+						myGame.gameManager.BloodMinRadius = 180;
+						myGame.gameManager.BloodMaxRadius = 200;
 						isHit = true;
 						MainHP -= myGame.gameManager.player.Damage;
 					}
@@ -175,7 +164,7 @@ namespace Predator
 		{
 			if (movementType != EnemyType.SLIMEBALL && movementType != EnemyType.BIRD)
 			{
-				foreach (Tile t in TileList)
+				foreach (Tile t in myGame.gameManager.tileObjects)
 				{
 					if (t.tileCollisions == Tile.TileCollisions.Impassable)
 					{
@@ -186,11 +175,13 @@ namespace Predator
 					}
 				}
 			}
+
+			base.HandleCollisions(gameTime);
 		}
 
-		public override void  ApplyPhysics(GameTime gameTime)
+		public override void ApplyPhysics(GameTime gameTime)
 		{
-			TempVelocity = new Vector2(player.PositionCenter.X - PositionCenter.X, player.PositionCenter.Y - PositionCenter.Y);
+			TempVelocity = new Vector2(myGame.gameManager.player.PositionCenter.X - PositionCenter.X, myGame.gameManager.player.PositionCenter.Y - PositionCenter.Y);
 
 			if (Math.Abs(Movement) < 0.5f)
 			{
@@ -199,15 +190,15 @@ namespace Predator
 
 			if (CollisionHelper.Magnitude(TempVelocity) <= 200)
 			{
-				if (player.PositionCenter.X - PositionCenter.X < 0)
+				if (myGame.gameManager.player.PositionCenter.X - PositionCenter.X < 0)
 				{
 					Movement = -1;
 				}
-				else if (player.PositionCenter.X - PositionCenter.X > 0)
+				else if (myGame.gameManager.player.PositionCenter.X - PositionCenter.X > 0)
 				{
 					Movement = 1;
 				}
-				else if (player.PositionCenter.X == PositionCenter.X)
+				else if (myGame.gameManager.player.PositionCenter.X == PositionCenter.X)
 				{
 					Movement = 0;
 				}
@@ -257,7 +248,7 @@ namespace Predator
 				}
 			}
 
-			ApplyPhysics(gameTime);
+			base.ApplyPhysics(gameTime);
 		}
 	}
 }
