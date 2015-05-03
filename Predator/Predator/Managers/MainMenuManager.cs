@@ -12,7 +12,7 @@ using VoidEngine.VGUI;
 using VoidEngine.VGame;
 
 
-namespace Predator
+namespace Predator.Managers
 {
 	/// <summary>
 	/// This is a game component that implements IUpdateable.

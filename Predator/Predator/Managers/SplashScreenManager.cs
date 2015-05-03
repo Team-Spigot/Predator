@@ -10,14 +10,14 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
 
-namespace Predator
+namespace Predator.Managers
 {
 	/// <summary>
 	/// This is a game component that implements IUpdateable.
 	/// </summary>
 	public class SplashScreenManager : Microsoft.Xna.Framework.DrawableGameComponent
 	{
-		public SplashScreenManager(Game game)
+		public SplashScreenManager(Game1 game)
 			: base(game)
 		{
 			// TODO: Construct any child components here

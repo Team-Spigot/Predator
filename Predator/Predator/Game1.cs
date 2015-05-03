@@ -8,6 +8,8 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using Predator.Managers;
+using VoidEngine.VGUI;
 
 namespace Predator
 {
@@ -41,10 +43,16 @@ namespace Predator
 		/// </summary>
 		SpriteBatch spriteBatch;
 
+		#region States
 		/// <summary>
 		/// The KeyboardState of the game.
 		/// </summary>
-		public KeyboardState keyboardState, previousKeyboardState;
+		public KeyboardState KeyboardState, PreviousKeyboardState;
+		/// <summary>
+		/// The MouseState of the game.
+		/// </summary>
+		public MouseState MouseState, PreviousMouseState;
+		#endregion
 
 		#region Screen Properties
 		/// <summary>
@@ -119,6 +127,26 @@ namespace Predator
 		public SpriteFont segoeUIMonoDebug;
 		public SpriteFont segoeUIMono;
 		public SpriteFont segoeUIRegular;
+		public SpriteFont grimGhostRegular;
+		#endregion
+
+		#region Debug Stuff
+		/// <summary>
+		/// The value to debug the game.
+		/// </summary>
+		public bool IsGameDebug
+		{
+			get;
+			set;
+		}
+		/// <summary>
+		/// The label used for debuging.
+		/// </summary>
+		public Label debugLabel;
+		/// <summary>
+		/// The list of strings that are used for debuging.
+		/// </summary>
+		public string[] debugStrings = new string[25];
 		#endregion
 
 		/// <summary>
@@ -132,6 +160,7 @@ namespace Predator
 			WindowSize = new Point(1024, 768);
 			Fullscreen = false;
 			IsMouseVisible = true;
+			IsGameDebug = true;
 		}
 
 		/// <summary>
@@ -155,11 +184,7 @@ namespace Predator
 			// Create a new SpriteBatch, which can be used to draw textures.
 			spriteBatch = new SpriteBatch(GraphicsDevice);
 
-			segoeUIRegular = Content.Load<SpriteFont>(@"fonts\segoeuiregular");
-			segoeUIMono = Content.Load<SpriteFont>(@"fonts\segoeuimono");
-			segoeUIMonoDebug = Content.Load<SpriteFont>(@"fonts\segoeuimonodebug");
-			segoeUIBold = Content.Load<SpriteFont>(@"fonts\segoeuibold");
-			segoeUIItalic = Content.Load<SpriteFont>(@"fonts\segoeuiitalic");
+			LoadTextures();
 
 			splashScreenManager = new SplashScreenManager(this);
 			mainMenuManager = new MainMenuManager(this);
@@ -182,10 +207,24 @@ namespace Predator
 			mainMenuManager.Visible = false;
 
 			statManager.Enabled = false;
-			mainMenuManager.Visible = false;
+			statManager.Visible = false;
 
 			SetCurrentLevel(GameLevels.MENU);
-			// TODO: use this.Content to load your game content here
+
+			debugLabel = new Label(new Vector2(0, 60), segoeUIMonoDebug, 1f, Color.Black, "");
+		}
+
+		/// <summary>
+		/// Loads all the textures for the game.
+		/// </summary>
+		public void LoadTextures()
+		{
+			segoeUIRegular = Content.Load<SpriteFont>(@"fonts\segoeuiregular");
+			segoeUIMono = Content.Load<SpriteFont>(@"fonts\segoeuimono");
+			segoeUIMonoDebug = Content.Load<SpriteFont>(@"fonts\segoeuimonodebug");
+			segoeUIBold = Content.Load<SpriteFont>(@"fonts\segoeuibold");
+			segoeUIItalic = Content.Load<SpriteFont>(@"fonts\segoeuiitalic");
+			grimGhostRegular = Content.Load<SpriteFont>(@"fonts\grimghostregular");
 		}
 
 		/// <summary>
@@ -204,19 +243,50 @@ namespace Predator
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Update(GameTime gameTime)
 		{
+			KeyboardState = Keyboard.GetState();
+			MouseState = Mouse.GetState();
+
 			// Allows the game to exit
-			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || (KeyboardState.IsKeyDown(Keys.Escape) && KeyboardState.IsKeyDown(Keys.LeftShift)))
 			{
 				this.Exit();
 			}
 
-			keyboardState = Keyboard.GetState();
-
-			// TODO: Add your update logic here
-
 			base.Update(gameTime);
 
-			previousKeyboardState = keyboardState;
+			#region Debug Stuff
+			if (IsGameDebug)
+			{
+				debugLabel.Text = debugStrings[00] + "\n" +
+								  debugStrings[01] + "\n" +
+								  debugStrings[02] + "\n" +
+								  debugStrings[03] + "\n" +
+								  debugStrings[04] + "\n" +
+								  debugStrings[05] + "\n" +
+								  debugStrings[06] + "\n" +
+								  debugStrings[07] + "\n" +
+								  debugStrings[08] + "\n" +
+								  debugStrings[09] + "\n" +
+								  debugStrings[10] + "\n" +
+								  debugStrings[11] + "\n" +
+								  debugStrings[12] + "\n" +
+								  debugStrings[13] + "\n" +
+								  debugStrings[14] + "\n" +
+								  debugStrings[15] + "\n" +
+								  debugStrings[16] + "\n" +
+								  debugStrings[17] + "\n" +
+								  debugStrings[18] + "\n" +
+								  debugStrings[19] + "\n" +
+								  debugStrings[20] + "\n" +
+								  debugStrings[21] + "\n" +
+								  debugStrings[22] + "\n" +
+								  debugStrings[23] + "\n" +
+								  debugStrings[24];
+			}
+			#endregion
+
+			PreviousKeyboardState = KeyboardState;
+			PreviousMouseState = MouseState;
 		}
 
 		/// <summary>
@@ -238,7 +308,7 @@ namespace Predator
 		/// <param name="key">The key to check</param>
 		public bool CheckKey(Keys key)
 		{
-			if (keyboardState.IsKeyUp(key) && previousKeyboardState.IsKeyDown(key))
+			if (KeyboardState.IsKeyUp(key) && PreviousKeyboardState.IsKeyDown(key))
 			{
 				return true;
 			}

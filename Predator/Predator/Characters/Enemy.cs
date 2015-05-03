@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Input;
 using VoidEngine.VGame;
 using VoidEngine.Helpers;
 
-namespace Predator
+namespace Predator.Characters
 {
 	public class Enemy : Player
 	{
@@ -43,20 +43,23 @@ namespace Predator
 			set;
 		}
 
-		public Enemy(Vector2 position, EnemyType movementType, Color color, List<AnimationSet> animationSetList, Game1 myGame)
-			: base(position, color, animationSetList)
+		public Enemy(Texture2D texture, Vector2 position, EnemyType movementType, Color color, Game1 myGame)
+			: base(texture, position, color)
 		{
+			this.myGame = myGame;
+			AddAnimations(texture);
+
 			Level = 1;
 			MainHP = 30;
 			MaxHP = 30;
 			JumpbackTimer = 0;
-			MaxMoveSpeed = 200;
+			MaxMoveSpeed = 175;
 			GroundDragFactor = 0.46f;
 			AirDragFactor = 0.50f;
 
-			this.myGame = myGame;
+			Scale = 0.5833f;
 
-			SetAnimation("IDLE" + Level);
+			SetAnimation("IDLE");
 
 			#region Set default variables
 			this.myGame = myGame;
@@ -66,14 +69,14 @@ namespace Predator
 
 			if (movementType == EnemyType.BIRD)
 			{
-				RotationCenter = new Vector2(animationSetList[0].frameSize.X / 2, animationSetList[0].frameSize.Y / 2);
-				Offset = new Vector2(-(animationSetList[0].frameSize.X / 2), -(animationSetList[0].frameSize.Y / 2));
+				RotationCenter = new Vector2(CurrentAnimation.frameSize.X / 2, CurrentAnimation.frameSize.Y / 2);
+				Offset = new Vector2(-(CurrentAnimation.frameSize.X / 2), -(CurrentAnimation.frameSize.Y / 2));
 			}
 
-			int width = (int)(animationSetList[0].frameSize.X);
-			int left = (animationSetList[0].frameSize.X - width);
-			int height = (int)(animationSetList[0].frameSize.Y);
-			int top = animationSetList[0].frameSize.Y - height;
+			int width = (int)(CurrentAnimation.frameSize.X * Scale);
+			int left = (int)(CurrentAnimation.frameSize.X * Scale - width);
+			int height = (int)(CurrentAnimation.frameSize.Y * Scale);
+			int top = (int)(CurrentAnimation.frameSize.Y * Scale - height);
 			inbounds = new Rectangle(left, top, width, height);
 		}
 
@@ -85,21 +88,20 @@ namespace Predator
 
 			HandleHealth(gameTime);
 
-			Center = new Vector2(Inbounds.Width / 2, Inbounds.Height / 2);
-			if (!isDead && isGrounded)
+			if (!isDead && IsGrounded)
 			{
 				if (Math.Abs(Velocity.X) - 0.02f > 0)
 				{
-					SetAnimation("WALK" + Level);
+					SetAnimation("WALK");
 				}
 				else
 				{
-					SetAnimation("IDLE" + Level);
+					SetAnimation("IDLE");
 				}
 			}
 
 			Movement = 0.0f;
-			isJumping = false;
+			IsJumping = false;
 		}
 
 		protected void HandleHealth(GameTime gameTime)
@@ -118,21 +120,21 @@ namespace Predator
 
 		protected override void HandleEnemyCollisions(GameTime gameTime)
 		{
-			foreach (Projectile p in myGame.gameManager.player.ProjectileList)
+			foreach (Projectile p in myGame.gameManager.Player.ProjectileList)
 			{
 				if (BoundingCollisions.TouchLeftOf(p.projectileRectangle) || BoundingCollisions.TouchRightOf(p.projectileRectangle))
 				{
 					attackCounter -= (float)gameTime.ElapsedGameTime.TotalSeconds;
 					if (PositionCenter.X >= p.projectileRectangle.X + (p.projectileRectangle.Width / 2))
 					{
-						isJumping = true;
+						IsJumping = true;
 						Movement += 1;
 						velocity.X = MaxMoveSpeed * (float)gameTime.ElapsedGameTime.TotalMilliseconds * Movement;
 						velocity.Y = DoJump(velocity.Y, gameTime);
 					}
 					else if (PositionCenter.X < p.projectileRectangle.X + (p.projectileRectangle.Width / 2))
 					{
-						isJumping = true;
+						IsJumping = true;
 						Movement += -1;
 						velocity.X = MaxMoveSpeed * (float)gameTime.ElapsedGameTime.TotalMilliseconds * Movement;
 						velocity.Y = DoJump(velocity.Y, gameTime);
@@ -147,14 +149,14 @@ namespace Predator
 						myGame.gameManager.BloodMinRadius = 330;
 						myGame.gameManager.BloodMaxRadius = 350;
 						isHit = true;
-						MainHP -= myGame.gameManager.player.Damage;
+						MainHP -= myGame.gameManager.Player.Damage;
 					}
 					if (p.projectileRectangle.TouchRightOf(BoundingCollisions))
 					{
 						myGame.gameManager.BloodMinRadius = 180;
 						myGame.gameManager.BloodMaxRadius = 200;
 						isHit = true;
-						MainHP -= myGame.gameManager.player.Damage;
+						MainHP -= myGame.gameManager.Player.Damage;
 					}
 				}
 			}
@@ -164,11 +166,11 @@ namespace Predator
 		{
 			if (movementType != EnemyType.SLIMEBALL && movementType != EnemyType.BIRD)
 			{
-				foreach (Tile t in myGame.gameManager.tileObjects)
+				foreach (Tile t in myGame.gameManager.TilesList)
 				{
-					if (t.tileCollisions == Tile.TileCollisions.Impassable)
+					if (t.TileType == Tile.TileCollisions.Impassable)
 					{
-						if (BoundingCollisions.TouchLeftOf(t.Collisions) || BoundingCollisions.TouchRightOf(t.Collisions))
+						if (BoundingCollisions.TouchLeftOf(t.BoundingCollisions) || BoundingCollisions.TouchRightOf(t.BoundingCollisions))
 						{
 							isJumping2 = true;
 						}
@@ -181,7 +183,7 @@ namespace Predator
 
 		public override void ApplyPhysics(GameTime gameTime)
 		{
-			TempVelocity = new Vector2(myGame.gameManager.player.PositionCenter.X - PositionCenter.X, myGame.gameManager.player.PositionCenter.Y - PositionCenter.Y);
+			TempVelocity = new Vector2(myGame.gameManager.Player.PositionCenter.X - PositionCenter.X, myGame.gameManager.Player.PositionCenter.Y - PositionCenter.Y);
 
 			if (Math.Abs(Movement) < 0.5f)
 			{
@@ -190,22 +192,22 @@ namespace Predator
 
 			if (CollisionHelper.Magnitude(TempVelocity) <= 200)
 			{
-				if (myGame.gameManager.player.PositionCenter.X - PositionCenter.X < 0)
+				if (myGame.gameManager.Player.PositionCenter.X - PositionCenter.X < 0)
 				{
 					Movement = -1;
 				}
-				else if (myGame.gameManager.player.PositionCenter.X - PositionCenter.X > 0)
+				else if (myGame.gameManager.Player.PositionCenter.X - PositionCenter.X > 0)
 				{
 					Movement = 1;
 				}
-				else if (myGame.gameManager.player.PositionCenter.X == PositionCenter.X)
+				else if (myGame.gameManager.Player.PositionCenter.X == PositionCenter.X)
 				{
 					Movement = 0;
 				}
 
 				if (movementType != EnemyType.SLIMEBALL)
 				{
-					SetAnimation("WALK" + Level);
+					SetAnimation("WALK");
 				}
 
 				if (movementType == EnemyType.BIRD)
@@ -217,7 +219,7 @@ namespace Predator
 			{
 				if (movementType != EnemyType.SLIMEBALL)
 				{
-					SetAnimation("IDLE" + Level);
+					SetAnimation("IDLE");
 				}
 			}
 
@@ -235,11 +237,11 @@ namespace Predator
 
 				if (JumpDelayTimer > 0)
 				{
-					isJumping = true;
+					IsJumping = true;
 				}
 				if (JumpDelayTimer <= 0)
 				{
-					isJumping = false;
+					IsJumping = false;
 				}
 				if (JumpDelayTimer < -200)
 				{
@@ -249,6 +251,16 @@ namespace Predator
 			}
 
 			base.ApplyPhysics(gameTime);
+		}
+
+		protected override void AddAnimations(Texture2D texture)
+		{
+			AddAnimation("IDLE", texture, new Point(60, 120), new Point(1, 1), new Point(0,   0), 1600, false);
+			AddAnimation("WALK", texture, new Point(60, 120), new Point(8, 1), new Point(0,   0), 50, true);
+			AddAnimation("JUMP", texture, new Point(60, 120), new Point(3, 1), new Point(240, 0), 50, true);
+			SetAnimation("IDLE");
+
+			base.AddAnimations(texture);
 		}
 	}
 }

@@ -1,18 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
 using VoidEngine.VGame;
 using VoidEngine.Helpers;
 
-namespace Predator
+namespace Predator.Characters
 {
 	public class Player : Sprite
 	{
@@ -83,31 +77,13 @@ namespace Predator
 
 		#region Movement Stats
 		/// <summary>
-		/// Gets or sets center of the player's bounding boxes.
-		/// </summary>
-		public Vector2 Center
-		{
-			get
-			{
-				return center;
-			}
-			protected set
-			{
-				center = value;
-			}
-		}
-		/// <summary>
-		/// The center of the player's bounding boxes.
-		/// </summary>
-		protected Vector2 center;
-		/// <summary>
 		/// Gets the players center based off of it's posititon.
 		/// </summary>
 		public Vector2 PositionCenter
 		{
 			get
 			{
-				return Position + Center;
+				return Position + new Vector2(BoundingCollisions.Center.X, BoundingCollisions.Center.Y);
 			}
 		}
 		/// <summary>
@@ -121,7 +97,7 @@ namespace Predator
 		/// <summary>
 		/// The keyboardState that the player can detect it's keys with.
 		/// </summary>
-		public KeyboardState keyboardState;
+		public KeyboardState KeyboardState;
 		/// <summary>
 		/// Gets or sets the velocity to move the player at.
 		/// </summary>
@@ -190,7 +166,7 @@ namespace Predator
 		/// <summary>
 		/// Gets or sets if the player is grounded.
 		/// </summary>
-		public bool isGrounded
+		public bool IsGrounded
 		{
 			get;
 			protected set;
@@ -206,7 +182,7 @@ namespace Predator
 		/// <summary>
 		/// Gets or sets if the player is jumping.
 		/// </summary>
-		public bool isJumping
+		public bool IsJumping
 		{
 			get;
 			set;
@@ -214,7 +190,7 @@ namespace Predator
 		/// <summary>
 		/// Gets or sets if the player was jumping.
 		/// </summary>
-		public bool wasJumping
+		public bool WasJumping
 		{
 			get;
 			protected set;
@@ -235,37 +211,6 @@ namespace Predator
 			get;
 			protected set;
 		}
-		/// <summary>
-		/// Gets the bounding Collisions.
-		/// </summary>
-		public Rectangle BoundingCollisions
-		{
-			get
-			{
-				int left = (int)Math.Round(Position.X) + inbounds.X;
-				int top = (int)Math.Round(Position.Y) + inbounds.Y;
-
-				return new Rectangle(left, top, inbounds.Width, inbounds.Height);
-			}
-		}
-		/// <summary>
-		/// Gets or sets the inner bounds of the player.
-		/// </summary>
-		public Rectangle Inbounds
-		{
-			get
-			{
-				return inbounds;
-			}
-			set
-			{
-				inbounds = value;
-			}
-		}
-		/// <summary>
-		/// The inner bounds of the player.
-		/// </summary>
-		protected Rectangle inbounds;
 		#endregion
 
 		#region Projectile Stuff
@@ -280,7 +225,7 @@ namespace Predator
 		/// <summary>
 		/// Gets or sets the list of AnimationSets that the projectile has.
 		/// </summary>
-		protected List<AnimationSet> ProjectileAnimationSet
+		public Texture2D ProjectileTexture
 		{
 			get;
 			set;
@@ -288,7 +233,7 @@ namespace Predator
 		/// <summary>
 		/// Gets or sets if the player is shooting.
 		/// </summary>
-		public bool isShooting
+		public bool IsShooting
 		{
 			get;
 			set;
@@ -348,22 +293,26 @@ namespace Predator
 		/// <param name="color">The Color to mask the player with.</param>
 		/// <param name="animationSetList">The AnimationSet the player has.</param>
 		/// <param name="ProjectileAnimationSet">The AnimationSet of the projectile.</param>
-		public Player(Vector2 position, Keys[,] movementKeys, float HP, Color color, List<AnimationSet> animationSetList, List<AnimationSet> ProjectileAnimationSet, Game1 myGame)
-			: base(position, color, animationSetList)
+		public Player(Texture2D texture, Vector2 position, Keys[,] movementKeys, float HP, Color color, Game1 myGame)
+			: base(position, color, texture)
 		{
 			this.myGame = myGame;
+			AddAnimations(texture);
+
 			Level = 1;
+			SetAnimation("IDLE" + Level);
+
 			MainHP = HP;
 			MaxHP = HP;
+
 			JumpbackTimer = 1;
 
 			PStrength = 2;
+			MainHP = MaxHP *= PStrength;
 			PAgility = 2;
 			PDefense = 2;
 			PExp = 0;
 			statPoints = 0;
-
-			this.ProjectileAnimationSet = ProjectileAnimationSet;
 
 			Mana = MaxMana = 0;
 			ManaRechargeTime = DefaultManaRechargeTime = 0.09f;
@@ -372,19 +321,17 @@ namespace Predator
 
 			#region Set Projectile Factors
 			ProjectileList = new List<Projectile>();
-			ProjectileAnimationSet = new List<AnimationSet>();
 			CanShoot = true;
 			CreateNewProjectile = true;
 			#endregion
 
 			#region Set Movement and Collision Factors
 			MovementKeys = movementKeys;
-			SetAnimation("IDLE" + Level);
 
-			int width = (int)(animationSetList[0].frameSize.X);
-			int left = (animationSetList[0].frameSize.X - width);
-			int height = (int)(animationSetList[0].frameSize.Y);
-			int top = animationSetList[0].frameSize.Y - height;
+			int width = (int)(CurrentAnimation.frameSize.X);
+			int left = (CurrentAnimation.frameSize.X - width);
+			int height = (int)(CurrentAnimation.frameSize.Y);
+			int top = CurrentAnimation.frameSize.Y - height;
 			inbounds = new Rectangle(left, top, width, height);
 			#endregion
 		}
@@ -397,11 +344,10 @@ namespace Predator
 		/// <param name="position">The position to start the player at.</param>
 		/// <param name="color">The color to mask the player with.</param>
 		/// <param name="animationSetList">The animation set list for the player.</param>
-		public Player(Vector2 position, Color color, List<AnimationSet> animationSetList)
-			: base(position, color, animationSetList)
+		public Player(Texture2D texture, Vector2 position, Color color)
+			: base(position, color, texture)
 		{
 			ProjectileList = new List<Projectile>();
-			ProjectileAnimationSet = new List<AnimationSet>();
 		}
 
 		/// <summary>
@@ -411,7 +357,7 @@ namespace Predator
 		/// <param name="keyboardState">The game's KeyboardState.</param>
 		public void UpdateKeyboardState(GameTime gameTime, KeyboardState keyboardState)
 		{
-			this.keyboardState = keyboardState;
+			this.KeyboardState = keyboardState;
 		}
 
 		/// <summary>
@@ -466,9 +412,7 @@ namespace Predator
 			}
 			#endregion
 
-			Center = new Vector2(inbounds.Width / 2, inbounds.Height / 2);
-
-			if (!isDead && isGrounded)
+			if (!isDead && IsGrounded)
 			{
 				if (Math.Abs(Velocity.X) - 0.02f > 0)
 				{
@@ -481,7 +425,7 @@ namespace Predator
 			}
 
 			Movement = 0.0f;
-			isJumping = false;
+			IsJumping = false;
 			//isShooting = false;
 		}
 
@@ -526,6 +470,7 @@ namespace Predator
 			{
 				ProjectileList.RemoveRange(0, ProjectileList.Count);
 			}
+
 			MainHP = MathHelper.Clamp(MainHP, 0, MaxHP);
 		}
 
@@ -541,29 +486,29 @@ namespace Predator
 			}
 
 			// If any digital horizontal movement input is found, override the analog movement.
-			if (keyboardState.IsKeyDown(MovementKeys[0, 0]) || keyboardState.IsKeyDown(MovementKeys[1, 0]))
+			if (KeyboardState.IsKeyDown(MovementKeys[0, 0]) || KeyboardState.IsKeyDown(MovementKeys[1, 0]))
 			{
 				Movement += -1.0f;
 			}
-			else if (keyboardState.IsKeyDown(MovementKeys[0, 2]) || keyboardState.IsKeyDown(MovementKeys[1, 2]))
+			else if (KeyboardState.IsKeyDown(MovementKeys[0, 2]) || KeyboardState.IsKeyDown(MovementKeys[1, 2]))
 			{
 				Movement += 1.0f;
 			}
-			if (keyboardState.IsKeyDown(Keys.P))
+			if (KeyboardState.IsKeyDown(Keys.P))
 			{
 				MainHP += 1;
 			}
-			if (keyboardState.IsKeyDown(Keys.L))
+			if (KeyboardState.IsKeyDown(Keys.L))
 			{
 				MainHP -= 1;
 			}
 
 			Movement = MathHelper.Clamp(Movement, -1, 1);
 
-			isShooting = keyboardState.IsKeyDown(MovementKeys[0, 4]);
+			IsShooting = KeyboardState.IsKeyDown(MovementKeys[0, 4]);
 
 			// Check if the player wants to jump.
-			isJumping = keyboardState.IsKeyDown(MovementKeys[0, 1]) || keyboardState.IsKeyDown(MovementKeys[1, 1]);
+			IsJumping = KeyboardState.IsKeyDown(MovementKeys[0, 1]) || KeyboardState.IsKeyDown(MovementKeys[1, 1]);
 		}
 
 		/// <summary>
@@ -582,7 +527,7 @@ namespace Predator
 
 			HandleEnemyCollisions(gameTime);
 
-			if (!isGrounded)
+			if (!IsGrounded)
 			{
 				velocity.Y = MathHelper.Clamp(velocity.Y + GravityAcceleration * elapsed, -MaxFallSpeed, MaxFallSpeed);
 			}
@@ -590,7 +535,7 @@ namespace Predator
 			velocity.Y = DoJump(velocity.Y, gameTime);
 
 			// Apply pseudo-drag horizontally.
-			if (isGrounded)
+			if (IsGrounded)
 			{
 				velocity.X *= GroundDragFactor;
 			}
@@ -641,10 +586,10 @@ namespace Predator
 		protected virtual float DoJump(float velocityY, GameTime gameTime)
 		{
 			// If the player wants to jump
-			if (isJumping)
+			if (IsJumping)
 			{
 				// Begin or continue a jump
-				if ((!wasJumping && isGrounded) || JumpTime > 0.0f)
+				if ((!WasJumping && IsGrounded) || JumpTime > 0.0f)
 				{
 					if (JumpTime == 0.0f)
 					{
@@ -672,7 +617,7 @@ namespace Predator
 				// Continues not jumping or cancels a jump in progress
 				JumpTime = 0.0f;
 			}
-			wasJumping = isJumping;
+			WasJumping = IsJumping;
 
 			return velocityY;
 		}
@@ -683,9 +628,9 @@ namespace Predator
 		/// <param name="gameTime"></param>
 		protected virtual void HandleProjectile(GameTime gameTime)
 		{
-			if (isShooting && CanShoot)
+			if (IsShooting && CanShoot)
 			{
-				ProjectileList.Add(new Projectile(Position, Color.White, ProjectileAnimationSet, myGame));
+				ProjectileList.Add(new Projectile(ProjectileTexture, Position, Color.White, myGame));
 
 				CanShoot = false;
 			}
@@ -727,14 +672,14 @@ namespace Predator
 						attackCounter -= (float)gameTime.ElapsedGameTime.TotalSeconds;
 						if (PositionCenter.X >= e.PositionCenter.X)
 						{
-							isJumping = true;
+							IsJumping = true;
 							Movement += 1;
 							velocity.X = MaxMoveSpeed * (float)gameTime.ElapsedGameTime.TotalMilliseconds * Movement;
 							velocity.Y = DoJump(velocity.Y, gameTime);
 						}
 						else if (PositionCenter.X < e.PositionCenter.X)
 						{
-							isJumping = true;
+							IsJumping = true;
 							Movement += -1;
 							velocity.X = MaxMoveSpeed * (float)gameTime.ElapsedGameTime.TotalMilliseconds * Movement;
 							velocity.Y = DoJump(velocity.Y, gameTime);
@@ -758,32 +703,32 @@ namespace Predator
 		protected virtual void HandleCollisions(GameTime gameTime)
 		{
 			// Reset flag to search for ground collision.
-			isGrounded = false;
+			IsGrounded = false;
 
-			foreach (Tile t in myGame.gameManager.tileObjects)
+			foreach (Tile t in myGame.gameManager.TilesList)
 			{
-				if (BoundingCollisions.TouchTopOf(t.Collisions) && t.tileCollisions != Tile.TileCollisions.Passable)
+				if (BoundingCollisions.TouchTopOf(t.BoundingCollisions) && t.TileType != Tile.TileCollisions.Passable)
 				{
-					isGrounded = true;
-					Position.Y = t.GetPosition.Y - BoundingCollisions.Height;
-					test = t.Collisions;
+					IsGrounded = true;
+					position.Y = t.Position.Y - BoundingCollisions.Height;
+					test = t.BoundingCollisions;
 				}
-				if (BoundingCollisions.TouchLeftOf(t.Collisions) && t.tileCollisions == Tile.TileCollisions.Impassable)
+				if (BoundingCollisions.TouchLeftOf(t.BoundingCollisions) && t.TileType == Tile.TileCollisions.Impassable)
 				{
-					Position.X = t.GetPosition.X - BoundingCollisions.Width;
-					test = t.Collisions;
+					position.X = t.Position.X - BoundingCollisions.Width;
+					test = t.BoundingCollisions;
 				}
-				if (BoundingCollisions.TouchRightOf(t.Collisions) && t.tileCollisions == Tile.TileCollisions.Impassable)
+				if (BoundingCollisions.TouchRightOf(t.BoundingCollisions) && t.TileType == Tile.TileCollisions.Impassable)
 				{
-					Position.X = t.Collisions.Right;
-					test = t.Collisions;
+					position.X = t.BoundingCollisions.Right;
+					test = t.BoundingCollisions;
 				}
-				if (BoundingCollisions.TouchBottomOf(t.Collisions) && t.tileCollisions == Tile.TileCollisions.Impassable)
+				if (BoundingCollisions.TouchBottomOf(t.BoundingCollisions) && t.TileType == Tile.TileCollisions.Impassable)
 				{
-					isJumping = false;
+					IsJumping = false;
 					JumpTime = 0;
-					Position.Y = t.Collisions.Bottom + 2;
-					test = t.Collisions;
+					position.Y = t.BoundingCollisions.Bottom + 2;
+					test = t.BoundingCollisions;
 				}
 			}
 
@@ -796,22 +741,45 @@ namespace Predator
 				}
 				if (r.TouchRightOf(BoundingCollisions))
 				{
-					Position.X = r.Left - BoundingCollisions.Width;
+					position.X = r.Left - BoundingCollisions.Width;
 					test = r;
 				}
 				else if (r.TouchLeftOf(BoundingCollisions))
 				{
-					Position.X = r.Right;
+					position.X = r.Right;
 					test = r;
 				}
 				if (r.TouchTopOf(BoundingCollisions))
 				{
-					isJumping = false;
+					IsJumping = false;
 					JumpTime = 0;
-					Position.Y = r.Bottom + 2;
+					position.Y = r.Bottom + 2;
 					test = r;
 				}
 			}
+		}
+
+		protected override void AddAnimations(Texture2D texture)
+		{
+			AddAnimation("IDLE1", texture, new Point(35, 50), new Point(1, 1), new Point(000, 000), 1600, true);
+			AddAnimation("WALK1", texture, new Point(35, 50), new Point(1, 1), new Point(035, 000), 1600, true);
+			AddAnimation("JUMP1", texture, new Point(35, 50), new Point(1, 1), new Point(070, 000), 1600, true);
+			AddAnimation("FALL1", texture, new Point(35, 50), new Point(1, 1), new Point(105, 000), 1600, true);
+			AddAnimation("HURT1", texture, new Point(35, 50), new Point(1, 1), new Point(140, 000), 1600, true);
+			AddAnimation("ATK-1", texture, new Point(35, 50), new Point(1, 1), new Point(175, 000), 1600, true);
+			AddAnimation("DIE-1", texture, new Point(35, 50), new Point(1, 1), new Point(210, 000), 1600, true);
+			AddAnimation("GAIN1", texture, new Point(35, 50), new Point(1, 1), new Point(245, 000), 1600, true);
+			AddAnimation("IDLE2", texture, new Point(35, 50), new Point(1, 1), new Point(000, 050), 1600, true);
+			AddAnimation("WALK2", texture, new Point(35, 50), new Point(1, 1), new Point(035, 050), 1600, true);
+			AddAnimation("JUMP2", texture, new Point(35, 50), new Point(1, 1), new Point(070, 050), 1600, true);
+			AddAnimation("FALL2", texture, new Point(35, 50), new Point(1, 1), new Point(105, 050), 1600, true);
+			AddAnimation("HURT2", texture, new Point(35, 50), new Point(1, 1), new Point(140, 050), 1600, true);
+			AddAnimation("ATK-2", texture, new Point(35, 50), new Point(1, 1), new Point(175, 050), 1600, true);
+			AddAnimation("DIE-2", texture, new Point(35, 50), new Point(1, 1), new Point(210, 050), 1600, true);
+			AddAnimation("GAIN2", texture, new Point(35, 50), new Point(1, 1), new Point(245, 050), 1600, true);
+			SetAnimation("IDLE1");
+
+			base.AddAnimations(texture);
 		}
 	}
 }

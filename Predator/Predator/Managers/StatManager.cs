@@ -10,121 +10,118 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using VoidEngine.VGame;
 using VoidEngine.VGUI;
+using Predator.Characters;
+using Predator.Managers;
 
 
 namespace Predator
 {
-    /// <summary>
-    /// This is a game component that implements IUpdateable.
-    /// </summary>
-    public class StatManager : Microsoft.Xna.Framework.DrawableGameComponent
-    {
-        Game1 myGame;
-        SpriteBatch spriteBatch;
-
-        public int levelSelect = 0; //when zoomed in the hud is always the same(same start button) so when you first click on the level it will set this value so when you click on the start it will load the level using a switch
-        // level 1 = 1, level 2 = 2... etc.
-        Texture2D menuBackground;
-
-        Texture2D plusTexture;
-        Texture2D minusTexture;
-
-        List<Sprite.AnimationSet> buttonAnimationSet;
-        List<Sprite.AnimationSet> buttonAnimationSet2;
-
-        Button plusButton;
-        Button minusButton;
+	/// <summary>
+	/// This is a game component that implements IUpdateable.
+	/// </summary>
+	public class StatManager : Microsoft.Xna.Framework.DrawableGameComponent
+	{
+		Game1 myGame;
+		SpriteBatch spriteBatch;
 
 
-        public StatManager(Game1 game)
-            : base(game)
-        {
-            myGame = game;
-            menuBackground = Game.Content.Load<Texture2D>(@"images\tiles\temp");
-            Initialize();
-        }
 
-        /// <summary>
-        /// Allows the game component to perform any initialization it needs to before starting
-        /// to run.  This is where it can query for any required services and load content.
-        /// </summary>
-        public override void Initialize()
-        {
-            buttonAnimationSet = new List<Sprite.AnimationSet>();
-            buttonAnimationSet2 = new List<Sprite.AnimationSet>();
+		public int levelSelect = 0; //when zoomed in the hud is always the same(same start button) so when you first click on the level it will set this value so when you click on the start it will load the level using a switch
+		// level 1 = 1, level 2 = 2... etc.
+
+		Texture2D statMenuTexture;
+		Texture2D plusButtonTexture;
+		Texture2D exitButtonTexture;
+		Texture2D backButtonTexture;
+
+		Button plusButtonA;
+		Button plusButtonS;
+		Button plusButtonD;
+		Button exitButton;
+		Button backButton;
 
 
-            // TODO: Add your initialization code here
-
-            base.Initialize();
-        }
-
-        protected override void LoadContent()
+		public StatManager(Game1 game)
+			: base(game)
 		{
+			myGame = game;
 			spriteBatch = new SpriteBatch(myGame.GraphicsDevice);
+			Initialize();
+		}
 
-            plusTexture = Game.Content.Load<Texture2D>(@"images\gui\statsMenu\plusBtn");
-            minusTexture = Game.Content.Load<Texture2D>(@"images\gui\statsMenu\minusBtn");
+		/// <summary>
+		/// Allows the game component to perform any initialization it needs to before starting
+		/// to run.  This is where it can query for any required services and load content.
+		/// </summary>
+		public override void Initialize()
+		{
+			base.Initialize();
+		}
 
-            //plus button
-            buttonAnimationSet.Add(new Sprite.AnimationSet("IDLE", plusTexture, new Point(100, 100), new Point(1, 1), new Point(0, 0), 16000, false));
-            buttonAnimationSet.Add(new Sprite.AnimationSet("HOVER", plusTexture, new Point(100, 100), new Point(1, 1), new Point(0, 0), 16000, false));
-            buttonAnimationSet.Add(new Sprite.AnimationSet("PRESSED", plusTexture, new Point(100, 100), new Point(1, 1), new Point(0, 0), 16000, false));
-            //minus button
-            buttonAnimationSet2.Add(new Sprite.AnimationSet("IDLE", minusTexture, new Point(100, 100), new Point(1, 1), new Point(0, 0), 16000, false));
-            buttonAnimationSet2.Add(new Sprite.AnimationSet("HOVER", minusTexture, new Point(100, 100), new Point(1, 1), new Point(0, 0), 16000, false));
-            buttonAnimationSet2.Add(new Sprite.AnimationSet("PRESSED", minusTexture, new Point(100, 100), new Point(1, 1), new Point(0, 0), 16000, false));
+		protected override void LoadContent()
+		{
+			plusButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\statsMenu\plusButton");
+			statMenuTexture   = Game.Content.Load<Texture2D>(@"images\gui\statsMenu\menu");
+			exitButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\statsMenu\exitButton");
+			backButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\statsMenu\backButton");
 
+			plusButtonS = new Button(plusButtonTexture, new Vector2(((myGame.WindowSize.X - statMenuTexture.Width) / 2) + 150, ((myGame.WindowSize.X - statMenuTexture.Height) / 2) + 075), myGame.segoeUIRegular, 1f, Color.Black, "",     Color.White);
+			plusButtonA = new Button(plusButtonTexture, new Vector2(((myGame.WindowSize.X - statMenuTexture.Width) / 2) + 150, ((myGame.WindowSize.X - statMenuTexture.Height) / 2) + 150), myGame.segoeUIRegular, 1f, Color.Black, "",     Color.White);
+			plusButtonD = new Button(plusButtonTexture, new Vector2(((myGame.WindowSize.X - statMenuTexture.Width) / 2) + 150, ((myGame.WindowSize.X - statMenuTexture.Height) / 2) + 225), myGame.segoeUIRegular, 1f, Color.Black, "",     Color.White);
+			exitButton  = new Button(exitButtonTexture, new Vector2(((myGame.WindowSize.X - statMenuTexture.Width) / 2) + 000, ((myGame.WindowSize.X - statMenuTexture.Height) / 2) - 000), myGame.segoeUIRegular, 1f, Color.White, "Back", Color.White);
+			backButton  = new Button(backButtonTexture, new Vector2(((myGame.WindowSize.X - statMenuTexture.Width) / 2) + 000, ((myGame.WindowSize.X - statMenuTexture.Height) / 2) - 000), myGame.segoeUIRegular, 1f, Color.White, "",     Color.White);
 
+			base.LoadContent();
+		}
 
+		/// <summary>
+		/// Allows the game component to update itself.
+		/// </summary>
+		/// <param name="gameTime">Provides a snapshot of timing values.</param>
+		public override void Update(GameTime gameTime)
+		{
+			plusButtonA.Update(gameTime);
+			plusButtonS.Update(gameTime);
+			plusButtonD.Update(gameTime);
 
-            plusButton = new Button(new Vector2((myGame.WindowSize.X - 100) / 2, 300), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, buttonAnimationSet);
-            minusButton = new Button(new Vector2((myGame.WindowSize.X - 100) / 2, 550), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, buttonAnimationSet2);
+			if (plusButtonA.Clicked() && myGame.gameManager.Player.statPoints >= 1)
+			{
+				myGame.gameManager.Player.statPoints -= 1;
+				myGame.gameManager.Player.PAgility -= 0.08f;
 
+			}
+			if (plusButtonS.Clicked() && myGame.gameManager.Player.statPoints >= 1)
+			{
+				myGame.gameManager.Player.statPoints -= 1;
+				myGame.gameManager.Player.PStrength += 0.18f;
 
+			}
+			if (plusButtonD.Clicked() && myGame.gameManager.Player.statPoints >= 1)
+			{
+				myGame.gameManager.Player.statPoints -= 1;
+				myGame.gameManager.Player.PDefense += 0.18f;
 
+			}
 
-            base.LoadContent();
-        }
+			if (Keyboard.GetState().IsKeyDown(Keys.T))
+			{
+				myGame.SetCurrentLevel(Game1.GameLevels.GAME);
+			}
+			base.Update(gameTime);
+		}
 
-        /// <summary>
-        /// Allows the game component to update itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        public override void Update(GameTime gameTime)
-        {
-            plusButton.Update(gameTime);
-            minusButton.Update(gameTime);
-
-
-
-            if (plusButton.Clicked() && myGame.gameManager.player.statPoints >= 1)
-            {
-                myGame.gameManager.player.statPoints -= 1;
-                myGame.gameManager.player.PAgility += 1.5f;
-
-            }
-            if (minusButton.Clicked())
-            {
-                myGame.gameManager.player.PAgility -= 1.5f;
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.Q))
-            {
-                myGame.SetCurrentLevel(Game1.GameLevels.GAME);
-            }
-            base.Update(gameTime);
-        }
-
-        public override void Draw(GameTime gameTime)
-        {
-            spriteBatch.Begin();
-            {
-                plusButton.Draw(gameTime, spriteBatch);
-                minusButton.Draw(gameTime, spriteBatch);
-            }
+		public override void Draw(GameTime gameTime)
+		{
+			spriteBatch.Begin();
+			{
+				spriteBatch.Draw(statMenuTexture, new Vector2((myGame.WindowSize.X - statMenuTexture.Width) / 2, (myGame.WindowSize.Y - statMenuTexture.Height) / 2), Color.White);
+				plusButtonA.Draw(gameTime, spriteBatch);
+				plusButtonS.Draw(gameTime, spriteBatch);
+				plusButtonD.Draw(gameTime, spriteBatch);
+			}
 			spriteBatch.End();
 
 			base.Draw(gameTime);
-        }
-    }
+		}
+	}
 }

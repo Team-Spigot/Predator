@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework.Media;
 using VoidEngine.VGame;
 using VoidEngine.VGUI;
 
-namespace Predator
+namespace Predator.Managers
 {
 	/// <summary>
 	/// This is a game component that implements IUpdateable.

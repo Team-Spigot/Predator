@@ -19,6 +19,13 @@ namespace VoidEngine.VGUI
 	{
 		public string Text;
 		protected SpriteFont texture;
+		public SpriteFont GetFont
+		{
+			get
+			{
+				return texture;
+			}
+		}
 		public Vector2 Position;
 		public float Scale;
 		public Color Color;

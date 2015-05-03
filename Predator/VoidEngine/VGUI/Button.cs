@@ -31,6 +31,18 @@ namespace VoidEngine.VGUI
 
 		protected Label label; // This is the label that the button has overlayed on it.
 
+		public string Text
+		{
+			get
+			{
+				return label.Text;
+			}
+			set
+			{
+				label.Text = value;
+			}
+		}
+
 		protected bState buttonState = new bState(); // This is the button state variable
 		protected bool mousePress = false; // This
 		protected bool previousMousePress = false;
@@ -54,9 +66,16 @@ namespace VoidEngine.VGUI
 		public Button(Vector2 position, SpriteFont font, float scale, Color fontColor, string text, Color color, List<Sprite.AnimationSet> animationSetList)
 			: base(position, color, animationSetList)
 		{
-			_Color = color;
+			Color = color;
 			AnimationSets = animationSetList;
 			label = new Label(new Vector2(position.X + ((animationSetList[0].frameSize.X - font.MeasureString(text).X) / 2), position.Y + ((animationSetList[0].frameSize.Y - font.MeasureString(text).Y) / 2)), font, scale, fontColor, text);
+		}
+
+		public Button(Texture2D texture, Vector2 position, SpriteFont font, float scale, Color fontColor, string text, Color buttonColor) : base(position, buttonColor, texture)
+		{
+			Color = buttonColor;
+			AddAnimations(texture);
+			label = new Label(new Vector2(position.X + (((texture.Width / 3) - font.MeasureString(text).X) / 2), position.Y + ((texture.Height - font.MeasureString(text).Y) / 2)), font, scale, fontColor, text);
 		}
 
 		/// <summary>
@@ -92,7 +111,9 @@ namespace VoidEngine.VGUI
 			previousMousePress = mousePress;
 			mousePress = mState.LeftButton == ButtonState.Pressed;
 
-			if (hitButtonAlpha(Position, CurrentAnimation.frameSize, mouseCords))
+			label.Position = new Vector2(position.X + ((CurrentAnimation.frameSize.X - label.GetFont.MeasureString(label.Text).X) / 2), position.Y + ((CurrentAnimation.frameSize.Y - label.GetFont.MeasureString(label.Text).Y) / 2));
+
+			if (hitButtonAlpha(position, CurrentAnimation.frameSize, mouseCords))
 			{
 				if (mousePress)
 				{
@@ -144,6 +165,16 @@ namespace VoidEngine.VGUI
 			base.Draw(gameTime, spriteBatch);
 
 			label.Draw(gameTime, spriteBatch);
+		}
+
+		protected override void AddAnimations(Texture2D texture)
+		{
+			AddAnimation("IDLE", texture, new Point(texture.Width / 3, texture.Height), new Point(1, 1), new Point(0, 0), 1600, false);
+			AddAnimation("HOVER", texture, new Point(texture.Width / 3, texture.Height), new Point(1, 1), new Point(texture.Width / 3, 0), 1600, false);
+			AddAnimation("PRESSED", texture, new Point(texture.Width / 3, texture.Height), new Point(1, 1), new Point((texture.Width / 3) * 2, 0), 1600, false);
+			SetAnimation("IDLE");
+
+			base.AddAnimations(texture);
 		}
 	}
 }

@@ -111,7 +111,7 @@ namespace VoidEngine.VGame
 		/// <summary>
 		/// Gets or sets the SpriteEffects value of the sprite.
 		/// </summary>
-		protected SpriteEffects flipEffect
+		protected SpriteEffects FlipEffect
 		{
 			get;
 			set;
@@ -123,7 +123,7 @@ namespace VoidEngine.VGame
 		{
 			get
 			{
-				if (flipEffect != SpriteEffects.None)
+				if (FlipEffect != SpriteEffects.None)
 				{
 					return true;
 				}
@@ -149,26 +149,19 @@ namespace VoidEngine.VGame
 		/// The position that the player is at.
 		/// Can only be used by child or self.
 		/// </summary>
-		protected Vector2 Position;
+		protected Vector2 position;
 		/// <summary>
-		/// Gets the position that the sprite is at.
+		/// Gets or sets the position that the sprite is at.
 		/// </summary>
-		public Vector2 GetPosition
+		public Vector2 Position
 		{
 			get
 			{
-				return Position;
+				return position;
 			}
-		}
-		/// <summary>
-		///
-		/// </summary>
-		public Vector2 SetPosition
-		{
 			set
 			{
-				Position.X = value.X;
-				Position.Y = value.Y;
+				position = value;
 			}
 		}
 		/// <summary>
@@ -190,10 +183,41 @@ namespace VoidEngine.VGame
 		#endregion
 
 		/// <summary>
+		/// Gets the bounding Collisions.
+		/// </summary>
+		public Rectangle BoundingCollisions
+		{
+			get
+			{
+				int left = (int)Math.Round(Position.X) + inbounds.X;
+				int top = (int)Math.Round(Position.Y) + inbounds.Y;
+
+				return new Rectangle(left, top, inbounds.Width, inbounds.Height);
+			}
+		}
+		/// <summary>
+		/// Gets or sets the inner bounds of the player.
+		/// </summary>
+		public Rectangle Inbounds
+		{
+			get
+			{
+				return inbounds;
+			}
+			set
+			{
+				inbounds = value;
+			}
+		}
+		/// <summary>
+		/// The inner bounds of the player.
+		/// </summary>
+		protected Rectangle inbounds;
+		/// <summary>
 		/// Gets or sets the sprites color.
 		/// Can be only set by child or self.
 		/// </summary>
-		public Color _Color
+		public Color Color
 		{
 			get;
 			protected set;
@@ -202,16 +226,31 @@ namespace VoidEngine.VGame
 		/// <summary>
 		/// Creates a sprite.
 		/// </summary>
-		/// <param name="postion">The stating position of the sprite.</param>
+		/// <param name="position">The stating position of the sprite.</param>
 		/// <param name="color">The color to mask the sprite with.</param>
 		/// <param name="animationSetList">The animation set of the sprite.</param>
 		public Sprite(Vector2 position, Color color, List<AnimationSet> animationSetList)
 		{
 			AnimationSets = new List<AnimationSet>();
 			AnimationSets = animationSetList;
-			Position = position;
+			this.position = position;
 			LastFrameTime = 0;
-			_Color = color;
+			Color = color;
+			Scale = 1f;
+		}
+
+		/// <summary>
+		/// Creates a sprite.
+		/// </summary>
+		/// <param name="position">The stating position of the sprite.</param>
+		/// <param name="color">The color to mask the sprite with.</param>
+		/// <param name="texture">The texture of the sprite.</param>
+		public Sprite(Vector2 position, Color color, Texture2D texture)
+		{
+			AnimationSets = new List<AnimationSet>();
+			this.position = position;
+			LastFrameTime = 0;
+			Color = color;
 			Scale = 1f;
 		}
 
@@ -234,7 +273,7 @@ namespace VoidEngine.VGame
 		/// <param name="spriteBatch">The sprite batch to draw from.</param>
 		public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch)
 		{
-			spriteBatch.Draw(CurrentAnimation.texture, Position - Offset, new Rectangle(CurrentAnimation.startPosition.X + (CurrentFrame.X * CurrentAnimation.frameSize.X), CurrentAnimation.startPosition.Y + (CurrentFrame.Y * CurrentAnimation.frameSize.Y), CurrentAnimation.frameSize.X, CurrentAnimation.frameSize.Y), _Color, Rotation, RotationCenter, Scale, flipEffect, 0);
+			spriteBatch.Draw(CurrentAnimation.texture, position - Offset, new Rectangle(CurrentAnimation.startPosition.X + (CurrentFrame.X * CurrentAnimation.frameSize.X), CurrentAnimation.startPosition.Y + (CurrentFrame.Y * CurrentAnimation.frameSize.Y), CurrentAnimation.frameSize.X, CurrentAnimation.frameSize.Y), Color, Rotation, RotationCenter, Scale, FlipEffect, 0);
 		}
 
 		/// <summary>
@@ -260,29 +299,28 @@ namespace VoidEngine.VGame
 		/// Flips the sprite texture based off a bool and axis.
 		/// To flip back turn isFlip to false or use the second version.
 		/// </summary>
-		/// <param name="isFlip">The bool to flip</param>
 		/// <param name="axis">The axis to flip on</param>
 		protected void FlipSprite(Axis axis)
 		{
 			if (axis == Axis.Y)
 			{
-				flipEffect = SpriteEffects.FlipHorizontally;
+				FlipEffect = SpriteEffects.FlipHorizontally;
 			}
 			if (axis == Axis.X)
 			{
-				flipEffect = SpriteEffects.FlipVertically;
+				FlipEffect = SpriteEffects.FlipVertically;
 			}
 			if (axis == Axis.NONE)
 			{
-				flipEffect = SpriteEffects.None;
+				FlipEffect = SpriteEffects.None;
 			}
 		}
 
 		/// <summary>
-		///
+		/// Handles the animations for the sprite class.
 		/// </summary>
-		/// <param name="gameTime"></param>
-		protected void HandleAnimations(GameTime gameTime)
+		/// <param name="gameTime">The GameTime that the game is running off of.</param>
+		protected virtual void HandleAnimations(GameTime gameTime)
 		{
 			LastFrameTime += gameTime.ElapsedGameTime.Milliseconds;
 
@@ -310,6 +348,37 @@ namespace VoidEngine.VGame
 
 				LastFrameTime = 0;
 			}
+		}
+
+		/// <summary>
+		/// Another way to add an animation indiviually.
+		/// </summary>
+		/// <param name="name">The name of the animation set.</param>
+		/// <param name="texture">The sprite sheet of the animation.</param>
+		/// <param name="frameSize">The frame size of the animation.</param>
+		/// <param name="sheetSize">The sheet size of the animation.</param>
+		/// <param name="startPosition">The start position of the animation.</param>
+		/// <param name="framesPerMillisecond">The frames per milliscond between each frame.</param>
+		/// <param name="isLooping">Sets if the animation loops.</param>
+		protected virtual void AddAnimation(string name, Texture2D texture, Point frameSize, Point sheetSize, Point startPosition, int framesPerMillisecond, bool isLooping)
+		{
+			AnimationSets.Add(new AnimationSet(name, texture, frameSize, sheetSize, startPosition, framesPerMillisecond, isLooping));
+		}
+
+		/// <summary>
+		/// Another way to add the animations to the sprites.
+		/// </summary>
+		/// <param name="texture">The texture of the sprite.</param>
+		protected virtual void AddAnimations(Texture2D texture)
+		{
+		}
+
+		public void DrawBoundingCollisions(Texture2D line, Color color, SpriteBatch spriteBatch)
+		{
+			spriteBatch.Draw(line, new Rectangle(BoundingCollisions.X, BoundingCollisions.Y, BoundingCollisions.Width, 1), color);
+			spriteBatch.Draw(line, new Rectangle(BoundingCollisions.Right - 1, BoundingCollisions.Y, 1, BoundingCollisions.Height), color);
+			spriteBatch.Draw(line, new Rectangle(BoundingCollisions.X, BoundingCollisions.Bottom - 1, BoundingCollisions.Width, 1), color);
+			spriteBatch.Draw(line, new Rectangle(BoundingCollisions.X, BoundingCollisions.Y, 1, BoundingCollisions.Height), color);
 		}
 	}
 }

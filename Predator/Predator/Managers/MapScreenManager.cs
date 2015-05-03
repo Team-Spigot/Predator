@@ -12,7 +12,7 @@ using VoidEngine.VGame;
 using VoidEngine.VGUI;
 using VoidEngine.Helpers;
 
-namespace Predator
+namespace Predator.Managers
 {
 	/// <summary>
 	/// This is a game component that implements IUpdateable.
@@ -224,13 +224,13 @@ namespace Predator
 			switch (levelSelect)
 			{
 				case 1:
-					if (camera.Position.X - level1Button.GetPosition.X >= 100 && camera.Position.Y - level1Button.GetPosition.Y <= 100)
+					if (camera.Position.X - level1Button.Position.X >= 100 && camera.Position.Y - level1Button.Position.Y <= 100)
 					{
 						Speed = 0.0f;
 					}
 					break;
 				case 2:
-					if (camera.Position.X - level2Button.GetPosition.X <= 100 && camera.Position.Y - level1Button.GetPosition.Y <= 100)
+					if (camera.Position.X - level2Button.Position.X <= 100 && camera.Position.Y - level1Button.Position.Y <= 100)
 					{
 						Speed = 0.0f;
 					}
@@ -260,7 +260,7 @@ namespace Predator
 					levelPullUp = true;
 					isZoomingIn = true;
 					isZoomingOut = false;
-					tempDirection = new Vector2(level1Button.GetPosition.X - camera.Position.X, level1Button.GetPosition.Y - camera.Position.Y);
+					tempDirection = new Vector2(level1Button.Position.X - camera.Position.X, level1Button.Position.Y - camera.Position.Y);
 					Direction = CollisionHelper.UnitVector(tempDirection);
 				}
 				if (level2Button.Clicked()) // Zooming into zone 2
@@ -271,7 +271,7 @@ namespace Predator
 					levelPullUp = true;
 					isZoomingIn = true;
 					isZoomingOut = false;
-					tempDirection = new Vector2(level2Button.GetPosition.X - camera.Position.X, level2Button.GetPosition.Y - camera.Position.Y);
+					tempDirection = new Vector2(level2Button.Position.X - camera.Position.X, level2Button.Position.Y - camera.Position.Y);
 					Direction = CollisionHelper.UnitVector(tempDirection);
 				}
 
@@ -297,12 +297,12 @@ namespace Predator
 					{
 						case 1:
 							Speed = 10.0f;
-							tempDirection = new Vector2(camera.Position.X - level1Button.GetPosition.X, camera.Position.Y - level1Button.GetPosition.Y);
+							tempDirection = new Vector2(camera.Position.X - level1Button.Position.X, camera.Position.Y - level1Button.Position.Y);
 							Direction = CollisionHelper.UnitVector(tempDirection);
 							break;
 						case 2:
 							Speed = 10.0f;
-							tempDirection = new Vector2(camera.Position.X - level2Button.GetPosition.X, camera.Position.Y - level2Button.GetPosition.Y);
+							tempDirection = new Vector2(camera.Position.X - level2Button.Position.X, camera.Position.Y - level2Button.Position.Y);
 							Direction = CollisionHelper.UnitVector(tempDirection);
 							break;
 					}

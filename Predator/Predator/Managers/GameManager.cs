@@ -11,8 +11,11 @@ using Microsoft.Xna.Framework.Media;
 using VoidEngine.VGUI;
 using VoidEngine.VGame;
 using VoidEngine.Helpers;
+using Predator.Characters;
+using VoidEngine.Particles;
+using Predator.Game;
 
-namespace Predator
+namespace Predator.Managers
 {
 	/// <summary>
 	/// This is a game component that implements IUpdateable.
@@ -25,50 +28,62 @@ namespace Predator
 		/// <summary>
 		/// Used to control the game's screen.
 		/// </summary>
-		Camera camera;
+		Camera Camera;
 
 		/// <summary>
 		/// Used to get random real numbers.
 		/// </summary>
-		Random random = new Random();
+		Random Random = new Random();
 
 		#region Textures
 		/// <summary>
 		/// Loads the line texture.
 		/// </summary>
-		public Texture2D line;
+		public Texture2D LineTexture;
+		/// <summary>
+		/// Loads the air tile texture.
+		/// </summary>
+		public Texture2D AirTileTexture;
+		/// <summary>
+		/// Loads the sewer tile texture.
+		/// </summary>
+		public Texture2D SewerTileTexture;
 		/// <summary>
 		/// Loads the temp player texture.
 		/// </summary>
-		public Texture2D playerTemp;
-		/// <summary>
-		/// Loads the temp tile texture.
-		/// </summary>
-		public Texture2D tempTileTexture;
-		/// <summary>
-		/// Loads the main healthbar's background texture.
-		/// </summary>
-		public Texture2D healthBGTexture;
-		/// <summary>
-		/// Loads the main healthbar's foreground texture.
-		/// </summary>
-		public Texture2D healthFGTexture;
-		/// <summary>
-		/// Loads the overhead healthbar's background texture.
-		/// </summary>
-		public Texture2D healthOverheadBGTexture;
-		/// <summary>
-		/// Loads the overhead healthbar's foreground texture.
-		/// </summary>
-		public Texture2D healthOverheadFGTexture;
+		public Texture2D TempPlayerTexture;
 		/// <summary>
 		/// Loads the projectile's texture.
 		/// </summary>
-		public Texture2D projectileTexture;
+		public Texture2D ProjectileTexture;
+		/// <summary>
+		/// Loads the temp enemy texture.
+		/// </summary>
+		public Texture2D TempEnemyTexture;
+		/// <summary>
+		/// Loads the temp tile texture.
+		/// </summary>
+		public Texture2D TempTileTexture;
+		/// <summary>
+		/// Loads the main healthbar's background texture.
+		/// </summary>
+		public Texture2D HealthBackgroundTexture;
+		/// <summary>
+		/// Loads the main healthbar's foreground texture.
+		/// </summary>
+		public Texture2D HealthForegroundTexture;
+		/// <summary>
+		/// Loads the overhead healthbar's background texture.
+		/// </summary>
+		public Texture2D HealthOverheadBackgroundTexture;
+		/// <summary>
+		/// Loads the overhead healthbar's foreground texture.
+		/// </summary>
+		public Texture2D HealthOverheadForegroundTexture;
 		/// <summary>
 		/// Loads the particle's texture.
 		/// </summary>
-		public Texture2D particleTex;
+		public Texture2D ParticleTexture;
 		#endregion
 
 		#region Enemy Stuff
@@ -78,55 +93,38 @@ namespace Predator
 		/// </summary>
 		public List<Enemy> EnemyList = new List<Enemy>();
 		#endregion
+
 		#region Tile Stuff
 		/// <summary>
 		/// The tile objects
 		/// </summary>
-		public List<Tile> tileObjects = new List<Tile>();
-		/// <summary>
-		/// The tile Animation Sets
-		/// </summary>
-		public List<Sprite.AnimationSet> tileAnimationSets = new List<Sprite.AnimationSet>();
+		public List<Tile> TilesList = new List<Tile>();
 		#endregion
+
 		#region Player Stuff
 		/// <summary>
 		/// The default player.
 		/// </summary>
-		public Player player;
-		/// <summary>
-		/// The player's animation set.
-		/// </summary>
-		public List<Sprite.AnimationSet> playerAnimationSet = new List<Sprite.AnimationSet>();
-		/// <summary>
-		/// The projectile's animation set.
-		/// </summary>
-		public List<Sprite.AnimationSet> projectileAnimationSet = new List<Sprite.AnimationSet>();
+		public Player Player;
 		/// <summary>
 		/// The player's movement keys.
 		/// </summary>
-		public Keys[,] movementKeys = new Keys[4, 15];
+		public Keys[,] MovementKeys = new Keys[4, 15];
 		/// <summary>
 		/// The main healthbar.
 		/// </summary>
-		public HealthBar healthBar;
-		/// <summary>
-		/// The main healthbar's animation set.
-		/// </summary>
-		public List<Sprite.AnimationSet> healthBarAnimationSetList = new List<Sprite.AnimationSet>();
+		public HealthBar HealthBar;
 		/// <summary>
 		/// The overhead healthbar.
 		/// </summary>
-		public HealthBar playerHealthBar;
-		/// <summary>
-		/// The overhead healthbar's animation set.
-		/// </summary>
-		public List<Sprite.AnimationSet> playerHealthBarAnimationSetList = new List<Sprite.AnimationSet>();
+		public HealthBar OverheadHealthBar;
 		#endregion
+
 		#region Level & Transition Stuff
 		/// <summary>
 		/// The level of the game.
 		/// </summary>
-		public int Level
+		public int CurrentLevel
 		{
 			get;
 			set;
@@ -152,10 +150,6 @@ namespace Predator
 		/// </summary>
 		List<Particle> ParticleList = new List<Particle>();
 		/// <summary>
-		/// The particle's animtion set.
-		/// </summary>
-		List<Sprite.AnimationSet> ParticalAnimationSet = new List<Sprite.AnimationSet>();
-		/// <summary>
 		/// Gets or sets the blood's minimum radius.
 		/// </summary>
 		public float BloodMinRadius
@@ -171,21 +165,6 @@ namespace Predator
 			get;
 			set;
 		}
-		#endregion
-
-		#region Debug Stuff
-		/// <summary>
-		/// The value to debug the game.
-		/// </summary>
-		public bool GameDebug = true;
-		/// <summary>
-		/// The label used for debuging.
-		/// </summary>
-		Label debugLabel;
-		/// <summary>
-		/// The list of strings that are used for debuging.
-		/// </summary>
-		string[] debugStrings = new string[10];
 		#endregion
 
 		/// <summary>
@@ -219,95 +198,57 @@ namespace Predator
 		{
 			spriteBatch = new SpriteBatch(myGame.GraphicsDevice);
 
-			#region Texture Loading
-			line = Game.Content.Load<Texture2D>(@"images\other\line");
-			playerTemp = Game.Content.Load<Texture2D>(@"images\player\temp");
-			tempTileTexture = Game.Content.Load<Texture2D>(@"images\tiles\temp");
-			healthFGTexture = Game.Content.Load<Texture2D>(@"images\gui\game\healthFG");
-			healthBGTexture = Game.Content.Load<Texture2D>(@"images\gui\game\healthBG");
-			healthOverheadFGTexture = Game.Content.Load<Texture2D>(@"images\gui\game\healthOHFG");
-			healthOverheadBGTexture = Game.Content.Load<Texture2D>(@"images\gui\game\healthOHBG");
-			projectileTexture = Game.Content.Load<Texture2D>(@"images\player\attackTemp");
-			particleTex = Game.Content.Load<Texture2D>(@"images\other\testParticle");
-			#endregion
-
-			#region Animation Sets
-			#region Tile Animation Sets
-			tileAnimationSets.Add(new Sprite.AnimationSet("0", tempTileTexture, new Point(0, 0), new Point(1, 1), new Point(0, 0), 1600, false));
-			tileAnimationSets.Add(new Sprite.AnimationSet("1", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(0, 0), 1600, false));
-			tileAnimationSets.Add(new Sprite.AnimationSet("2", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(35, 0), 1600, false));
-			tileAnimationSets.Add(new Sprite.AnimationSet("3", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(70, 0), 1600, false));
-			tileAnimationSets.Add(new Sprite.AnimationSet("4", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(105, 0), 1600, false));
-			tileAnimationSets.Add(new Sprite.AnimationSet("5", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(0, 35), 1600, false));
-			tileAnimationSets.Add(new Sprite.AnimationSet("6", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(35, 35), 1600, false));
-			tileAnimationSets.Add(new Sprite.AnimationSet("7", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(70, 35), 1600, false));
-			tileAnimationSets.Add(new Sprite.AnimationSet("8", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(105, 35), 1600, false));
-			tileAnimationSets.Add(new Sprite.AnimationSet("9", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(0, 70), 1600, false));
-			tileAnimationSets.Add(new Sprite.AnimationSet("10", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(35, 70), 1600, false));
-			tileAnimationSets.Add(new Sprite.AnimationSet("11", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(70, 70), 1600, false));
-			tileAnimationSets.Add(new Sprite.AnimationSet("12", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(105, 70), 1600, false));
-			tileAnimationSets.Add(new Sprite.AnimationSet("13", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(0, 105), 1600, false));
-			tileAnimationSets.Add(new Sprite.AnimationSet("14", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(35, 105), 1600, false));
-			tileAnimationSets.Add(new Sprite.AnimationSet("15", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(70, 105), 1600, false));
-			tileAnimationSets.Add(new Sprite.AnimationSet("16", tempTileTexture, new Point(35, 35), new Point(1, 1), new Point(105, 105), 1600, false));
-			#endregion
-			#region Player Animation Sets
-			playerAnimationSet.Add(new Sprite.AnimationSet("IDLE1", playerTemp, new Point(35, 50), new Point(1, 1), new Point(000, 000), 1600, true));
-			playerAnimationSet.Add(new Sprite.AnimationSet("WALK1", playerTemp, new Point(35, 50), new Point(1, 1), new Point(035, 000), 1600, true));
-			playerAnimationSet.Add(new Sprite.AnimationSet("JUMP1", playerTemp, new Point(35, 50), new Point(1, 1), new Point(070, 000), 1600, true));
-			playerAnimationSet.Add(new Sprite.AnimationSet("FALL1", playerTemp, new Point(35, 50), new Point(1, 1), new Point(105, 000), 1600, true));
-			playerAnimationSet.Add(new Sprite.AnimationSet("HURT1", playerTemp, new Point(35, 50), new Point(1, 1), new Point(140, 000), 1600, true));
-			playerAnimationSet.Add(new Sprite.AnimationSet("ATK-1", playerTemp, new Point(35, 50), new Point(1, 1), new Point(175, 000), 1600, true));
-			playerAnimationSet.Add(new Sprite.AnimationSet("DIE-1", playerTemp, new Point(35, 50), new Point(1, 1), new Point(210, 000), 1600, true));
-			playerAnimationSet.Add(new Sprite.AnimationSet("GAIN1", playerTemp, new Point(35, 50), new Point(1, 1), new Point(245, 000), 1600, true));
-			playerAnimationSet.Add(new Sprite.AnimationSet("IDLE2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(000, 050), 1600, true));
-			playerAnimationSet.Add(new Sprite.AnimationSet("WALK2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(035, 050), 1600, true));
-			playerAnimationSet.Add(new Sprite.AnimationSet("JUMP2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(070, 050), 1600, true));
-			playerAnimationSet.Add(new Sprite.AnimationSet("FALL2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(105, 050), 1600, true));
-			playerAnimationSet.Add(new Sprite.AnimationSet("HURT2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(140, 050), 1600, true));
-			playerAnimationSet.Add(new Sprite.AnimationSet("ATK-2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(175, 050), 1600, true));
-			playerAnimationSet.Add(new Sprite.AnimationSet("DIE-2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(210, 050), 1600, true));
-			playerAnimationSet.Add(new Sprite.AnimationSet("GAIN2", playerTemp, new Point(35, 50), new Point(1, 1), new Point(245, 050), 1600, true));
-			#endregion
-			ParticalAnimationSet.Add(new Sprite.AnimationSet("IDLE", particleTex, new Point(particleTex.Width, particleTex.Height), Point.Zero, Point.Zero, 1600, false));
-
-			projectileAnimationSet.Add(new Sprite.AnimationSet("IDLE", projectileTexture, new Point(40, 24), new Point(3, 1), new Point(0, 0), 50, false));
-
-			healthBarAnimationSetList.Add(new Sprite.AnimationSet("IDLE", healthFGTexture, new Point(190, 16), new Point(1, 1), new Point(0, 0), 16000, false));
-			playerHealthBarAnimationSetList.Add(new Sprite.AnimationSet("IDLE", healthOverheadFGTexture, new Point(44, 3), new Point(1, 1), new Point(0, 0), 16000, false));
-			#endregion
+			LoadTextures();
 
 			#region Player Stuff
-			movementKeys[0, 0] = Keys.A;
-			movementKeys[0, 1] = Keys.W;
-			movementKeys[0, 2] = Keys.D;
-			movementKeys[0, 3] = Keys.S;
-			movementKeys[0, 4] = Keys.Space;
-			movementKeys[0, 5] = Keys.E;
-			movementKeys[1, 0] = Keys.Left;
-			movementKeys[1, 1] = Keys.Up;
-			movementKeys[1, 2] = Keys.Right;
-			movementKeys[1, 3] = Keys.Down;
+			MovementKeys[0, 0] = Keys.A;
+			MovementKeys[0, 1] = Keys.W;
+			MovementKeys[0, 2] = Keys.D;
+			MovementKeys[0, 3] = Keys.S;
+			MovementKeys[0, 4] = Keys.Space;
+			MovementKeys[0, 5] = Keys.E;
+			MovementKeys[1, 0] = Keys.Left;
+			MovementKeys[1, 1] = Keys.Up;
+			MovementKeys[1, 2] = Keys.Right;
+			MovementKeys[1, 3] = Keys.Down;
 
-			player = new Player(new Vector2(100, 100), movementKeys, 100f, Color.White, playerAnimationSet, projectileAnimationSet, myGame);
+			Player = new Player(TempPlayerTexture, new Vector2(100, 100), MovementKeys, 100f, Color.White, myGame);
+			Player.ProjectileTexture = ProjectileTexture;
 
-			healthBar = new HealthBar(new Vector2(20, 25), Color.White, healthBarAnimationSetList, player);
+			HealthBar = new HealthBar(HealthForegroundTexture, new Vector2(20, 25), Color.White, Player);
 
-			playerHealthBar = new HealthBar(new Vector2(player.GetPosition.X - ((48 - 35) / 2), player.GetPosition.Y - 10), Color.White, playerHealthBarAnimationSetList, player);
+			OverheadHealthBar = new HealthBar(HealthOverheadForegroundTexture, new Vector2(Player.Position.X - ((48 - 35) / 2), Player.Position.Y - 10), Color.White, Player);
 			#endregion
 
 			#region Game Stuff
-			camera = new Camera(myGame.GraphicsDevice.Viewport, new Point(1024, 768), 1.0f);
+			Camera = new Camera(myGame.GraphicsDevice.Viewport, new Point(1024, 768), 1.0f);
 
-			MapBoundries.Add(new Rectangle(-5, -5, 5, camera.Size.Y + 10));
-			MapBoundries.Add(new Rectangle(-5, -5, camera.Size.X + 10, 5));
-			MapBoundries.Add(new Rectangle(camera.Size.X, -5, 5, camera.Size.Y + 10));
-			MapBoundries.Add(new Rectangle(-5, camera.Size.Y, camera.Size.X + 10, 5));
+			MapBoundries.Add(new Rectangle(-5, -5, 5, Camera.Size.Y + 10));
+			MapBoundries.Add(new Rectangle(-5, -5, Camera.Size.X + 10, 5));
+			MapBoundries.Add(new Rectangle(Camera.Size.X, -5, 5, Camera.Size.Y + 10));
+			MapBoundries.Add(new Rectangle(-5, Camera.Size.Y, Camera.Size.X + 10, 5));
 			#endregion
 
-			debugLabel = new Label(new Vector2(0, 60), myGame.segoeUIMonoDebug, 1f, Color.Black, "");
-
 			base.LoadContent();
+		}
+
+		/// <summary>
+		/// Loads all of the textures.
+		/// </summary>
+		protected void LoadTextures()
+		{
+			LineTexture = Game.Content.Load<Texture2D>(@"images\other\line");
+			AirTileTexture = Game.Content.Load<Texture2D>(@"images\tiles\airTiles");
+			TempTileTexture = Game.Content.Load<Texture2D>(@"images\tiles\tempTiles");
+			SewerTileTexture = Game.Content.Load<Texture2D>(@"images\tiles\sewerTiles");
+			TempPlayerTexture = Game.Content.Load<Texture2D>(@"images\player\temp");
+			TempEnemyTexture = Game.Content.Load<Texture2D>(@"images\enemy\tempEnemy");
+			HealthForegroundTexture = Game.Content.Load<Texture2D>(@"images\gui\game\healthFG");
+			HealthBackgroundTexture = Game.Content.Load<Texture2D>(@"images\gui\game\healthBG");
+			HealthOverheadForegroundTexture = Game.Content.Load<Texture2D>(@"images\gui\game\healthOHFG");
+			HealthOverheadBackgroundTexture = Game.Content.Load<Texture2D>(@"images\gui\game\healthOHBG");
+			ProjectileTexture = Game.Content.Load<Texture2D>(@"images\player\attackTemp");
+			ParticleTexture = Game.Content.Load<Texture2D>(@"images\other\testParticle");
 		}
 
 		/// <summary>
@@ -317,36 +258,43 @@ namespace Predator
 		public override void Update(GameTime gameTime)
 		{
 			#region Camera Controls
-			// Rotate the camera to the left.
-			if (myGame.keyboardState.IsKeyDown(Keys.NumPad4))
+			#region Debug Camera Controls
+			if (myGame.IsGameDebug)
 			{
-				camera.Rotation += 1 * (float)Math.PI / 180;
+				// Rotate the camera to the left.
+				if (myGame.KeyboardState.IsKeyDown(Keys.NumPad4))
+				{
+					Camera.RotationZ += 1 * (float)Math.PI / 180;
+				}
+				// Rotate the camera to the right.
+				if (myGame.KeyboardState.IsKeyDown(Keys.NumPad6))
+				{
+					Camera.RotationZ -= 1 * (float)Math.PI / 180;
+				}
+				/// Zoom the camera in.
+				if (myGame.KeyboardState.IsKeyDown(Keys.NumPad8))
+				{
+					Camera.Zoom += 0.01f;
+				}
+				/// Zome the camera out.
+				if (myGame.KeyboardState.IsKeyDown(Keys.NumPad2))
+				{
+					Camera.Zoom -= 0.01f;
+				}
+				/// Reset the camera.
+				if (myGame.KeyboardState.IsKeyDown(Keys.NumPad5))
+				{
+					Camera.Zoom = 1f;
+					Camera.RotationZ = 0;
+					Camera.Position = Player.Position;
+				}
 			}
-			// Rotate the camera to the right.
-			if (myGame.keyboardState.IsKeyDown(Keys.NumPad6))
-			{
-				camera.Rotation -= 1 * (float)Math.PI / 180;
-			}
-			/// Zoom the camera in.
-			if (myGame.keyboardState.IsKeyDown(Keys.NumPad8))
-			{
-				camera.Zoom += 0.01f;
-			}
-			/// Zome the camera out.
-			if (myGame.keyboardState.IsKeyDown(Keys.NumPad2))
-			{
-				camera.Zoom -= 0.01f;
-			}
-			/// Reset the camera.
-			if (myGame.keyboardState.IsKeyDown(Keys.NumPad5))
-			{
-				camera.Zoom = 1f;
-				camera.Rotation = 0;
-			}
+			#endregion
+
 			// Update the camera's position.
-			if (camera.IsInView(player.GetPosition, new Vector2(player.CurrentAnimation.frameSize.X, player.CurrentAnimation.frameSize.Y)))
+			if (Camera.IsInView(Player.Position, new Vector2(Player.CurrentAnimation.frameSize.X, Player.CurrentAnimation.frameSize.Y)))
 			{
-				camera.Position = player.GetPosition;
+				Camera.Position = Player.Position;
 			}
 			#endregion
 
@@ -372,28 +320,20 @@ namespace Predator
 			// Reset The level
 			if (!LevelLoaded)
 			{
-				// Place the tiles.
-				SpawnTiles(0);
-
-				// Reset the map broundries.
-				MapBoundries[0] = new Rectangle(-35, -35, 35, camera.Size.Y + 70);
-				MapBoundries[1] = new Rectangle(camera.Size.X, -35, 35, camera.Size.Y + 70);
-				MapBoundries[2] = new Rectangle(-35, -35, camera.Size.X + 70, 35);
-				MapBoundries[3] = new Rectangle(-35, camera.Size.Y, camera.Size.X + 70, 35);
-
-				// Finish loading the level.
-				LevelLoaded = true;
+				CurrentLevel = 0;
+				RegenerateMap();
 			}
 
 			#region Update when level is loaded.
 			if (LevelLoaded)
 			{
 				#region Update Player Stuff
-				player.UpdateKeyboardState(gameTime, myGame.keyboardState);
-				player.Update(gameTime);
-				healthBar.Update(gameTime);
-				playerHealthBar.Update(gameTime);
-				playerHealthBar.SetPosition = new Vector2(player.GetPosition.X - ((44 - 35) / 2), player.GetPosition.Y - 7);
+				Player.UpdateKeyboardState(gameTime, myGame.KeyboardState);
+				Player.Update(gameTime);
+				//HealthBar.SetPlayer = Player;
+				HealthBar.Update(gameTime);
+				OverheadHealthBar.Update(gameTime);
+				OverheadHealthBar.Position = new Vector2(Player.Position.X - ((44 - 35) / 2), Player.Position.Y - 7);
 				#endregion
 
 				#region Update Enemy Stuff
@@ -410,7 +350,7 @@ namespace Predator
 
 						if (EnemyList[i].isHit)
 						{
-							ParticleSystem.CreateParticles(EnemyList[i].PositionCenter - new Vector2(0, 15), particleTex, random, ParticleList, ParticalAnimationSet, 230, 255, 0, 0, 0, 0, 5, 10, (int)BloodMinRadius, (int)BloodMaxRadius, 100, 250, 3, 5, 200, 255);
+							ParticleSystem.CreateParticles(EnemyList[i].PositionCenter - new Vector2(0, 15), ParticleTexture, Random, ParticleList, 230, 255, 0, 0, 0, 0, 5, 10, (int)BloodMinRadius, (int)BloodMaxRadius, 100, 250, 3, 5, 200, 255);
 							EnemyList[i].isHit = false;
 						}
 					}
@@ -420,7 +360,7 @@ namespace Predator
 				#region Update Particle stuff
 				for (int i = 0; i < ParticleList.Count; i++)
 				{
-					if (ParticleList[i].deleteMe)
+					if (ParticleList[i].DeleteMe)
 					{
 						ParticleList.RemoveAt(i);
 						i--;
@@ -433,34 +373,21 @@ namespace Predator
 				#endregion
 
 				#region Update Tile stuff
-				for (int i = 0; i < tileObjects.Count; i++)
+				for (int i = 0; i < TilesList.Count; i++)
 				{
-					tileObjects[i].Update(gameTime);
+					TilesList[i].Update(gameTime);
 				}
 				#endregion
 			}
 			#endregion
 
 			#region Debug Stuff
-			if (GameDebug && LevelLoaded)
+			if (myGame.IsGameDebug)
 			{
-				debugStrings[0] = "Player || JumpTime=" + player.JumpTime + " isGrounded=" + player.isGrounded;
-				debugStrings[1] = "       || Position=(" + player.GetPosition.X + "," + player.GetPosition.Y + ")";
-
-				debugLabel.Text = debugStrings[0] + "\n" +
-								  debugStrings[1] + "\n" +
-								  debugStrings[2] + "\n" +
-								  debugStrings[3] + "\n" +
-								  debugStrings[4] + "\n" +
-								  debugStrings[5] + "\n" +
-								  debugStrings[6] + "\n" +
-								  debugStrings[7] + "\n" +
-								  debugStrings[8] + "\n" +
-								  debugStrings[9];
+				myGame.debugStrings[0] = "Player || JumpTime=" + Player.JumpTime + " isGrounded=" + Player.IsGrounded;
+				myGame.debugStrings[1] = "       || Position=(" + Player.Position.X + "," + Player.Position.Y + ")";
 			}
 			#endregion
-
-			// TODO: Add your update code here
 
 			base.Update(gameTime);
 		}
@@ -471,23 +398,23 @@ namespace Predator
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		public override void Draw(GameTime gameTime)
 		{
-			spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null, null, camera.GetTransformation());
+			spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null, null, Camera.GetTransformation());
 			{
 				foreach (Enemy e in EnemyList)
 				{
 					e.Draw(gameTime, spriteBatch);
 				}
 
-				foreach (Tile t in tileObjects)
+				foreach (Tile t in TilesList)
 				{
 					t.Draw(gameTime, spriteBatch);
 				}
 
-				spriteBatch.Draw(healthOverheadBGTexture, new Vector2(player.GetPosition.X - ((50 - 35) / 2), player.GetPosition.Y - 12), Color.White);
+				spriteBatch.Draw(HealthOverheadBackgroundTexture, new Vector2(Player.Position.X - ((50 - 35) / 2), Player.Position.Y - 12), Color.White);
 
-				playerHealthBar.Draw(gameTime, spriteBatch);
+				OverheadHealthBar.Draw(gameTime, spriteBatch);
 
-				player.Draw(gameTime, spriteBatch);
+				Player.Draw(gameTime, spriteBatch);
 
 				foreach (Particle p in ParticleList)
 				{
@@ -498,60 +425,47 @@ namespace Predator
 
 			spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null);
 			{
-				spriteBatch.Draw(healthBGTexture, new Vector2(15, 15), Color.White);
+				spriteBatch.Draw(HealthBackgroundTexture, new Vector2(15, 15), Color.White);
 
-				healthBar.Draw(gameTime, spriteBatch);
+				HealthBar.Draw(gameTime, spriteBatch);
+
+				myGame.debugLabel.Draw(gameTime, spriteBatch);
+
+				//spriteBatch.DrawString(myGame.grimGhostRegular, "Hello World!", new Vector2((myGame.WindowSize.X - myGame.grimGhostRegular.MeasureString("Hello World!").X) / 2, (myGame.WindowSize.Y - myGame.grimGhostRegular.MeasureString("Hellow World!").Y) / 2), Color.Black);
 			}
 			spriteBatch.End();
 
 			#region Debug Stuff
-			spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null, null, camera.GetTransformation());
+			spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null, null, Camera.GetTransformation());
 			{
-				if (GameDebug && LevelLoaded)
+				if (myGame.IsGameDebug && LevelLoaded)
 				{
-					foreach (Tile t in tileObjects)
+					foreach (Tile t in TilesList)
 					{
-						if (t.tileCollisions == Tile.TileCollisions.Impassable)
+						if (t.TileType == Tile.TileCollisions.Impassable)
 						{
-							spriteBatch.Draw(line, new Rectangle(t.Collisions.X, t.Collisions.Y, t.Collisions.Width, 1), Color.White);
-							spriteBatch.Draw(line, new Rectangle(t.Collisions.Right - 1, t.Collisions.Y, 1, t.Collisions.Height), Color.White);
-							spriteBatch.Draw(line, new Rectangle(t.Collisions.X, t.Collisions.Bottom - 1, t.Collisions.Width, 1), Color.White);
-							spriteBatch.Draw(line, new Rectangle(t.Collisions.X, t.Collisions.Y, 1, t.Collisions.Height), Color.White);
+							//t.DrawBoundingCollisions(LineTexture, Color.White, spriteBatch);
 						}
 
-						if (t.tileCollisions == Tile.TileCollisions.Platform)
+						if (t.TileType == Tile.TileCollisions.Platform)
 						{
-							spriteBatch.Draw(line, new Rectangle(t.Collisions.X, t.Collisions.Y, t.Collisions.Width, 1), Color.Blue);
+							//t.DrawBoundingCollisions(LineTexture, Color.Blue, spriteBatch);
 						}
 					}
 					foreach (Rectangle r in MapBoundries)
 					{
-						spriteBatch.Draw(line, new Rectangle(r.X, r.Y, r.Width, 1), Color.White);
-						spriteBatch.Draw(line, new Rectangle(r.Right - 1, r.Y, 1, r.Height), Color.White);
-						spriteBatch.Draw(line, new Rectangle(r.X, r.Bottom - 1, r.Width, 1), Color.White);
-						spriteBatch.Draw(line, new Rectangle(r.X, r.Y, 1, r.Height), Color.White);
+						spriteBatch.Draw(LineTexture, new Rectangle(r.X, r.Y, r.Width, 1), Color.White);
+						spriteBatch.Draw(LineTexture, new Rectangle(r.Right - 1, r.Y, 1, r.Height), Color.White);
+						spriteBatch.Draw(LineTexture, new Rectangle(r.X, r.Bottom - 1, r.Width, 1), Color.White);
+						spriteBatch.Draw(LineTexture, new Rectangle(r.X, r.Y, 1, r.Height), Color.White);
 					}
 
 					foreach (Enemy e in EnemyList)
 					{
-						spriteBatch.Draw(line, new Rectangle(e.test.X, e.test.Y, e.test.Width, 1), Color.Red);
-						spriteBatch.Draw(line, new Rectangle(e.test.Right - 1, e.test.Y, 1, e.test.Height), Color.Red);
-						spriteBatch.Draw(line, new Rectangle(e.test.X, e.test.Bottom - 1, e.test.Width, 1), Color.Red);
-						spriteBatch.Draw(line, new Rectangle(e.test.X, e.test.Y, 1, e.test.Height), Color.Red);
-						spriteBatch.Draw(line, new Rectangle(e.BoundingCollisions.X, e.BoundingCollisions.Y, e.BoundingCollisions.Width, 1), Color.Magenta);
-						spriteBatch.Draw(line, new Rectangle(e.BoundingCollisions.Right - 1, e.BoundingCollisions.Y, 1, e.BoundingCollisions.Height), Color.Magenta);
-						spriteBatch.Draw(line, new Rectangle(e.BoundingCollisions.X, e.BoundingCollisions.Bottom - 1, e.BoundingCollisions.Width, 1), Color.Magenta);
-						spriteBatch.Draw(line, new Rectangle(e.BoundingCollisions.X, e.BoundingCollisions.Y, 1, e.BoundingCollisions.Height), Color.Magenta);
+						e.DrawBoundingCollisions(LineTexture, Color.Magenta, spriteBatch);
 					}
 
-					spriteBatch.Draw(line, new Rectangle(player.BoundingCollisions.X, player.BoundingCollisions.Y, player.BoundingCollisions.Width, 1), Color.Lime);
-					spriteBatch.Draw(line, new Rectangle(player.BoundingCollisions.Right - 1, player.BoundingCollisions.Y, 1, player.BoundingCollisions.Height), Color.Lime);
-					spriteBatch.Draw(line, new Rectangle(player.BoundingCollisions.X, player.BoundingCollisions.Bottom - 1, player.BoundingCollisions.Width, 1), Color.Lime);
-					spriteBatch.Draw(line, new Rectangle(player.BoundingCollisions.X, player.BoundingCollisions.Y, 1, player.BoundingCollisions.Height), Color.Lime);
-					spriteBatch.Draw(line, new Rectangle(player.test.X, player.test.Y, player.test.Width, 1), Color.Blue);
-					spriteBatch.Draw(line, new Rectangle(player.test.Right - 1, player.test.Y, 1, player.test.Height), Color.Blue);
-					spriteBatch.Draw(line, new Rectangle(player.test.X, player.test.Bottom - 1, player.test.Width, 1), Color.Blue);
-					spriteBatch.Draw(line, new Rectangle(player.test.X, player.test.Y, 1, player.test.Height), Color.Blue);
+					Player.DrawBoundingCollisions(LineTexture, Color.Blue, spriteBatch);
 				}
 			}
 			spriteBatch.End();
@@ -561,56 +475,81 @@ namespace Predator
 		}
 
 		/// <summary>
+		/// Regenerates the map
+		/// * Be sure to set level before this and set "LevelLoaded" to false *
+		/// </summary>
+		public void RegenerateMap()
+		{
+			TilesList.RemoveRange(0, TilesList.Count);
+			EnemyList.RemoveRange(0, EnemyList.Count);
+			Player.Position = Vector2.Zero;
+
+			SpawnTiles(CurrentLevel);
+
+			MapBoundries[0] = new Rectangle(-35, -35, 35, Camera.Size.Y + 70);
+			MapBoundries[1] = new Rectangle(Camera.Size.X, -35, 35, Camera.Size.Y + 70);
+			MapBoundries[2] = new Rectangle(-35, -35, Camera.Size.X + 70, 35);
+			MapBoundries[3] = new Rectangle(-35, Camera.Size.Y, Camera.Size.X + 70, 35);
+
+			LevelLoaded = true;
+		}
+
+		/// <summary>
 		/// Spawns the tiles in the world
 		/// </summary>
 		/// <param name="level">The level to spawn.</param>
 		public void SpawnTiles(int level)
 		{
 			Point Size = new Point(0, 0);
-			uint[,] tiles = new uint[0, 0];
+			int[,] tiles = new int[0, 0];
 
 			switch (level)
 			{
 				case 0:
-					tiles = MapHelper.GetTileArray(Maps.TestLevel());
-					Size = new Point(Maps.TestLevel()[0].Length, Maps.TestLevel().Count);
+					tiles = Maps.TestLevel();
+					Size = new Point(Maps.TestLevel().GetLength(1), Maps.TestLevel().GetLength(0));
 					break;
 			}
 
-			camera.Size = new Point(Size.X * 35, Size.Y * 35);
+			Camera.Size = new Point(Size.X * 35, Size.Y * 35);
 
 			for (int x = 0; x < Size.X; x++)
 			{
 				for (int y = 0; y < Size.Y; y++)
 				{
-					if (tiles[x, y] == 70)
+					if (tiles[y, x] == 77)
 					{
-						player.SetPosition = new Vector2(x * 35, y * 35);
+						Player.Position = new Vector2(x * 35, y * 35);
 					}
-					else if (tiles[x, y] == 71)
+					else if (tiles[y, x] == 78)
 					{
-						Enemy tempEnemy1 = new Enemy(new Vector2(x * 35, y * 35), Enemy.EnemyType.RAT, Color.White, playerAnimationSet, myGame);
+						Enemy tempEnemy1 = new Enemy(TempEnemyTexture, new Vector2(x * 35, y * 35), Enemy.EnemyType.RAT, Color.White, myGame);
 						EnemyList.Add(tempEnemy1);
 					}
 
-					if (tiles[x, y] > 69)
+					if (tiles[y, x] > 69)
 					{
-						tiles[x, y] = 0;
+						tiles[y, x] = 0;
 					}
 
-					if (tiles[x, y] == 0)
+					if (tiles[y, x] == 0)
 					{
-						tileObjects.Add(new Tile(new Vector2(x * 35, y * 35), (int)tiles[x, y], Tile.TileCollisions.Passable, new Rectangle(x * 35, y * 35, 35, 35), Color.White, tileAnimationSets));
+						TilesList.Add(new Tile(AirTileTexture, new Vector2(x * 35, y * 35), Tile.TileCollisions.Passable, TilesList, 0, Color.White));
 					}
 
-					if (tiles[x, y] > 0)
+					if (tiles[y, x] > 0)
 					{
-						tileObjects.Add(new Tile(new Vector2(x * 35, y * 35), (int)tiles[x, y], Tile.TileCollisions.Impassable, new Rectangle(x * 35, y * 35, 35, 35), Color.White, tileAnimationSets));
+						TilesList.Add(new Tile(SewerTileTexture, new Vector2(x * 35, y * 35), Tile.TileCollisions.Impassable, TilesList, 1, Color.White));
 					}
 				}
 			}
 
-			camera.Position = player.GetPosition;
+			foreach (Tile t in TilesList)
+			{
+				t.UpdateConnections();
+			}
+
+			Camera.Position = Player.Position;
 		}
 	}
 }

@@ -30,9 +30,9 @@ namespace VoidEngine.VGUI
 			: base(position, color, animationSetList)
 		{
 			this.myGame = myGame;
-			_Color = color;
+			Color = color;
 			AnimationSets = animationSetList;
-			Position = position;
+			this.position = position;
 		}
 	}
 }
