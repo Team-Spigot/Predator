@@ -47,8 +47,6 @@ namespace Predator.Managers
 		public bool isHudScrollingIn = false;
 		public bool isHudScrollingOut = false;
 
-		List<Sprite.AnimationSet> buttonAnimationSet;
-
 		Button level1Button;
 		Button level2Button;
 		//Button level3Button;
@@ -92,7 +90,6 @@ namespace Predator.Managers
 			: base(game)
 		{
 			myGame = game;
-			spriteBatch = new SpriteBatch(myGame.GraphicsDevice);
 			Initialize();
 		}
 
@@ -102,10 +99,6 @@ namespace Predator.Managers
 		/// </summary>
 		public override void Initialize()
 		{
-			buttonAnimationSet = new List<Sprite.AnimationSet>();
-
-			// TODO: Add your initialization code here
-
 			base.Initialize();
 		}
 
@@ -113,40 +106,28 @@ namespace Predator.Managers
 		{
 			spriteBatch = new SpriteBatch(myGame.GraphicsDevice);
 
-			line = Game.Content.Load<Texture2D>(@"images\other\line");
-			mapBackground = Game.Content.Load<Texture2D>(@"images\gui\map\tempMapScreen");
-			buttonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\tempMapButton");
-			hudBackButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\tempMapButton");
-			backButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\tempMapButton");
+			LoadTextures();
 
-			mapHudTexture = Game.Content.Load<Texture2D>(@"images\gui\map\tempMapHud");
+			level1Button = new Button(buttonTexture, new Vector2(700, 400), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
+			level2Button = new Button(buttonTexture, new Vector2(100, 120), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
+			backButton = new Button(buttonTexture, new Vector2(50, 700), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
+			hudBackButton = new Button(buttonTexture, new Vector2(100, 700), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
+
+			debugLabel = new Label(new Vector2(350, 15), myGame.segoeUIMonoDebug, 1.0f, Color.White, "");
 
 			camera = new Camera(myGame.GraphicsDevice.Viewport, new Point(2048, 1536), 1f);
 			camera.Position = new Vector2(512, 256);
 
-			// The Map Buttons
-			buttonAnimationSet.Add(new Sprite.AnimationSet("IDLE", buttonTexture, new Point(20, 20), new Point(1, 1), new Point(0, 0), 16000, false));
-			buttonAnimationSet.Add(new Sprite.AnimationSet("HOVER", buttonTexture, new Point(20, 20), new Point(1, 1), new Point(20, 0), 16000, false));
-			buttonAnimationSet.Add(new Sprite.AnimationSet("PRESSED", buttonTexture, new Point(20, 20), new Point(1, 1), new Point(40, 0), 16000, false));
-			// Hud Back Button
-			buttonAnimationSet.Add(new Sprite.AnimationSet("IDLE", buttonTexture, new Point(20, 20), new Point(1, 1), new Point(0, 0), 16000, false));
-			buttonAnimationSet.Add(new Sprite.AnimationSet("HOVER", buttonTexture, new Point(20, 20), new Point(1, 1), new Point(20, 0), 16000, false));
-			buttonAnimationSet.Add(new Sprite.AnimationSet("PRESSED", buttonTexture, new Point(20, 20), new Point(1, 1), new Point(40, 0), 16000, false));
-			// Back Button
-			buttonAnimationSet.Add(new Sprite.AnimationSet("IDLE", buttonTexture, new Point(20, 20), new Point(1, 1), new Point(0, 0), 16000, false));
-			buttonAnimationSet.Add(new Sprite.AnimationSet("HOVER", buttonTexture, new Point(20, 20), new Point(1, 1), new Point(20, 0), 16000, false));
-			buttonAnimationSet.Add(new Sprite.AnimationSet("PRESSED", buttonTexture, new Point(20, 20), new Point(1, 1), new Point(40, 0), 16000, false));
-
-			level1Button = new Button(new Vector2(700, 400), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, buttonAnimationSet);
-			level2Button = new Button(new Vector2(100, 120), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, buttonAnimationSet);
-
-			backButton = new Button(new Vector2(50, 700), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, buttonAnimationSet);
-
-			hudBackButton = new Button(new Vector2(100, 700), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, buttonAnimationSet);
-
-			debugLabel = new Label(new Vector2(350, 15), myGame.segoeUIMonoDebug, 1.0f, Color.White, "");
-
 			base.LoadContent();
+		}
+
+		public void LoadTextures()
+		{
+			mapBackground = Game.Content.Load<Texture2D>(@"images\gui\map\tempMapScreen");
+			buttonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\tempMapButton");
+			hudBackButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\tempMapButton");
+			backButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\tempMapButton");
+			mapHudTexture = Game.Content.Load<Texture2D>(@"images\gui\map\tempMapHud");
 		}
 
 		/// <summary>
@@ -345,7 +326,7 @@ namespace Predator.Managers
 			{
 				if (isTransitioningIn || isTransitioningOut)
 				{
-					spriteBatch.Draw(line, new Rectangle(0, 0, myGame.WindowSize.X, myGame.WindowSize.X), new Color(0, 0, 0, TransitionAlpha));
+					//spriteBatch.Draw(line, new Rectangle(0, 0, myGame.WindowSize.X, myGame.WindowSize.X), new Color(0, 0, 0, TransitionAlpha));
 				}
 				if (!isTransitioningIn && !isTransitioningOut)
 				{

@@ -371,14 +371,14 @@ namespace Predator.Managers
 						i--;
 					}
 					else
-                    {
-                        EnemyList[i].Update(gameTime);
+					{
+						EnemyList[i].Update(gameTime);
 
-                        if (EnemyList[i].isHit)
-                        {
-                            ParticleSystem.CreateParticles(EnemyList[i].PositionCenter - new Vector2(0, 15), ParticleTexture, Random, ParticleList, 230, 255, 0, 0, 0, 0, 5, 10, (int)BloodMinRadius, (int)BloodMaxRadius, 100, 250, 3, 5, 200, 255);
-                            EnemyList[i].isHit = false;
-                        }
+						if (EnemyList[i].isHit)
+						{
+							ParticleSystem.CreateParticles(EnemyList[i].PositionCenter - new Vector2(0, 15), ParticleTexture, Random, ParticleList, 230, 255, 0, 0, 0, 0, 5, 10, (int)BloodMinRadius, (int)BloodMaxRadius, 100, 250, 3, 5, 200, 255);
+							EnemyList[i].isHit = false;
+						}
 					}
 				}
 				#endregion

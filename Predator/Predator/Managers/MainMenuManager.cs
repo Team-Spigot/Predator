@@ -36,20 +36,11 @@ namespace Predator.Managers
 		/// <summary>
 		/// The start button texture.
 		/// <summary>
-		Texture2D startTexture;
+		Texture2D startButtonTexture;
 		/// <summary>
 		/// The quit button texture.
 		/// </summary>
-		Texture2D quitTexture;
-
-		/// <summary>
-		/// The start button's animation set.
-		/// </summary>
-		List<Sprite.AnimationSet> startButtonAnimationSet = new List<Sprite.AnimationSet>();
-		/// <summary>
-		/// The quit button's animation set.
-		/// </summary>
-		List<Sprite.AnimationSet> quitButtonAnimationSet = new List<Sprite.AnimationSet>();
+		Texture2D quitButtonTexture;
 
 		/// <summary>
 		/// The start button.
@@ -64,7 +55,7 @@ namespace Predator.Managers
 		/// Creates the game manager.
 		/// </summary>
 		public MainMenuManager(Game1 game)
-		: base(game)
+			: base(game)
 		{
 			myGame = game;
 			Initialize();
@@ -88,25 +79,19 @@ namespace Predator.Managers
 		{
 			spriteBatch = new SpriteBatch(myGame.GraphicsDevice);
 
-			menuBackground = Game.Content.Load<Texture2D>(@"images\gui\mainMenu\mainMenu");
-			startTexture = Game.Content.Load<Texture2D>(@"images\gui\mainMenu\startButton");
-			quitTexture = Game.Content.Load<Texture2D>(@"images\gui\mainMenu\quitButton");
+			LoadTextures();
 
-			#region Animation Sets
-			//start button
-			startButtonAnimationSet.Add(new Sprite.AnimationSet("IDLE", startTexture, new Point(100, 50), new Point(1, 1), new Point(0, 0), 16000, false));
-			startButtonAnimationSet.Add(new Sprite.AnimationSet("HOVER", startTexture, new Point(100, 50), new Point(1, 1), new Point(100, 0), 16000, false));
-			startButtonAnimationSet.Add(new Sprite.AnimationSet("PRESSED", startTexture, new Point(100, 50), new Point(1, 1), new Point(200, 0), 16000, false));
-			//quit button
-			quitButtonAnimationSet.Add(new Sprite.AnimationSet("IDLE", quitTexture, new Point(100, 50), new Point(1, 1), new Point(0, 0), 16000, false));
-			quitButtonAnimationSet.Add(new Sprite.AnimationSet("HOVER", quitTexture, new Point(100, 50), new Point(1, 1), new Point(100, 0), 16000, false));
-			quitButtonAnimationSet.Add(new Sprite.AnimationSet("PRESSED", quitTexture, new Point(100, 50), new Point(1, 1), new Point(200, 0), 16000, false));
-			#endregion
-
-			startButton = new Button(new Vector2((myGame.WindowSize.X - 100) / 2, 300), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, startButtonAnimationSet);
-			quitButton = new Button(new Vector2((myGame.WindowSize.X - 100) / 2, 550), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, quitButtonAnimationSet);
+			startButton = new Button(startButtonTexture, new Vector2((myGame.WindowSize.X - 100) / 2, 300), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
+			quitButton = new Button(quitButtonTexture, new Vector2((myGame.WindowSize.X - 100) / 2, 550), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
 
 			base.LoadContent();
+		}
+
+		public void LoadTextures()
+		{
+			menuBackground = Game.Content.Load<Texture2D>(@"images\gui\mainMenu\mainMenu");
+			startButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\mainMenu\startButton");
+			quitButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\mainMenu\quitButton");
 		}
 
 		/// <summary>
@@ -136,7 +121,6 @@ namespace Predator.Managers
 				spriteBatch.Draw(menuBackground, Vector2.Zero, Color.White);
 				startButton.Draw(gameTime, spriteBatch);
 				quitButton.Draw(gameTime, spriteBatch);
-                //spriteBatch.Draw(Game.Content.Load<Texture2D>(@"images\gui\mainMenu\spigot"), new Rectangle(15, 500, 128, 96), Color.White);
 			}
 			spriteBatch.End();
 
