@@ -42,6 +42,14 @@ namespace Predator.Characters
 			get;
 			set;
 		}
+        public bool DeleteMe = false;
+        public float EStrength;
+        public float EAgility;
+        public float EDefense;
+        public bool playerDetected = false;
+        public bool canMove = true;
+        public bool knockedBack = false;
+        public bool dropPickUp = false;
 
 		public Enemy(Texture2D texture, Vector2 position, EnemyType movementType, Color color, Game1 myGame)
 			: base(texture, position, color)
@@ -50,14 +58,14 @@ namespace Predator.Characters
 			AddAnimations(texture);
 
 			Level = 1;
-			MainHP = 30;
-			MaxHP = 30;
+			MainHP = 100;
+			MaxHP = 100;
 			JumpbackTimer = 0;
 			MaxMoveSpeed = 175;
 			GroundDragFactor = 0.46f;
 			AirDragFactor = 0.50f;
 
-			Scale = 0.5833f;
+			Scale = .7f;
 
 			SetAnimation("IDLE");
 
@@ -82,6 +90,11 @@ namespace Predator.Characters
 
 		public override void Update(GameTime gameTime)
 		{
+			if (Math.Abs(Movement) < 0.5f)
+			{
+				Movement = 0.0f;
+			}
+
 			HandleAnimations(gameTime);
 
 			ApplyPhysics(gameTime);
@@ -111,10 +124,15 @@ namespace Predator.Characters
 				isDead = true;
 				myGame.gameManager.BloodMinRadius = 0;
 				myGame.gameManager.BloodMaxRadius = 360;
+                DeleteMe = true;
 				if (HP <= 0)
 				{
 					MainHP = 0;
 				}
+                if (dropPickUp)
+                {
+                    dropPickUp = false;
+                }
 			}
 		}
 
@@ -128,36 +146,29 @@ namespace Predator.Characters
 					if (PositionCenter.X >= p.projectileRectangle.X + (p.projectileRectangle.Width / 2))
 					{
 						IsJumping = true;
-						Movement += 1;
+						Movement += -1;
 						velocity.X = MaxMoveSpeed * (float)gameTime.ElapsedGameTime.TotalMilliseconds * Movement;
 						velocity.Y = DoJump(velocity.Y, gameTime);
+                        myGame.gameManager.BloodMinRadius = 330;
+                        myGame.gameManager.BloodMaxRadius = 350;
+                        isHit = true;
+                        MainHP -= myGame.gameManager.Player.PStrength;
 					}
 					else if (PositionCenter.X < p.projectileRectangle.X + (p.projectileRectangle.Width / 2))
 					{
 						IsJumping = true;
-						Movement += -1;
+						Movement += 1;
 						velocity.X = MaxMoveSpeed * (float)gameTime.ElapsedGameTime.TotalMilliseconds * Movement;
 						velocity.Y = DoJump(velocity.Y, gameTime);
+                        myGame.gameManager.BloodMinRadius = 180;
+                        myGame.gameManager.BloodMaxRadius = 200;
+                        isHit = true;
+                        MainHP -= myGame.gameManager.Player.PStrength;
 					}
-				}
-				if (attackCounter <= 0)
-				{
-					attackCounter = 1;
-
-					if (p.projectileRectangle.TouchLeftOf(BoundingCollisions))
-					{
-						myGame.gameManager.BloodMinRadius = 330;
-						myGame.gameManager.BloodMaxRadius = 350;
-						isHit = true;
-						MainHP -= myGame.gameManager.Player.Damage;
-					}
-					if (p.projectileRectangle.TouchRightOf(BoundingCollisions))
-					{
-						myGame.gameManager.BloodMinRadius = 180;
-						myGame.gameManager.BloodMaxRadius = 200;
-						isHit = true;
-						MainHP -= myGame.gameManager.Player.Damage;
-					}
+                    if (MainHP <= 0)
+                    {
+                        isDead = true;
+                    }
 				}
 			}
 		}
@@ -185,12 +196,7 @@ namespace Predator.Characters
 		{
 			TempVelocity = new Vector2(myGame.gameManager.Player.PositionCenter.X - PositionCenter.X, myGame.gameManager.Player.PositionCenter.Y - PositionCenter.Y);
 
-			if (Math.Abs(Movement) < 0.5f)
-			{
-				Movement = 0.0f;
-			}
-
-			if (CollisionHelper.Magnitude(TempVelocity) <= 200)
+			if (CollisionHelper.Magnitude(TempVelocity) <= 400)
 			{
 				if (myGame.gameManager.Player.PositionCenter.X - PositionCenter.X < 0)
 				{
@@ -223,8 +229,8 @@ namespace Predator.Characters
 				}
 			}
 
-			HandleCollisions(gameTime);
 			HandleEnemyCollisions(gameTime);
+			HandleCollisions(gameTime);
 
 			if (movementType == EnemyType.SLIMEBALL)
 			{
@@ -255,9 +261,10 @@ namespace Predator.Characters
 
 		protected override void AddAnimations(Texture2D texture)
 		{
-			AddAnimation("IDLE", texture, new Point(60, 120), new Point(1, 1), new Point(0,   0), 1600, false);
-			AddAnimation("WALK", texture, new Point(60, 120), new Point(8, 1), new Point(0,   0), 50, true);
-			AddAnimation("JUMP", texture, new Point(60, 120), new Point(3, 1), new Point(240, 0), 50, true);
+			AddAnimation("IDLE", texture, new Point(120, 60), new Point(1, 1), new Point(360, 000), 1600, false);
+			AddAnimation("WALK", texture, new Point(120, 60), new Point(2, 2), new Point(0, 000), 100, true);
+            
+			
 			SetAnimation("IDLE");
 
 			base.AddAnimations(texture);

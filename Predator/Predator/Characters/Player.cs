@@ -35,7 +35,7 @@ namespace Predator.Characters
 		public float MainHP
 		{
 			get;
-			protected set;
+			set;
 		}
 		/// <summary>
 		/// Gets the player's HP rounded down.
@@ -66,6 +66,8 @@ namespace Predator.Characters
 		public float Damage;
 		public float Defense;
 		public int statPoints;
+
+        public int attackDelay;
 
 		public float PStrength;
 		public float PAgility;
@@ -304,6 +306,8 @@ namespace Predator.Characters
 
 			MainHP = HP;
 			MaxHP = HP;
+
+            attackDelay = 750;
 
 			JumpbackTimer = 1;
 
@@ -597,7 +601,7 @@ namespace Predator.Characters
 					}
 
 					JumpTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
-					SetAnimation("JUMP" + Level);
+                    //SetAnimation("JUMP" + Level);
 				}
 
 				// If we are in the ascent of the jump
@@ -628,34 +632,62 @@ namespace Predator.Characters
 		/// <param name="gameTime"></param>
 		protected virtual void HandleProjectile(GameTime gameTime)
 		{
-			if (IsShooting && CanShoot)
-			{
-				ProjectileList.Add(new Projectile(ProjectileTexture, Position, Color.White, myGame));
+            attackDelay -= gameTime.ElapsedGameTime.Milliseconds;
+            if (attackDelay == 0)
+            {
+                CanShoot = true;
+            }
+            if (IsShooting && CanShoot)
+            {
+                ProjectileList.Add(new Projectile(ProjectileTexture, Position, Color.White, myGame));
+                attackDelay--;
+                CanShoot = false;
+                IsShooting = false;
+            }
+            if (attackDelay <= 0)
+            {
+                attackDelay = 750;
+                CanShoot = true;
+                if (ProjectileList.Count > 0)
+                {
+                    ProjectileList.RemoveAt(ProjectileList.Count - 1);
+                }
+            }
+        }
+        //    attackDelay -= gameTime.ElapsedGameTime.Milliseconds;
+        //    if (attackDelay == 0)
+        //    {
+        //        CanShoot = true;
+        //    }
+        //    if (IsShooting && CanShoot)
+        //    {
+        //        ProjectileList.Add(new Projectile(ProjectileTexture, Position, Color.White, myGame));
+        //        attackDelay--;
+        //        CanShoot = false;
+                
+        //    }
+        //    if (!CanShoot)
+        //    {
+        //        ManaRechargeTime -= (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-				CanShoot = false;
-			}
-			if (!CanShoot)
-			{
-				ManaRechargeTime -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+        //        if (ManaRechargeTime <= 0)
+        //        {
+        //            if (ProjectileList.Count > 0)
+        //            {
+        //                ProjectileList.RemoveAt(ProjectileList.Count - 1);
+        //            }
 
-				if (ManaRechargeTime <= 0)
-				{
-					if (ProjectileList.Count > 0)
-					{
-						ProjectileList.RemoveAt(ProjectileList.Count - 1);
-					}
+        //            ManaRechargeInterval -= (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-					ManaRechargeInterval -= (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-					if (ManaRechargeInterval <= 0)
-					{
-						ManaRechargeTime = DefaultManaRechargeTime;
-						ManaRechargeInterval = DefaultManaRechargeInterval;
-						CanShoot = true;
-					}
-				}
-			}
-		}
+        //            if (ManaRechargeInterval <= 0)
+        //            {
+        //                ManaRechargeTime = DefaultManaRechargeTime;
+        //                ManaRechargeInterval = DefaultManaRechargeInterval;
+        //                CanShoot = true;
+        //            }
+        //        }
+        //    }
+        //}
 
 		public Rectangle test;
 		public float attackCounter = 1;
@@ -676,6 +708,7 @@ namespace Predator.Characters
 							Movement += 1;
 							velocity.X = MaxMoveSpeed * (float)gameTime.ElapsedGameTime.TotalMilliseconds * Movement;
 							velocity.Y = DoJump(velocity.Y, gameTime);
+                            MainHP -= 2;
 						}
 						else if (PositionCenter.X < e.PositionCenter.X)
 						{
@@ -683,13 +716,10 @@ namespace Predator.Characters
 							Movement += -1;
 							velocity.X = MaxMoveSpeed * (float)gameTime.ElapsedGameTime.TotalMilliseconds * Movement;
 							velocity.Y = DoJump(velocity.Y, gameTime);
+                            MainHP -= 2;
 						}
 					}
-					if (attackCounter <= 0)
-					{
-						MainHP -= 5;
-						attackCounter = 1;
-					}
+					
 				}
 			}
 		}

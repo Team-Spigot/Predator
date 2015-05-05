@@ -203,13 +203,16 @@ namespace Predator
 			mapScreenManager.Enabled = false;
 			mapScreenManager.Visible = false;
 
+			gameManager.Enabled = false;
+			gameManager.Visible = false;
+
 			mainMenuManager.Enabled = false;
 			mainMenuManager.Visible = false;
 
 			statManager.Enabled = false;
 			statManager.Visible = false;
 
-			SetCurrentLevel(GameLevels.MENU);
+			SetCurrentLevel(GameLevels.SPLASH);
 
 			debugLabel = new Label(new Vector2(0, 60), segoeUIMonoDebug, 1f, Color.Black, "");
 		}

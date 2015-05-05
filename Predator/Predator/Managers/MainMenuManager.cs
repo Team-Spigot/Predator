@@ -136,6 +136,7 @@ namespace Predator.Managers
 				spriteBatch.Draw(menuBackground, Vector2.Zero, Color.White);
 				startButton.Draw(gameTime, spriteBatch);
 				quitButton.Draw(gameTime, spriteBatch);
+                //spriteBatch.Draw(Game.Content.Load<Texture2D>(@"images\gui\mainMenu\spigot"), new Rectangle(15, 500, 128, 96), Color.White);
 			}
 			spriteBatch.End();
 

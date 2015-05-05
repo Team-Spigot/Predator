@@ -14,6 +14,7 @@ using VoidEngine.Helpers;
 using Predator.Characters;
 using VoidEngine.Particles;
 using Predator.Game;
+using Predator.Other;
 
 namespace Predator.Managers
 {
@@ -84,6 +85,11 @@ namespace Predator.Managers
 		/// Loads the particle's texture.
 		/// </summary>
 		public Texture2D ParticleTexture;
+		public Texture2D healthDropTex;
+		public Texture2D crawlerTex;
+		Texture2D backgroundSpray;
+		Texture2D background;
+		Texture2D shadowTileTexture;
 		#endregion
 
 		#region Enemy Stuff
@@ -118,6 +124,7 @@ namespace Predator.Managers
 		/// The overhead healthbar.
 		/// </summary>
 		public HealthBar OverheadHealthBar;
+		public List<HealthPickUp> dropList = new List<HealthPickUp>();
 		#endregion
 
 		#region Level & Transition Stuff
@@ -249,6 +256,11 @@ namespace Predator.Managers
 			HealthOverheadBackgroundTexture = Game.Content.Load<Texture2D>(@"images\gui\game\healthOHBG");
 			ProjectileTexture = Game.Content.Load<Texture2D>(@"images\player\attackTemp");
 			ParticleTexture = Game.Content.Load<Texture2D>(@"images\other\testParticle");
+			crawlerTex = Game.Content.Load<Texture2D>(@"images\enemy\Crawler_Sprite_sheet");
+			healthDropTex = Game.Content.Load<Texture2D>(@"images\other\HealthDrop");
+			backgroundSpray = Game.Content.Load<Texture2D>(@"images\other\back_PARA");
+			background = Game.Content.Load<Texture2D>(@"images\other\back_PARA_Minus_Spray");
+			shadowTileTexture = Game.Content.Load<Texture2D>(@"images\tiles\fadeTiles");
 		}
 
 		/// <summary>
@@ -341,18 +353,19 @@ namespace Predator.Managers
 				{
 					if (EnemyList[i].isDead)
 					{
+						dropList.Add(new HealthPickUp(healthDropTex, EnemyList[i].Position, myGame));
 						EnemyList.RemoveAt(i);
 						i--;
 					}
 					else
-					{
-						EnemyList[i].Update(gameTime);
+                    {
+                        EnemyList[i].Update(gameTime);
 
-						if (EnemyList[i].isHit)
-						{
-							ParticleSystem.CreateParticles(EnemyList[i].PositionCenter - new Vector2(0, 15), ParticleTexture, Random, ParticleList, 230, 255, 0, 0, 0, 0, 5, 10, (int)BloodMinRadius, (int)BloodMaxRadius, 100, 250, 3, 5, 200, 255);
-							EnemyList[i].isHit = false;
-						}
+                        if (EnemyList[i].isHit)
+                        {
+                            ParticleSystem.CreateParticles(EnemyList[i].PositionCenter - new Vector2(0, 15), ParticleTexture, Random, ParticleList, 230, 255, 0, 0, 0, 0, 5, 10, (int)BloodMinRadius, (int)BloodMaxRadius, 100, 250, 3, 5, 200, 255);
+                            EnemyList[i].isHit = false;
+                        }
 					}
 				}
 				#endregion
@@ -378,14 +391,32 @@ namespace Predator.Managers
 					TilesList[i].Update(gameTime);
 				}
 				#endregion
+
+				#region Update Pickups
+				for (int i = 0; i < dropList.Count; i++)
+				{
+					if (dropList[i].deleteMe)
+					{
+						dropList.RemoveAt(i);
+						Player.MainHP += 5;
+						i--;
+					}
+					else
+					{
+						dropList[i].Update(gameTime);
+					}
+				}
+				#endregion
 			}
 			#endregion
 
 			#region Debug Stuff
 			if (myGame.IsGameDebug)
 			{
-				myGame.debugStrings[0] = "Player || JumpTime=" + Player.JumpTime + " isGrounded=" + Player.IsGrounded;
-				myGame.debugStrings[1] = "       || Position=(" + Player.Position.X + "," + Player.Position.Y + ")";
+
+				myGame.debugStrings[2] = "       || Agility=" + Player.PAgility;
+				myGame.debugStrings[3] = "       || Strength =" + Player.PStrength + "Defense =" + Player.PDefense + "StatPoints =" + Player.statPoints;
+				myGame.debugStrings[4] = "       || Level =" + Player.Lvl;
 			}
 			#endregion
 
@@ -400,6 +431,9 @@ namespace Predator.Managers
 		{
 			spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null, null, Camera.GetTransformation());
 			{
+				spriteBatch.Draw(backgroundSpray, new Rectangle(0, 0, (int)myGame.WindowSize.X, (int)myGame.WindowSize.Y), Color.White);
+				spriteBatch.Draw(background, new Rectangle(1024, 0, (int)myGame.WindowSize.X, (int)myGame.WindowSize.Y), Color.White);
+				spriteBatch.Draw(background, new Rectangle(2048, 0, (int)myGame.WindowSize.X, (int)myGame.WindowSize.Y), Color.White);
 				foreach (Enemy e in EnemyList)
 				{
 					e.Draw(gameTime, spriteBatch);
@@ -419,6 +453,11 @@ namespace Predator.Managers
 				foreach (Particle p in ParticleList)
 				{
 					p.Draw(gameTime, spriteBatch);
+
+				}
+				foreach (HealthPickUp h in dropList)
+				{
+					h.Draw(gameTime, spriteBatch);
 				}
 			}
 			spriteBatch.End();
@@ -523,7 +562,7 @@ namespace Predator.Managers
 					}
 					else if (tiles[y, x] == 78)
 					{
-						Enemy tempEnemy1 = new Enemy(TempEnemyTexture, new Vector2(x * 35, y * 35), Enemy.EnemyType.RAT, Color.White, myGame);
+						Enemy tempEnemy1 = new Enemy(crawlerTex, new Vector2(x * 35, y * 35), Enemy.EnemyType.RAT, Color.DarkSeaGreen, myGame);
 						EnemyList.Add(tempEnemy1);
 					}
 
@@ -540,6 +579,7 @@ namespace Predator.Managers
 					if (tiles[y, x] > 0)
 					{
 						TilesList.Add(new Tile(SewerTileTexture, new Vector2(x * 35, y * 35), Tile.TileCollisions.Impassable, TilesList, 1, Color.White));
+						TilesList.Add(new Tile(shadowTileTexture, new Vector2(x * 35, y * 35), Tile.TileCollisions.Impassable, TilesList, 1, Color.White));
 					}
 				}
 			}

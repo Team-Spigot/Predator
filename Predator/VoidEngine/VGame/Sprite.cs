@@ -321,33 +321,33 @@ namespace VoidEngine.VGame
 		/// </summary>
 		/// <param name="gameTime">The GameTime that the game is running off of.</param>
 		protected virtual void HandleAnimations(GameTime gameTime)
-		{
-			LastFrameTime += gameTime.ElapsedGameTime.Milliseconds;
+        {
+            LastFrameTime += gameTime.ElapsedGameTime.Milliseconds;
 
-			if (LastFrameTime >= CurrentAnimation.framesPerMillisecond)
-			{
-				CurrentFrame.X++;
+            if (LastFrameTime >= CurrentAnimation.framesPerMillisecond)
+            {
+                CurrentFrame.X++;
 
-				if (CurrentFrame.X >= CurrentAnimation.sheetSize.X)
-				{
-					CurrentFrame.Y++;
-					if (CurrentAnimation.isLooping)
-					{
-						CurrentFrame.X = 0;
-					}
-					else
-					{
-						CurrentFrame.X = CurrentAnimation.sheetSize.X;
-					}
+                if (CurrentFrame.X >= CurrentAnimation.sheetSize.X)
+                {
+                    CurrentFrame.Y++;
+                    if (CurrentAnimation.isLooping)
+                    {
+                        CurrentFrame.X = 0;
+                    }
+                    else
+                    {
+                        CurrentFrame.X = CurrentAnimation.sheetSize.X;
+                    }
 
-					if (CurrentFrame.Y >= CurrentAnimation.sheetSize.Y)
-					{
-						CurrentFrame.Y = 0;
-					}
-				}
+                    if (CurrentFrame.Y >= CurrentAnimation.sheetSize.Y)
+                    {
+                        CurrentFrame.Y = 0;
+                    }
+                }
 
-				LastFrameTime = 0;
-			}
+                LastFrameTime = 0;
+            }
 		}
 
 		/// <summary>

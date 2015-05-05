@@ -17,10 +17,20 @@ namespace Predator.Managers
 	/// </summary>
 	public class SplashScreenManager : Microsoft.Xna.Framework.DrawableGameComponent
 	{
+		Game1 myGame;
+		SpriteBatch spriteBatch;
+
+		Texture2D spigotLogoTexture;
+		Texture2D backgroundTexture;
+
+		int Timer = 5000;
+
 		public SplashScreenManager(Game1 game)
 			: base(game)
 		{
-			// TODO: Construct any child components here
+			myGame = game;
+
+			Initialize();
 		}
 
 		/// <summary>
@@ -29,9 +39,22 @@ namespace Predator.Managers
 		/// </summary>
 		public override void Initialize()
 		{
-			// TODO: Add your initialization code here
-
 			base.Initialize();
+		}
+
+		protected override void LoadContent()
+		{
+			spriteBatch = new SpriteBatch(myGame.GraphicsDevice);
+
+			LoadImages();
+
+			base.LoadContent();
+		}
+
+		public void LoadImages()
+		{
+			spigotLogoTexture = Game.Content.Load<Texture2D>(@"images\gui\mainMenu\spigot");
+			backgroundTexture = Game.Content.Load<Texture2D>(@"images\other\Back_PARA_Minus_Spray");
 		}
 
 		/// <summary>
@@ -40,9 +63,26 @@ namespace Predator.Managers
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		public override void Update(GameTime gameTime)
 		{
-			// TODO: Add your update code here
+			Timer -= (int)gameTime.ElapsedGameTime.Milliseconds;
+
+			if (Timer <= 0)
+			{
+				myGame.SetCurrentLevel(Game1.GameLevels.MENU);
+			}
 
 			base.Update(gameTime);
+		}
+
+		public override void Draw(GameTime gameTime)
+		{
+			spriteBatch.Begin();
+			{
+				spriteBatch.Draw(backgroundTexture, Vector2.Zero, Color.White);
+				spriteBatch.Draw(spigotLogoTexture, Vector2.Zero, Color.White);
+			}
+			spriteBatch.End();
+
+			base.Draw(gameTime);
 		}
 	}
 }

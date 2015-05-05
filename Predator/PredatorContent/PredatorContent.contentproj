@@ -210,6 +210,7 @@
       <Name>grimghostregular</Name>
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
+      <SubType>Designer</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -235,6 +236,65 @@
     </Compile>
     <Compile Include="images\gui\statsMenu\strengthSym.png">
       <Name>strengthSym</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="images\gui\statsMenu\Exitbuttonsprite.png">
+      <Name>Exitbuttonsprite</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="images\gui\statsMenu\Icon+Sprite.png">
+      <Name>Icon+Sprite</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="images\gui\statsMenu\Menu#3.png">
+      <Name>Menu#3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="images\other\HealthDrop.png">
+      <Name>HealthDrop</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="images\enemy\Crawler_Sprite_sheet.png">
+      <Name>Crawler_Sprite_sheet</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="images\other\Back_PARA.png">
+      <Name>Back_PARA</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="images\other\Back_PARA_Minus_Spray.png">
+      <Name>Back_PARA_Minus_Spray</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="images\tiles\fadeTiles.png">
+      <Name>fadeTiles</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="images\gui\mainMenu\spigot.png">
+      <Name>spigot</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

@@ -72,8 +72,6 @@ namespace VoidEngine.Particles
         public Particle(Vector2 position, Texture2D texture, int lifespan, int speed, Color washcolor, float angle)
             : base(position, washcolor, texture)
         {
-        	// Create the animations.
-        	AddAnimations(texture);
         	// Set the angle of the angle in degrees.
             angle *= (float)(Math.PI / 180);
             // Set the direction based off of the Cosine and Sine of the angle.
@@ -84,6 +82,8 @@ namespace VoidEngine.Particles
             Color = washcolor;
             // Set the speed of the particle.
             Speed = speed;
+            // Create the animations.
+            AddAnimations(texture);
         }
         
         /// <summary>
@@ -92,6 +92,7 @@ namespace VoidEngine.Particles
         /// <param name="gameTime">The GameTime that the game runs off of.</param>
         public override void Update(GameTime gameTime)
         {
+            HandleAnimations(gameTime);
         	// Update the Position of the particle.
             position += Direction * Speed;
             // Update the elapsed time of the particle.
@@ -108,9 +109,17 @@ namespace VoidEngine.Particles
             
             base.Update(gameTime);
         }
+
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(CurrentAnimation.texture, new Vector2(position.X + PositionCenter.X, position.Y + PositionCenter.Y), new Rectangle((CurrentAnimation.frameSize.X) + CurrentAnimation.startPosition.X, (CurrentAnimation.frameSize.Y) + CurrentAnimation.startPosition.Y, CurrentAnimation.frameSize.X, CurrentAnimation.frameSize.Y), Color, Rotation, RotationCenter, 1, SpriteEffects.None, 0);
+            base.Draw(gameTime, spriteBatch);
+        }
+
+
+        protected override void AddAnimations(Texture2D texture)
+        {
+            AddAnimation("IDLE", texture, new Point(texture.Width, texture.Height), new Point(0, 0), new Point(0, 0), 1600, false);
+            SetAnimation("IDLE");
         }
     }
 }
