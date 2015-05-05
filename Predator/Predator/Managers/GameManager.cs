@@ -244,23 +244,36 @@ namespace Predator.Managers
 		/// </summary>
 		protected void LoadTextures()
 		{
+			// Debug
 			LineTexture = Game.Content.Load<Texture2D>(@"images\other\line");
+
+			// Tiles
 			AirTileTexture = Game.Content.Load<Texture2D>(@"images\tiles\airTiles");
 			TempTileTexture = Game.Content.Load<Texture2D>(@"images\tiles\tempTiles");
 			SewerTileTexture = Game.Content.Load<Texture2D>(@"images\tiles\sewerTiles");
+			shadowTileTexture = Game.Content.Load<Texture2D>(@"images\tiles\fadeTiles");
+
+			// Player and entities
 			TempPlayerTexture = Game.Content.Load<Texture2D>(@"images\player\temp");
 			TempEnemyTexture = Game.Content.Load<Texture2D>(@"images\enemy\tempEnemy");
-			HealthForegroundTexture = Game.Content.Load<Texture2D>(@"images\gui\game\healthFG");
-			HealthBackgroundTexture = Game.Content.Load<Texture2D>(@"images\gui\game\healthBG");
-			HealthOverheadForegroundTexture = Game.Content.Load<Texture2D>(@"images\gui\game\healthOHFG");
-			HealthOverheadBackgroundTexture = Game.Content.Load<Texture2D>(@"images\gui\game\healthOHBG");
+			crawlerTex = Game.Content.Load<Texture2D>(@"images\enemy\crawler1");
+
+			// UI
+			HealthForegroundTexture = Game.Content.Load<Texture2D>(@"images\gui\game\healthBarFore");
+			HealthBackgroundTexture = Game.Content.Load<Texture2D>(@"images\gui\game\healthBarBack");
+			HealthOverheadForegroundTexture = Game.Content.Load<Texture2D>(@"images\gui\game\healthBarOverFore");
+			HealthOverheadBackgroundTexture = Game.Content.Load<Texture2D>(@"images\gui\game\healthBarOverback");
+
+			// Effects
 			ProjectileTexture = Game.Content.Load<Texture2D>(@"images\player\attackTemp");
-			ParticleTexture = Game.Content.Load<Texture2D>(@"images\other\testParticle");
-			crawlerTex = Game.Content.Load<Texture2D>(@"images\enemy\Crawler_Sprite_sheet");
-			healthDropTex = Game.Content.Load<Texture2D>(@"images\other\HealthDrop");
-			backgroundSpray = Game.Content.Load<Texture2D>(@"images\other\back_PARA");
-			background = Game.Content.Load<Texture2D>(@"images\other\back_PARA_Minus_Spray");
-			shadowTileTexture = Game.Content.Load<Texture2D>(@"images\tiles\fadeTiles");
+			ParticleTexture = Game.Content.Load<Texture2D>(@"images\game\particles\tempParticle");
+
+			// Drops
+			healthDropTex = Game.Content.Load<Texture2D>(@"images\game\drops\healthDrop");
+
+			// Backgrounds
+			backgroundSpray = Game.Content.Load<Texture2D>(@"images\game\backgrounds\sewerBackgroundG");
+			background = Game.Content.Load<Texture2D>(@"images\game\backgrounds\sewerBackground");
 		}
 
 		/// <summary>

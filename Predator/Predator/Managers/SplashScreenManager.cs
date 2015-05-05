@@ -54,7 +54,7 @@ namespace Predator.Managers
 		public void LoadImages()
 		{
 			spigotLogoTexture = Game.Content.Load<Texture2D>(@"images\gui\mainMenu\spigot");
-			backgroundTexture = Game.Content.Load<Texture2D>(@"images\other\Back_PARA_Minus_Spray");
+			backgroundTexture = Game.Content.Load<Texture2D>(@"images\game\backgrounds\sewerBackground");
 		}
 
 		/// <summary>

@@ -114,12 +114,12 @@ namespace Predator.Managers
 			spriteBatch = new SpriteBatch(myGame.GraphicsDevice);
 
 			line = Game.Content.Load<Texture2D>(@"images\other\line");
-			mapBackground = Game.Content.Load<Texture2D>(@"images\gui\map\mapScreen");
-			buttonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\mapButtonTest");
-			hudBackButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\mapButtonTest");
-			backButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\mapButtonTest");
+			mapBackground = Game.Content.Load<Texture2D>(@"images\gui\map\tempMapScreen");
+			buttonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\tempMapButton");
+			hudBackButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\tempMapButton");
+			backButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\tempMapButton");
 
-			mapHudTexture = Game.Content.Load<Texture2D>(@"images\gui\map\mapHud");
+			mapHudTexture = Game.Content.Load<Texture2D>(@"images\gui\map\tempMapHud");
 
 			camera = new Camera(myGame.GraphicsDevice.Viewport, new Point(2048, 1536), 1f);
 			camera.Position = new Vector2(512, 256);

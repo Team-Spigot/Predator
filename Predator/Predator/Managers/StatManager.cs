@@ -72,11 +72,9 @@ namespace Predator
 
         protected override void LoadContent()
         {
-            plusTexture = Game.Content.Load<Texture2D>(@"images\gui\statsMenu\Icon+Sprite");
-            menuBackground = Game.Content.Load<Texture2D>(@"images\gui\statsMenu\Menu#3");
-            exitBtnTex = Game.Content.Load<Texture2D>(@"images\gui\statsMenu\Exitbuttonsprite");
-
-
+            plusTexture = Game.Content.Load<Texture2D>(@"images\gui\statsMenu\plusButton");
+            menuBackground = Game.Content.Load<Texture2D>(@"images\gui\statsMenu\menu");
+            exitBtnTex = Game.Content.Load<Texture2D>(@"images\gui\global\exitButton");
 
             //camera = new Camera(myGame.GraphicsDevice.Viewport, new Point(2048, 1536), 1f);
             //camera.Position = new Vector2(512, 256);

@@ -69,23 +69,23 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="images\gui\game\healthOHFG.png">
-      <Name>healthOHFG</Name>
+    <Compile Include="images\gui\game\healthBarOverFore.png">
+      <Name>healthBarOverFore</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="images\gui\game\healthBG.png">
-      <Name>healthBG</Name>
+    <Compile Include="images\gui\game\healthBarBack.png">
+      <Name>healthBarBack</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="images\gui\game\healthFG.png">
-      <Name>healthFG</Name>
+    <Compile Include="images\gui\game\healthBarFore.png">
+      <Name>healthBarFore</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="images\gui\game\healthOHBG.png">
-      <Name>healthOHBG</Name>
+    <Compile Include="images\gui\game\healthBarOverBack.png">
+      <Name>healthBarOverBack</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -108,30 +108,18 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="images\gui\map\mapButtonTest.png">
-      <Name>mapButtonTest</Name>
+    <Compile Include="images\gui\map\tempMapButton.png">
+      <Name>tempMapButton</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="images\gui\map\mapHud.png">
-      <Name>mapHud</Name>
+    <Compile Include="images\gui\map\tempMapHud.png">
+      <Name>tempMapHud</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="images\gui\map\mapScreen.png">
-      <Name>mapScreen</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="images\gui\statsMenu\minusBtn.jpg">
-      <Name>minusBtn</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="images\gui\statsMenu\plusBtn.jpg">
-      <Name>plusBtn</Name>
+    <Compile Include="images\gui\map\tempMapScreen.png">
+      <Name>tempMapScreen</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -142,8 +130,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="images\other\testParticle.png">
-      <Name>testParticle</Name>
+    <Compile Include="images\game\particles\tempParticle.png">
+      <Name>tempParticle</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -180,11 +168,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="images\gui\statsMenu\menu.png">
-      <Name>menu</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
     <Compile Include="images\gui\statsMenu\plusButton.png">
       <Name>plusButton</Name>
       <Importer>TextureImporter</Importer>
@@ -214,73 +197,48 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="images\gui\statsMenu\agilitySym.png">
-      <Name>agilitySym</Name>
+    <Compile Include="images\gui\global\button1.png">
+      <Name>button1</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="images\gui\statsMenu\backButton.png">
-      <Name>backButton</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="images\gui\statsMenu\defenseSym.png">
-      <Name>defenseSym</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="images\gui\statsMenu\exitButton.png">
+    <Compile Include="images\gui\global\exitButton.png">
       <Name>exitButton</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="images\gui\statsMenu\strengthSym.png">
-      <Name>strengthSym</Name>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="images\gui\statsMenu\menu.png">
+      <Name>menu</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="images\gui\statsMenu\Exitbuttonsprite.png">
-      <Name>Exitbuttonsprite</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="images\gui\statsMenu\Icon+Sprite.png">
-      <Name>Icon+Sprite</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="images\gui\statsMenu\Menu#3.png">
-      <Name>Menu#3</Name>
+    <Compile Include="images\game\drops\healthDrop.png">
+      <Name>healthDrop</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="images\other\HealthDrop.png">
-      <Name>HealthDrop</Name>
+    <Compile Include="images\enemy\crawler1.png">
+      <Name>crawler1</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="images\enemy\Crawler_Sprite_sheet.png">
-      <Name>Crawler_Sprite_sheet</Name>
+    <Compile Include="images\game\backgrounds\sewerBackgroundG.png">
+      <Name>sewerBackgroundG</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="images\other\Back_PARA.png">
-      <Name>Back_PARA</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="images\other\Back_PARA_Minus_Spray.png">
-      <Name>Back_PARA_Minus_Spray</Name>
+    <Compile Include="images\game\backgrounds\sewerBackground.png">
+      <Name>sewerBackground</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
