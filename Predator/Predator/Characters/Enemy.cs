@@ -42,14 +42,14 @@ namespace Predator.Characters
 			get;
 			set;
 		}
-        public bool DeleteMe = false;
-        public float EStrength;
-        public float EAgility;
-        public float EDefense;
-        public bool playerDetected = false;
-        public bool canMove = true;
-        public bool knockedBack = false;
-        public bool dropPickUp = false;
+		public bool DeleteMe = false;
+		public float EStrength;
+		public float EAgility;
+		public float EDefense;
+		public bool playerDetected = false;
+		public bool canMove = true;
+		public bool knockedBack = false;
+		public bool dropPickUp = false;
 
 		public Enemy(Texture2D texture, Vector2 position, EnemyType movementType, Color color, Game1 myGame)
 			: base(texture, position, color)
@@ -124,15 +124,15 @@ namespace Predator.Characters
 				isDead = true;
 				myGame.gameManager.BloodMinRadius = 0;
 				myGame.gameManager.BloodMaxRadius = 360;
-                DeleteMe = true;
+				DeleteMe = true;
 				if (HP <= 0)
 				{
 					MainHP = 0;
 				}
-                if (dropPickUp)
-                {
-                    dropPickUp = false;
-                }
+				if (dropPickUp)
+				{
+					dropPickUp = false;
+				}
 			}
 		}
 
@@ -149,10 +149,10 @@ namespace Predator.Characters
 						Movement += -1;
 						velocity.X = MaxMoveSpeed * (float)gameTime.ElapsedGameTime.TotalMilliseconds * Movement;
 						velocity.Y = DoJump(velocity.Y, gameTime);
-                        myGame.gameManager.BloodMinRadius = 330;
-                        myGame.gameManager.BloodMaxRadius = 350;
-                        isHit = true;
-                        MainHP -= myGame.gameManager.Player.PStrength;
+						myGame.gameManager.BloodMinRadius = 330;
+						myGame.gameManager.BloodMaxRadius = 350;
+						isHit = true;
+						MainHP -= myGame.gameManager.Player.PStrength;
 					}
 					else if (PositionCenter.X < p.projectileRectangle.X + (p.projectileRectangle.Width / 2))
 					{
@@ -160,15 +160,15 @@ namespace Predator.Characters
 						Movement += 1;
 						velocity.X = MaxMoveSpeed * (float)gameTime.ElapsedGameTime.TotalMilliseconds * Movement;
 						velocity.Y = DoJump(velocity.Y, gameTime);
-                        myGame.gameManager.BloodMinRadius = 180;
-                        myGame.gameManager.BloodMaxRadius = 200;
-                        isHit = true;
-                        MainHP -= myGame.gameManager.Player.PStrength;
+						myGame.gameManager.BloodMinRadius = 180;
+						myGame.gameManager.BloodMaxRadius = 200;
+						isHit = true;
+						MainHP -= myGame.gameManager.Player.PStrength;
 					}
-                    if (MainHP <= 0)
-                    {
-                        isDead = true;
-                    }
+					if (MainHP <= 0)
+					{
+						isDead = true;
+					}
 				}
 			}
 		}
@@ -263,8 +263,8 @@ namespace Predator.Characters
 		{
 			AddAnimation("IDLE", texture, new Point(120, 60), new Point(1, 1), new Point(360, 000), 1600, false);
 			AddAnimation("WALK", texture, new Point(120, 60), new Point(2, 2), new Point(0, 000), 100, true);
-            
-			
+
+
 			SetAnimation("IDLE");
 
 			base.AddAnimations(texture);

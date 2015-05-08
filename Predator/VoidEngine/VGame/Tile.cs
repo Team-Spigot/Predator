@@ -221,20 +221,20 @@ namespace VoidEngine.VGame
 
 		protected override void AddAnimations(Texture2D texture)
 		{
-			AnimationSets.Add(new Sprite.AnimationSet("0", texture,  new Point(GridSize, GridSize), Point.Zero, new Point(0,            0), 0, false));
-			AnimationSets.Add(new Sprite.AnimationSet("1", texture,  new Point(GridSize, GridSize), Point.Zero, new Point(GridSize,     0), 0, false));
-			AnimationSets.Add(new Sprite.AnimationSet("2", texture,  new Point(GridSize, GridSize), Point.Zero, new Point(GridSize * 2, 0), 0, false));
-			AnimationSets.Add(new Sprite.AnimationSet("3", texture,  new Point(GridSize, GridSize), Point.Zero, new Point(GridSize * 3, 0), 0, false));
-			AnimationSets.Add(new Sprite.AnimationSet("4", texture,  new Point(GridSize, GridSize), Point.Zero, new Point(0,            GridSize), 0, false));
-			AnimationSets.Add(new Sprite.AnimationSet("5", texture,  new Point(GridSize, GridSize), Point.Zero, new Point(GridSize,     GridSize), 0, false));
-			AnimationSets.Add(new Sprite.AnimationSet("6", texture,  new Point(GridSize, GridSize), Point.Zero, new Point(GridSize * 2, GridSize), 0, false));
-			AnimationSets.Add(new Sprite.AnimationSet("7", texture,  new Point(GridSize, GridSize), Point.Zero, new Point(GridSize * 3, GridSize), 0, false));
-			AnimationSets.Add(new Sprite.AnimationSet("8", texture,  new Point(GridSize, GridSize), Point.Zero, new Point(0,            GridSize * 2), 0, false));
-			AnimationSets.Add(new Sprite.AnimationSet("9", texture,  new Point(GridSize, GridSize), Point.Zero, new Point(GridSize,     GridSize * 2), 0, false));
+			AnimationSets.Add(new Sprite.AnimationSet("0", texture, new Point(GridSize, GridSize), Point.Zero, new Point(0, 0), 0, false));
+			AnimationSets.Add(new Sprite.AnimationSet("1", texture, new Point(GridSize, GridSize), Point.Zero, new Point(GridSize, 0), 0, false));
+			AnimationSets.Add(new Sprite.AnimationSet("2", texture, new Point(GridSize, GridSize), Point.Zero, new Point(GridSize * 2, 0), 0, false));
+			AnimationSets.Add(new Sprite.AnimationSet("3", texture, new Point(GridSize, GridSize), Point.Zero, new Point(GridSize * 3, 0), 0, false));
+			AnimationSets.Add(new Sprite.AnimationSet("4", texture, new Point(GridSize, GridSize), Point.Zero, new Point(0, GridSize), 0, false));
+			AnimationSets.Add(new Sprite.AnimationSet("5", texture, new Point(GridSize, GridSize), Point.Zero, new Point(GridSize, GridSize), 0, false));
+			AnimationSets.Add(new Sprite.AnimationSet("6", texture, new Point(GridSize, GridSize), Point.Zero, new Point(GridSize * 2, GridSize), 0, false));
+			AnimationSets.Add(new Sprite.AnimationSet("7", texture, new Point(GridSize, GridSize), Point.Zero, new Point(GridSize * 3, GridSize), 0, false));
+			AnimationSets.Add(new Sprite.AnimationSet("8", texture, new Point(GridSize, GridSize), Point.Zero, new Point(0, GridSize * 2), 0, false));
+			AnimationSets.Add(new Sprite.AnimationSet("9", texture, new Point(GridSize, GridSize), Point.Zero, new Point(GridSize, GridSize * 2), 0, false));
 			AnimationSets.Add(new Sprite.AnimationSet("10", texture, new Point(GridSize, GridSize), Point.Zero, new Point(GridSize * 2, GridSize * 2), 0, false));
 			AnimationSets.Add(new Sprite.AnimationSet("11", texture, new Point(GridSize, GridSize), Point.Zero, new Point(GridSize * 3, GridSize * 2), 0, false));
-			AnimationSets.Add(new Sprite.AnimationSet("12", texture, new Point(GridSize, GridSize), Point.Zero, new Point(0,            GridSize * 3), 0, false));
-			AnimationSets.Add(new Sprite.AnimationSet("13", texture, new Point(GridSize, GridSize), Point.Zero, new Point(GridSize,     GridSize * 3), 0, false));
+			AnimationSets.Add(new Sprite.AnimationSet("12", texture, new Point(GridSize, GridSize), Point.Zero, new Point(0, GridSize * 3), 0, false));
+			AnimationSets.Add(new Sprite.AnimationSet("13", texture, new Point(GridSize, GridSize), Point.Zero, new Point(GridSize, GridSize * 3), 0, false));
 			AnimationSets.Add(new Sprite.AnimationSet("14", texture, new Point(GridSize, GridSize), Point.Zero, new Point(GridSize * 2, GridSize * 3), 0, false));
 			AnimationSets.Add(new Sprite.AnimationSet("15", texture, new Point(GridSize, GridSize), Point.Zero, new Point(GridSize * 3, GridSize * 3), 0, false));
 			SetAnimation("0");

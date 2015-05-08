@@ -11,6 +11,10 @@ using Microsoft.Xna.Framework.Media;
 using Predator.Managers;
 using VoidEngine.VGUI;
 
+// ====================================== //
+// Possible Title: "The Curse of Chimera" //
+// ====================================== //
+
 namespace Predator
 {
 	/// <summary>
@@ -98,7 +102,7 @@ namespace Predator
 		/// <summary>
 		/// The MainMenuManager for the game.
 		/// </summary>
-        public MainMenuManager mainMenuManager;
+		public MainMenuManager mainMenuManager;
 		/// <summary>
 		/// The OptionsManager for the game.
 		/// </summary>
@@ -212,7 +216,7 @@ namespace Predator
 			statManager.Enabled = false;
 			statManager.Visible = false;
 
-			SetCurrentLevel(GameLevels.SPLASH);
+			SetCurrentLevel(GameLevels.MENU);
 
 			debugLabel = new Label(new Vector2(0, 60), segoeUIMonoDebug, 1f, Color.Black, "");
 		}

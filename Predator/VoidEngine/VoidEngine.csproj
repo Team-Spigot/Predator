@@ -105,6 +105,7 @@
     <Compile Include="VGame\Tile.cs" />
     <Compile Include="VGenerator\DoubleArrayExtensionMethods.cs" />
     <Compile Include="VGenerator\MapGenerator.cs" />
+    <Compile Include="VGUI\Checkbox.cs" />
     <Compile Include="VGUI\GUI.cs" />
     <Compile Include="Pathing\GridPathing.cs" />
     <Compile Include="Helpers\RectangleHelper.cs" />

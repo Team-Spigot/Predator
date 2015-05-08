@@ -51,6 +51,9 @@ namespace Predator.Managers
 		/// </summary>
 		Button quitButton;
 
+		Checkbox checkBoxTest;
+		Texture2D checkBoxTexture;
+
 		/// <summary>
 		/// Creates the game manager.
 		/// </summary>
@@ -83,6 +86,7 @@ namespace Predator.Managers
 
 			startButton = new Button(startButtonTexture, new Vector2((myGame.WindowSize.X - 100) / 2, 300), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
 			quitButton = new Button(quitButtonTexture, new Vector2((myGame.WindowSize.X - 100) / 2, 550), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
+			checkBoxTest = new Checkbox(checkBoxTexture, new Vector2(50, 50), Checkbox.ButtonTypes.Left, new Checkbox.SetButtonPositions(0, 1, 2, 3), Color.White);
 
 			base.LoadContent();
 		}
@@ -92,6 +96,7 @@ namespace Predator.Managers
 			menuBackground = Game.Content.Load<Texture2D>(@"images\gui\mainMenu\mainMenu");
 			startButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\mainMenu\startButton");
 			quitButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\mainMenu\quitButton");
+			checkBoxTexture = Game.Content.Load<Texture2D>(@"images\gui\global\checkBox");
 		}
 
 		/// <summary>
@@ -112,6 +117,8 @@ namespace Predator.Managers
 			{
 				Game.Exit();
 			}
+
+			checkBoxTest.Update(gameTime);
 		}
 
 		public override void Draw(GameTime gameTime)
@@ -121,6 +128,7 @@ namespace Predator.Managers
 				spriteBatch.Draw(menuBackground, Vector2.Zero, Color.White);
 				startButton.Draw(gameTime, spriteBatch);
 				quitButton.Draw(gameTime, spriteBatch);
+				checkBoxTest.Draw(gameTime, spriteBatch);
 			}
 			spriteBatch.End();
 

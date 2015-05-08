@@ -118,7 +118,7 @@ namespace VoidEngine.VGenerator
 					if (map[x, y] > oceanLevel - 1)
 					{
 						int LandLevelTemp = 0;
-						
+
 						if (map[x, y] < 15)
 						{
 							LandLevelTemp = 1;

@@ -144,9 +144,17 @@ namespace VoidEngine.VGame
 			}
 			set
 			{
-				Rectangle limits = new Rectangle((int)(viewportSize.X / 2), (int)(viewportSize.Y / 2), (int)(worldSize.X - viewportSize.X * 1.5f / zoom), (int)(worldSize.Y - viewportSize.Y * 1.5f / zoom));
+				Rectangle limits = new Rectangle((int)(viewportSize.X / 2 / zoom), (int)(viewportSize.Y / 2 / zoom), (int)(worldSize.X - (viewportSize.X / zoom)), (int)(worldSize.Y - (viewportSize.Y / zoom)));
 				position = value;
 				position = new Vector2(MathHelper.Clamp(position.X, limits.Left, limits.Right), MathHelper.Clamp(position.Y, limits.Top, limits.Bottom));
+			}
+		}
+
+		public Rectangle Bounds
+		{
+			get
+			{
+				return new Rectangle((int)(viewportSize.X / 2 / zoom), (int)(viewportSize.Y / 2 / zoom), (int)(worldSize.X - (viewportSize.X / 0.5f / zoom)), (int)(worldSize.Y - (viewportSize.Y / 0.5f / zoom)));
 			}
 		}
 
