@@ -341,6 +341,61 @@ namespace Predator.Characters
 		}
 
 		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="texture"></param>
+		/// <param name="position"></param>
+		/// <param name="movementKeys"></param>
+		/// <param name="HP"></param>
+		/// <param name="color"></param>
+		/// <param name="myGame"></param>
+		public Player(List<AnimationSet> animationSetList, Vector2 position, Keys[,] movementKeys, float HP, Color color, Game1 myGame)
+			: base(position, color, animationSetList)
+		{
+			this.myGame = myGame;
+
+			AnimationSets = animationSetList;
+			SetAnimation("IDLE" + Level);
+
+			Level = 1;
+
+			MainHP = HP;
+			MaxHP = HP;
+
+			attackDelay = 750;
+
+			JumpbackTimer = 1;
+
+			PStrength = 2;
+			MainHP = MaxHP *= PStrength;
+			PAgility = 2;
+			PDefense = 2;
+			PExp = 0;
+			statPoints = 0;
+
+			Mana = MaxMana = 0;
+			ManaRechargeTime = DefaultManaRechargeTime = 0.09f;
+			ManaRechargeInterval = DefaultManaRechargeInterval = 0.1f;
+			ManaDecreaseAmount = 0f;
+
+			#region Set Projectile Factors
+			ProjectileList = new List<Projectile>();
+			CanShoot = true;
+			CreateNewProjectile = true;
+			#endregion
+
+			#region Set Movement and Collision Factors
+			MovementKeys = movementKeys;
+
+			int width = (int)(CurrentAnimation.frameSize.X);
+			int left = (CurrentAnimation.frameSize.X - width);
+			int height = (int)(CurrentAnimation.frameSize.Y);
+			int top = CurrentAnimation.frameSize.Y - height;
+			inbounds = new Rectangle(left, top, width, height);
+			#endregion
+		}
+
+		/// <summary>
 		/// Creates the player class with the bare minimum.
 		/// Used for making child class for the player.
 		/// Projectile lists created already.
@@ -350,6 +405,18 @@ namespace Predator.Characters
 		/// <param name="animationSetList">The animation set list for the player.</param>
 		public Player(Texture2D texture, Vector2 position, Color color)
 			: base(position, color, texture)
+		{
+			ProjectileList = new List<Projectile>();
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="animationSetList"></param>
+		/// <param name="position"></param>
+		/// <param name="color"></param>
+		public Player(List<AnimationSet> animationSetList, Vector2 position, Color color)
+			: base(position, color, animationSetList)
 		{
 			ProjectileList = new List<Projectile>();
 		}
@@ -737,28 +804,31 @@ namespace Predator.Characters
 
 			foreach (Tile t in myGame.gameManager.TilesList)
 			{
-				if (BoundingCollisions.TouchTopOf(t.BoundingCollisions) && t.TileType != Tile.TileCollisions.Passable)
+				if (CheckInRadius(t.Position, new Vector2(t.BoundingCollisions.Width, t.BoundingCollisions.Height), 1500))
 				{
-					IsGrounded = true;
-					position.Y = t.Position.Y - BoundingCollisions.Height;
-					test = t.BoundingCollisions;
-				}
-				if (BoundingCollisions.TouchLeftOf(t.BoundingCollisions) && t.TileType == Tile.TileCollisions.Impassable)
-				{
-					position.X = t.Position.X - BoundingCollisions.Width;
-					test = t.BoundingCollisions;
-				}
-				if (BoundingCollisions.TouchRightOf(t.BoundingCollisions) && t.TileType == Tile.TileCollisions.Impassable)
-				{
-					position.X = t.BoundingCollisions.Right;
-					test = t.BoundingCollisions;
-				}
-				if (BoundingCollisions.TouchBottomOf(t.BoundingCollisions) && t.TileType == Tile.TileCollisions.Impassable)
-				{
-					IsJumping = false;
-					JumpTime = 0;
-					position.Y = t.BoundingCollisions.Bottom + 2;
-					test = t.BoundingCollisions;
+					if (BoundingCollisions.TouchTopOf(t.BoundingCollisions) && t.TileType != Tile.TileCollisions.Passable)
+					{
+						IsGrounded = true;
+						position.Y = t.Position.Y - BoundingCollisions.Height;
+						test = t.BoundingCollisions;
+					}
+					if (BoundingCollisions.TouchLeftOf(t.BoundingCollisions) && t.TileType == Tile.TileCollisions.Impassable)
+					{
+						position.X = t.Position.X - BoundingCollisions.Width;
+						test = t.BoundingCollisions;
+					}
+					if (BoundingCollisions.TouchRightOf(t.BoundingCollisions) && t.TileType == Tile.TileCollisions.Impassable)
+					{
+						position.X = t.BoundingCollisions.Right;
+						test = t.BoundingCollisions;
+					}
+					if (BoundingCollisions.TouchBottomOf(t.BoundingCollisions) && t.TileType == Tile.TileCollisions.Impassable)
+					{
+						IsJumping = false;
+						JumpTime = 0;
+						position.Y = t.BoundingCollisions.Bottom + 2;
+						test = t.BoundingCollisions;
+					}
 				}
 			}
 
@@ -810,6 +880,21 @@ namespace Predator.Characters
 			SetAnimation("IDLE1");
 
 			base.AddAnimations(texture);
+		}
+
+		public bool CheckInRadius(Vector2 position, Vector2 area, float raidus)
+		{
+			if (position.X + area.X < this.Position.X + raidus && position.X > this.Position.X + raidus)
+			{
+				return true;
+			}
+
+			if (position.Y + area.Y < this.Position.Y + raidus && position.Y > this.Position.Y + raidus)
+			{
+				return true;
+			}
+
+			return false;
 		}
 	}
 }

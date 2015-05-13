@@ -254,8 +254,8 @@ namespace Predator.Managers
 			MapBoundries.Add(new Rectangle(Camera.Size.X, -5, 5, Camera.Size.Y + 10));
 			MapBoundries.Add(new Rectangle(-5, Camera.Size.Y, Camera.Size.X + 10, 5));
 
-			sewerBackgroundParallax = new Parallax(sewerBackgroundTexture, new Vector2(Camera.Position.X, Camera.Position.Y), Color.White, new Vector2(0.50f, 0.01f), Camera);
-			sewerBackgroundSprayParallax = new Parallax(sewerBackgroundSprayTexture, new Vector2(Camera.Position.X, Camera.Position.Y), Color.White, new Vector2(0.50f, 0.01f), Camera);
+			sewerBackgroundParallax = new Parallax(sewerBackgroundTexture, new Vector2(Camera.Position.X, Camera.Position.Y), Color.White, new Vector2(0.50f, 0.00f), Camera);
+			sewerBackgroundSprayParallax = new Parallax(sewerBackgroundSprayTexture, new Vector2(Camera.Position.X, Camera.Position.Y), Color.White, new Vector2(0.50f, 0.00f), Camera);
 			#endregion
 
 			base.LoadContent();
@@ -343,6 +343,23 @@ namespace Predator.Managers
 				Camera.Position = Player.Position;
 			}
 			#endregion
+
+			if (myGame.KeyboardState.IsKeyDown(Keys.Up))
+			{
+				Player.Position -= new Vector2(0, 15);
+			}
+			if (myGame.KeyboardState.IsKeyDown(Keys.Down))
+			{
+				Player.Position += new Vector2(0, 15);
+			}
+			if (myGame.KeyboardState.IsKeyDown(Keys.Left))
+			{
+				Player.Position -= new Vector2(15, 0);
+			}
+			if (myGame.KeyboardState.IsKeyDown(Keys.Right))
+			{
+				Player.Position += new Vector2(15, 0);
+			}
 
 			#region Menu Controls
 			// Open the map.
@@ -440,11 +457,6 @@ namespace Predator.Managers
 						dropList[i].Update(gameTime);
 					}
 				}
-				#endregion
-
-				#region UpdateBackground
-				sewerBackgroundParallax.Update(gameTime);
-				sewerBackgroundSprayParallax.Update(gameTime);
 				#endregion
 			}
 			#endregion
@@ -556,6 +568,11 @@ namespace Predator.Managers
 			spriteBatch.End();
 			#endregion
 
+			if (myGame.OptionsChanged > myGame.OldOptionsChanged)
+			{
+				Camera.viewportSize = new Vector2(myGame.WindowSize.X, myGame.WindowSize.Y);
+			}
+
 			base.Draw(gameTime);
 		}
 
@@ -585,7 +602,7 @@ namespace Predator.Managers
 		/// <param name="level">The level to spawn.</param>
 		public void SpawnTiles(int level)
 		{
-			Point Size = new Point(0, 0);
+			Point Size = new Point();
 			int[,] tiles = new int[0, 0];
 
 			switch (level)

@@ -46,30 +46,16 @@ namespace VoidEngine.VGUI
 			Middle
 		}
 
-		public struct SetButtonPositions
-		{
-			public int CheckedPosition;
-			public int HoverCheckedPosition;
-			public int UncheckedPosition;
-			public int HoverUncheckedPosition;
-
-			public SetButtonPositions(int checkedPosition, int hoverCheckedPosition, int uncheckedPosition, int hoverUncheckedPosition)
-			{
-				CheckedPosition = checkedPosition;
-				HoverCheckedPosition = hoverCheckedPosition;
-				UncheckedPosition = uncheckedPosition;
-				HoverUncheckedPosition = hoverUncheckedPosition;
-			}
-		}
-
 		protected ButtonStates CheckButtonState = new ButtonStates(); // This is the button state variable
 		protected CheckboxStates CheckboxState = new CheckboxStates();
 		protected ButtonTypes PrimaryButton = new ButtonTypes();
-		protected SetButtonPositions DefaultButtonPositions;
 
 		protected bool MousePressed, PreviousMousePressed;
 		protected Point MouseCords;
 		protected Rectangle CollisionBounds;
+
+		public string test = "Hi";
+		public Color test2;
 
 		/// <summary>
 		/// Creates the Checkbox class.
@@ -79,24 +65,27 @@ namespace VoidEngine.VGUI
 		/// <param name="primaryButton"></param>
 		/// <param name="defaultButtonPositions"></param>
 		/// <param name="animationSetList"></param>
-		public Checkbox(Vector2 position, Color color, ButtonTypes primaryButton, SetButtonPositions defaultButtonPositions, List<Sprite.AnimationSet> animationSetList)
+		public Checkbox(Vector2 position, Color color, ButtonTypes primaryButton, List<Sprite.AnimationSet> animationSetList)
 			: base(position, color, animationSetList)
 		{
 			AnimationSets = animationSetList;
 
 			Color = color;
 			PrimaryButton = primaryButton;
-			DefaultButtonPositions = defaultButtonPositions;
+
+			CheckboxState = CheckboxStates.Unchecked;
 		}
 
-		public Checkbox(Texture2D texture, Vector2 position, ButtonTypes primaryButton, SetButtonPositions defaultButtonPositions, Color color)
+		public Checkbox(Texture2D texture, Vector2 position, ButtonTypes primaryButton, Color color)
 			: base(position, color, texture)
 		{
 			AddAnimations(texture);
 
 			Color = color;
 			PrimaryButton = primaryButton;
-			DefaultButtonPositions = defaultButtonPositions;
+
+			CheckboxState = CheckboxStates.Unchecked;
+			CheckButtonState = ButtonStates.Up;
 		}
 
 		/// <summary>
@@ -130,44 +119,67 @@ namespace VoidEngine.VGUI
 
 			MouseCords = new Point(MouseState.X, MouseState.Y);
 			PreviousMousePressed = MousePressed;
-			MousePressed = (PrimaryButton == ButtonTypes.Left && MouseState.LeftButton == ButtonState.Pressed) || (PrimaryButton == ButtonTypes.Right && MouseState.RightButton == ButtonState.Pressed) || (PrimaryButton == ButtonTypes.Middle && MouseState.MiddleButton == ButtonState.Pressed);
+			//MousePressed = (PrimaryButton == ButtonTypes.Left && MouseState.LeftButton == ButtonState.Pressed) || (PrimaryButton == ButtonTypes.Right && MouseState.RightButton == ButtonState.Pressed) || (PrimaryButton == ButtonTypes.Middle && MouseState.MiddleButton == ButtonState.Pressed);
+			MousePressed = MouseState.LeftButton == ButtonState.Pressed;
+
+			inbounds = new Rectangle(0, 0, CurrentAnimation.frameSize.X, CurrentAnimation.frameSize.Y);
+
+			if (CheckboxState == CheckboxStates.Checked)
+			{
+				test = "Checked";
+
+				if (CheckButtonState == ButtonStates.Hover)
+				{
+					test = "Checked Hover";
+				}
+				else if (CheckButtonState == ButtonStates.Up)
+				{
+					test = "Checked UP";
+				}
+			}
+			else if (CheckboxState == CheckboxStates.Unchecked)
+			{
+				test = "Unchecked";
+
+				if (CheckButtonState == ButtonStates.Hover)
+				{
+					test = "Unchecked Hover";
+				}
+				else if (CheckButtonState == ButtonStates.Up)
+				{
+					test = "Unchecked UP";
+				}
+			}
 
 			if (hitButtonAlpha(position, CurrentAnimation.frameSize, MouseCords))
 			{
-				if (MousePressed && CheckboxState == CheckboxStates.Checked)
+
+				if (CheckboxState == CheckboxStates.Unchecked && (!MousePressed && PreviousMousePressed))
 				{
-					CheckButtonState = ButtonStates.Down;
-					CheckboxState = CheckboxStates.Unchecked;
-					SetAnimation("UNCHECKED");
-				}
-				else if (MousePressed && CheckboxState == CheckboxStates.Unchecked)
-				{
-					CheckButtonState = ButtonStates.Down;
+					test2 = Color.Aqua;
+					//CheckButtonState = ButtonStates.Down;
 					CheckboxState = CheckboxStates.Checked;
 					SetAnimation("CHECKED");
 				}
-				else if (!MousePressed && PreviousMousePressed)
+				else if (CheckboxState == CheckboxStates.Checked && (!MousePressed && PreviousMousePressed))
 				{
-					if (CheckButtonState == ButtonStates.Down && CheckboxState == CheckboxStates.Checked)
-					{
-						CheckButtonState = ButtonStates.Released;
-						SetAnimation("CHECKED");
-					}
-					if (CheckButtonState == ButtonStates.Down && CheckboxState == CheckboxStates.Unchecked)
-					{
-						CheckButtonState = ButtonStates.Released;
-						SetAnimation("UNCHECKED");
-					}
+					test2 = Color.Red;
+					//CheckButtonState = ButtonStates.Down;
+					CheckboxState = CheckboxStates.Unchecked;
+					SetAnimation("UNCHECKED");
 				}
-				else
+
+				if (CheckButtonState == ButtonStates.Up)
 				{
 					if (CheckboxState == CheckboxStates.Unchecked)
 					{
+						test2 = Color.Blue;
 						CheckButtonState = ButtonStates.Hover;
 						SetAnimation("HOVERUNCHECKED");
 					}
 					else if (CheckboxState == CheckboxStates.Checked)
 					{
+						test2 = Color.Blue;
 						CheckButtonState = ButtonStates.Hover;
 						SetAnimation("HOVERCHECKED");
 					}
@@ -175,15 +187,20 @@ namespace VoidEngine.VGUI
 			}
 			else
 			{
-				if (CheckboxState == CheckboxStates.Unchecked)
+				if (CheckButtonState == ButtonStates.Hover)
 				{
-					CheckButtonState = ButtonStates.Up;
-					SetAnimation("UNCHECKED");
-				}
-				else if (CheckboxState == CheckboxStates.Checked)
-				{
-					CheckButtonState = ButtonStates.Up;
-					SetAnimation("CHECKED");
+					if (CheckboxState == CheckboxStates.Unchecked)
+					{
+						test2 = Color.Lime;
+						CheckButtonState = ButtonStates.Up;
+						SetAnimation("UNCHECKED");
+					}
+					else if (CheckboxState == CheckboxStates.Checked)
+					{
+						test2 = Color.Lime;
+						CheckButtonState = ButtonStates.Up;
+						SetAnimation("CHECKED");
+					}
 				}
 			}
 		}
@@ -217,10 +234,10 @@ namespace VoidEngine.VGUI
 
 		protected override void AddAnimations(Texture2D texture)
 		{
-			AddAnimation("UNCHECKED", texture, new Point(texture.Width / 4, texture.Height), new Point(1, 1), new Point((texture.Width / 4) * DefaultButtonPositions.UncheckedPosition, 0), 1600, true);
-			AddAnimation("HOVERUNCHECKED", texture, new Point(texture.Width / 4, texture.Height), new Point(1, 1), new Point((texture.Width / 4) * DefaultButtonPositions.HoverUncheckedPosition, 0), 1600, true);
-			AddAnimation("CHECKED", texture, new Point(texture.Width / 4, texture.Height), new Point(1, 1), new Point((texture.Width / 4) * DefaultButtonPositions.CheckedPosition, 0), 1600, true);
-			AddAnimation("HOVERCHECKED", texture, new Point(texture.Width / 4, texture.Height), new Point(1, 1), new Point((texture.Width / 4) * DefaultButtonPositions.HoverCheckedPosition, 0), 1600, true);
+			AddAnimation("UNCHECKED",      texture, new Point(texture.Width / 4, texture.Height), new Point(1, 1), new Point((texture.Width / 4) * 1, 0), 1600, true);
+			AddAnimation("HOVERUNCHECKED", texture, new Point(texture.Width / 4, texture.Height), new Point(1, 1), new Point((texture.Width / 4) * 0, 0), 1600, true);
+			AddAnimation("CHECKED",        texture, new Point(texture.Width / 4, texture.Height), new Point(1, 1), new Point((texture.Width / 4) * 2, 0), 1600, true);
+			AddAnimation("HOVERCHECKED",   texture, new Point(texture.Width / 4, texture.Height), new Point(1, 1), new Point((texture.Width / 4) * 3, 0), 1600, true);
 			SetAnimation("UNCHECKED");
 
 			base.AddAnimations(texture);

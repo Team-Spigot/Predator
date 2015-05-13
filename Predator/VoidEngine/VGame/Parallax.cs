@@ -58,14 +58,6 @@ namespace VoidEngine.VGame
 		/// <summary>
 		///
 		/// </summary>
-		public Vector2 parallax
-		{
-			get;
-			set;
-		}
-		/// <summary>
-		///
-		/// </summary>
 		private Vector2 defaultPosition
 		{
 			get;
@@ -99,12 +91,14 @@ namespace VoidEngine.VGame
 		}
 
 		/// <summary>
-		///
+		/// 
 		/// </summary>
-		/// <param name="gameTime"></param>
-		public void Update(GameTime gameTime)
+		public Vector2 ParallaxPosition
 		{
-			parallax = new Vector2((camera.Position.X) * multiplier.X, (camera.Position.Y) * multiplier.Y);
+			get
+			{
+				return new Vector2(MathHelper.Clamp((float)(camera.Position.X), (float)camera.Bounds.Left, (float)camera.Bounds.Right), MathHelper.Clamp((float)(camera.Position.Y), (float)camera.Bounds.Top, (float)camera.Bounds.Bottom));
+			}
 		}
 
 		/// <summary>
@@ -114,7 +108,7 @@ namespace VoidEngine.VGame
 		/// <param name="spriteBatch"></param>
 		public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
 		{
-			spriteBatch.Draw(texture, new Rectangle((int)position.X, (int)position.Y, (int)camera.viewportSize.X, (int)camera.viewportSize.Y), new Rectangle((int)parallax.X, (int)parallax.Y, (int)texture.Width, (int)texture.Height), color);
+			spriteBatch.Draw(texture, new Rectangle((int)(position.X), (int)(position.Y), (int)camera.viewportSize.X, (int)camera.viewportSize.Y), new Rectangle((int)((camera.Position.X * multiplier.X)), (int)((camera.Position.Y * multiplier.Y)), (int)texture.Width, (int)texture.Height), color);
 		}
 	}
 }

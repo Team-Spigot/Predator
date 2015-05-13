@@ -120,6 +120,10 @@ namespace Predator
 		/// </summary>
 		public LoseManager loseManager;
 		/// <summary>
+		/// 
+		/// </summary>
+		public OptionsManager optionsManager;
+		/// <summary>
 		/// The GameLevels for the game.
 		/// </summary>
 		public GameLevels currentGameLevel;
@@ -151,6 +155,44 @@ namespace Predator
 		/// The list of strings that are used for debuging.
 		/// </summary>
 		public string[] debugStrings = new string[25];
+		#endregion
+
+		#region Options Stuff
+		public bool VSync
+		{
+			get;
+			set;
+		}
+		public bool ApplySettings
+		{
+			get;
+			set;
+		}
+		public bool CancelSettings
+		{
+			get;
+			set;
+		}
+		public bool FinishedSettings
+		{
+			get;
+			set;
+		}
+		public int OptionsChanged
+		{
+			get;
+			set;
+		}
+		public int OldOptionsChanged
+		{
+			get;
+			set;
+		}
+		public Point TempWindowSize
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		/// <summary>
@@ -196,6 +238,7 @@ namespace Predator
 			mapScreenManager = new MapScreenManager(this);
 			statManager = new StatManager(this);
 			loseManager = new LoseManager(this);
+			optionsManager = new OptionsManager(this);
 
 			Components.Add(splashScreenManager);
 			Components.Add(mainMenuManager);
@@ -203,6 +246,7 @@ namespace Predator
 			Components.Add(mapScreenManager);
 			Components.Add(statManager);
 			Components.Add(loseManager);
+			Components.Add(optionsManager);
 
 			mapScreenManager.Enabled = false;
 			mapScreenManager.Visible = false;
@@ -216,9 +260,15 @@ namespace Predator
 			statManager.Enabled = false;
 			statManager.Visible = false;
 
-			SetCurrentLevel(GameLevels.MENU);
+			optionsManager.Enabled = false;
+			optionsManager.Visible = false;
 
 			debugLabel = new Label(new Vector2(0, 60), segoeUIMonoDebug, 1f, Color.Black, "");
+
+			TempWindowSize = WindowSize;
+			ApplySettings = true;
+
+			SetCurrentLevel(GameLevels.MENU);
 		}
 
 		/// <summary>
@@ -257,6 +307,41 @@ namespace Predator
 			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || (KeyboardState.IsKeyDown(Keys.Escape) && KeyboardState.IsKeyDown(Keys.LeftShift)))
 			{
 				this.Exit();
+			}
+
+			if (CheckKey(Keys.OemPlus) && currentGameLevel != GameLevels.MENU)
+			{
+				SetCurrentLevel(GameLevels.MENU);
+			}
+
+			if (ApplySettings)
+			{
+				graphics.SynchronizeWithVerticalRetrace = VSync;
+
+				if (new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight) != TempWindowSize)
+				{
+					graphics.PreferredBackBufferWidth = TempWindowSize.X;
+					graphics.PreferredBackBufferHeight = TempWindowSize.Y;
+
+					WindowSize = new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
+				}
+
+				graphics.ApplyChanges();
+				ApplySettings = false;
+				FinishedSettings = true;
+
+				OldOptionsChanged = OptionsChanged;
+				OptionsChanged += 1;
+			}
+
+			if (CancelSettings)
+			{
+				VSync = graphics.SynchronizeWithVerticalRetrace;
+
+				WindowSize = new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
+
+				CancelSettings = false;
+				FinishedSettings = true;
 			}
 
 			base.Update(gameTime);
@@ -339,8 +424,8 @@ namespace Predator
 				mainMenuManager.Visible = false;
 				gameManager.Enabled = false;
 				gameManager.Visible = false;
-				//optionsManager.Enabled = false;
-				//optionsManager.Visible = false;
+				optionsManager.Enabled = false;
+				optionsManager.Visible = false;
 				mapScreenManager.Enabled = false;
 				mapScreenManager.Visible = false;
 				statManager.Enabled = false;
@@ -360,8 +445,8 @@ namespace Predator
 					mainMenuManager.Visible = true;
 					break;
 				case GameLevels.OPTIONS:
-					//optionsManager.Enabled = true;
-					//optionsManager.Visible = true;
+					optionsManager.Enabled = true;
+					optionsManager.Visible = true;
 					break;
 				case GameLevels.GAME:
 					gameManager.Enabled = true;

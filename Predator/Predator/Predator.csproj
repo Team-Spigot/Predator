@@ -116,6 +116,7 @@
     <Compile Include="Managers\MapScreenManager.cs" />
     <Compile Include="Characters\Player.cs" />
     <Compile Include="Characters\Projectile.cs" />
+    <Compile Include="Managers\OptionsManager.cs" />
     <Compile Include="Other\HealthPickUp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />

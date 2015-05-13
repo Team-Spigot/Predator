@@ -88,6 +88,43 @@ namespace Predator.Characters
 			inbounds = new Rectangle(left, top, width, height);
 		}
 
+		public Enemy(List<AnimationSet> animationSetList, Vector2 position, EnemyType movementType, Color color, Game1 myGame)
+			: base(animationSetList, position, color)
+		{
+			this.myGame = myGame;
+			AnimationSets = animationSetList;
+
+			Level = 1;
+			MainHP = 100;
+			MaxHP = 100;
+			JumpbackTimer = 0;
+			MaxMoveSpeed = 175;
+			GroundDragFactor = 0.46f;
+			AirDragFactor = 0.50f;
+
+			Scale = .7f;
+
+			SetAnimation("IDLE");
+
+			#region Set default variables
+			this.myGame = myGame;
+			this.movementType = movementType;
+			this.CanShoot = true;
+			#endregion
+
+			if (movementType == EnemyType.BIRD)
+			{
+				RotationCenter = new Vector2(CurrentAnimation.frameSize.X / 2, CurrentAnimation.frameSize.Y / 2);
+				Offset = new Vector2(-(CurrentAnimation.frameSize.X / 2), -(CurrentAnimation.frameSize.Y / 2));
+			}
+
+			int width = (int)(CurrentAnimation.frameSize.X * Scale);
+			int left = (int)(CurrentAnimation.frameSize.X * Scale - width);
+			int height = (int)(CurrentAnimation.frameSize.Y * Scale);
+			int top = (int)(CurrentAnimation.frameSize.Y * Scale - height);
+			inbounds = new Rectangle(left, top, width, height);
+		}
+
 		public override void Update(GameTime gameTime)
 		{
 			if (Math.Abs(Movement) < 0.5f)

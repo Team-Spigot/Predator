@@ -31,16 +31,15 @@ namespace Predator.Managers
 		/// <summary>
 		/// The main menu Background.
 		/// </summary>
-		Texture2D menuBackground;
-
+		Texture2D menuBackgroundTexture;
 		/// <summary>
-		/// The start button texture.
-		/// <summary>
-		Texture2D startButtonTexture;
-		/// <summary>
-		/// The quit button texture.
+		/// 
 		/// </summary>
-		Texture2D quitButtonTexture;
+		Texture2D titleTexture;
+		/// <summary>
+		/// 
+		/// </summary>
+		Texture2D buttonTexture;
 
 		/// <summary>
 		/// The start button.
@@ -50,9 +49,20 @@ namespace Predator.Managers
 		/// The quit button.
 		/// </summary>
 		Button quitButton;
+		/// <summary>
+		/// 
+		/// </summary>
+		Button optionsButton;
 
-		Checkbox checkBoxTest;
-		Texture2D checkBoxTexture;
+		float TitleScale = 1.5f;
+		float TitleMaxSca = 1.7f;
+		float TitleMinSca = 1.3f;
+		float TitleScaMov = -1;
+
+		float TitleRot = 0;
+		float TitleMaxRot = -10 * (float)Math.PI / 180;
+		float TitleMinRot = 10 * (float)Math.PI / 180;
+		float TitleMovement = -1;
 
 		/// <summary>
 		/// Creates the game manager.
@@ -84,19 +94,18 @@ namespace Predator.Managers
 
 			LoadTextures();
 
-			startButton = new Button(startButtonTexture, new Vector2((myGame.WindowSize.X - 100) / 2, 300), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
-			quitButton = new Button(quitButtonTexture, new Vector2((myGame.WindowSize.X - 100) / 2, 550), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
-			checkBoxTest = new Checkbox(checkBoxTexture, new Vector2(50, 50), Checkbox.ButtonTypes.Left, new Checkbox.SetButtonPositions(0, 1, 2, 3), Color.White);
+			startButton   = new Button(buttonTexture, new Vector2((myGame.WindowSize.X - 121) / 2, 300), myGame.segoeUIRegular, 1.0f, new Color(155, 155, 155), "PLAY",    Color.White);
+			optionsButton = new Button(buttonTexture, new Vector2((myGame.WindowSize.X - 121) / 2, 420), myGame.segoeUIRegular, 1.0f, new Color(155, 155, 155), "OPTIONS", Color.White);
+			quitButton    = new Button(buttonTexture, new Vector2((myGame.WindowSize.X - 121) / 2, 550), myGame.segoeUIRegular, 1.0f, new Color(155, 155, 155), "QUIT",    Color.White);
 
 			base.LoadContent();
 		}
 
 		public void LoadTextures()
 		{
-			menuBackground = Game.Content.Load<Texture2D>(@"images\gui\mainMenu\mainMenu");
-			startButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\mainMenu\startButton");
-			quitButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\mainMenu\quitButton");
-			checkBoxTexture = Game.Content.Load<Texture2D>(@"images\gui\global\checkBox");
+			menuBackgroundTexture = Game.Content.Load<Texture2D>(@"images\game\backgrounds\sewerBackgroundG");
+			buttonTexture = Game.Content.Load<Texture2D>(@"images\gui\global\button1");
+			titleTexture = Game.Content.Load<Texture2D>(@"images\gui\mainMenu\title");
 		}
 
 		/// <summary>
@@ -107,6 +116,7 @@ namespace Predator.Managers
 		{
 			startButton.Update(gameTime);
 			quitButton.Update(gameTime);
+			optionsButton.Update(gameTime);
 
 			if (startButton.Clicked())
 			{
@@ -118,17 +128,64 @@ namespace Predator.Managers
 				Game.Exit();
 			}
 
-			checkBoxTest.Update(gameTime);
+			if (optionsButton.Clicked())
+			{
+				myGame.SetCurrentLevel(Game1.GameLevels.OPTIONS);
+			}
+
+			if (TitleScaMov == -1)
+			{
+				TitleScale -= 0.005f;
+			}
+			if (TitleScaMov == 1)
+			{
+				TitleScale += 0.005f;
+			}
+			if (TitleScale <= TitleMinSca)
+			{
+				TitleScaMov = 1;
+			}
+			if (TitleScale >= TitleMaxSca)
+			{
+				TitleScaMov = -1;
+			}
+
+			if (TitleMovement == -1)
+			{
+				TitleRot += 0.2f * (float)Math.PI / 180;
+			}
+			if (TitleMovement == 1)
+			{
+				TitleRot -= 0.2f * (float)Math.PI / 180;
+			}
+			if (TitleRot >= TitleMinRot)
+			{
+				TitleMovement = 1;
+			}
+			if (TitleRot <= TitleMaxRot)
+			{
+				TitleMovement = -1;
+			}
+
+			if (myGame.OptionsChanged > myGame.OldOptionsChanged)
+			{
+				startButton.Position = new Vector2((myGame.WindowSize.X - 121) / 2, 300);
+				quitButton.Position = new Vector2((myGame.WindowSize.X - 121) / 2, 550);
+				optionsButton.Position = new Vector2((myGame.WindowSize.X - 121) / 2, 420);
+			}
 		}
 
 		public override void Draw(GameTime gameTime)
 		{
+
 			spriteBatch.Begin();
 			{
-				spriteBatch.Draw(menuBackground, Vector2.Zero, Color.White);
+				spriteBatch.Draw(menuBackgroundTexture, new Rectangle(0, 0, myGame.WindowSize.X, myGame.WindowSize.Y), Color.White);
+				spriteBatch.Draw(titleTexture, new Vector2(myGame.WindowSize.X / 2, 100), new Rectangle(0, 0, titleTexture.Width, titleTexture.Height), Color.White, TitleRot, new Vector2(titleTexture.Width / 2, titleTexture.Height / 2), TitleScale, SpriteEffects.None, 0f);
 				startButton.Draw(gameTime, spriteBatch);
 				quitButton.Draw(gameTime, spriteBatch);
-				checkBoxTest.Draw(gameTime, spriteBatch);
+				optionsButton.Draw(gameTime, spriteBatch);
+				spriteBatch.DrawString(myGame.segoeUIMonoDebug, TitleRot.ToString() + " Max=" + TitleMaxRot + " Min=" + TitleMinRot + " dir=" + TitleMovement, Vector2.Zero, Color.Lime);
 			}
 			spriteBatch.End();
 
