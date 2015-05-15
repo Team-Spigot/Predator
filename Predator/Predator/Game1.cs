@@ -202,7 +202,7 @@ namespace Predator
 		{
 			graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "Content";
-			Window.Title = "Preditor";
+			Window.Title = "Predator";
 			WindowSize = new Point(1024, 768);
 			Fullscreen = false;
 			IsMouseVisible = true;
@@ -263,12 +263,12 @@ namespace Predator
 			optionsManager.Enabled = false;
 			optionsManager.Visible = false;
 
-			debugLabel = new Label(new Vector2(0, 60), segoeUIMonoDebug, 1f, Color.Black, "");
+			debugLabel = new Label(new Vector2(0, 60), segoeUIMonoDebug, 1f, Color.White, "");
 
 			TempWindowSize = WindowSize;
 			ApplySettings = true;
 
-			SetCurrentLevel(GameLevels.MAP);
+			SetCurrentLevel(GameLevels.MENU);
 		}
 
 		/// <summary>

@@ -249,9 +249,9 @@ namespace Predator.Managers
 			#region Game Stuff
 			Camera = new Camera(myGame.GraphicsDevice.Viewport, new Point(1024, 768), 1.0f);
 
-			MapBoundries.Add(new Rectangle(-5, -5, 5, Camera.Size.Y + 10));
-			MapBoundries.Add(new Rectangle(-5, -5, Camera.Size.X + 10, 5));
-			MapBoundries.Add(new Rectangle(Camera.Size.X, -5, 5, Camera.Size.Y + 10));
+			MapBoundries.Add(new Rectangle(-5, -105, 5, Camera.Size.Y + 10));
+			MapBoundries.Add(new Rectangle(-5, -105, Camera.Size.X + 10, 5));
+			MapBoundries.Add(new Rectangle(Camera.Size.X, -105, 5, Camera.Size.Y + 10));
 			MapBoundries.Add(new Rectangle(-5, Camera.Size.Y, Camera.Size.X + 10, 5));
 
 			sewerBackgroundParallax = new Parallax(sewerBackgroundTexture, new Vector2(Camera.Position.X, Camera.Position.Y), Color.White, new Vector2(0.50f, 0.00f), Camera);
@@ -496,9 +496,9 @@ namespace Predator.Managers
 			if (myGame.IsGameDebug)
 			{
 
-				myGame.debugStrings[2] = "       || Agility=" + Player.PAgility;
-				myGame.debugStrings[3] = "       || Strength =" + Player.PStrength + "Defense =" + Player.PDefense + "StatPoints =" + Player.statPoints;
-				myGame.debugStrings[4] = "       || Level =" + Player.Lvl;
+				myGame.debugStrings[0] = "Player     || ";
+				myGame.debugStrings[1] = "- Tings    || Postition=(" + Player.Position.X + "," + Player.Position.Y + ") Velocity=(" + Player.Velocity.X + "," + Player.Velocity.Y + ")";
+				myGame.debugStrings[2] = "- Stats    || Agility=" + Player.PAgility + " Strength=" + Player.PStrength + " Defense=" + Player.PDefense + " StatPoints=" + Player.statPoints + "Stat Level=" + Player.Lvl;
 			}
 			#endregion
 
@@ -624,9 +624,9 @@ namespace Predator.Managers
 
 			SpawnTiles(CurrentLevel);
 
-			MapBoundries[0] = new Rectangle(-35, -35, 35, Camera.Size.Y + 70);
-			MapBoundries[1] = new Rectangle(Camera.Size.X, -35, 35, Camera.Size.Y + 70);
-			MapBoundries[2] = new Rectangle(-35, -35, Camera.Size.X + 70, 35);
+			MapBoundries[0] = new Rectangle(-35, -105, 35, Camera.Size.Y + 70);
+			MapBoundries[1] = new Rectangle(Camera.Size.X, -105, 35, Camera.Size.Y + 70);
+			MapBoundries[2] = new Rectangle(-35, -105, Camera.Size.X + 70, 35);
 			MapBoundries[3] = new Rectangle(-35, Camera.Size.Y, Camera.Size.X + 70, 35);
 
 			LevelLoaded = true;
