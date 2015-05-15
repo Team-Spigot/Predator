@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using VoidEngine.Helpers;
 using VoidEngine.VGame;
 using VoidEngine.VGUI;
 using Predator.Characters;
@@ -17,84 +18,90 @@ namespace Predator.Characters
 {
 	public class Projectile : Sprite
 	{
+		/// <summary>
+		/// The game that the projectile uses.
+		/// </summary>
 		Game1 myGame;
 
-		public Rectangle projectileRectangle;
+		/// <summary>
+		/// The starting position of the projectile.
+		/// </summary>
+		public Vector2 StartingPosition;
 
-		Vector2 startPosition;
-		public Vector2 GetStartPosition
-		{
-			get
-			{
-				return startPosition;
-			}
-		}
-
+		/// <summary>
+		/// Gets or sets the max distance the projectile can travel.
+		/// </summary>
 		public float maxDistance
 		{
 			get;
 			protected set;
 		}
 
-		public float DirectionX
-		{
-			get;
-			protected set;
-		}
-
-		public bool visible
+		/// <summary>
+		/// Gets or sets if the projectile should be deleted.
+		/// </summary>
+		public bool DeleteMe
 		{
 			get;
 			set;
 		}
+		public float MaxSpeed;
+		public Vector2 Velocity;
 
-		public Projectile(Texture2D texture, Vector2 startPosition, Color color, Game1 myGame)
-			: base(startPosition, color, texture)
+		/// <summary>
+		/// Creates the projectile class, with default animation set.
+		/// </summary>
+		/// <param name="texture">The texture to use with the projectile.</param>
+		/// <param name="position">The starting position of the projectile.</param>
+		/// <param name="color">The color to mask the projectile with.</param>
+		/// <param name="myGame">The game that the projectile runs on.</param>
+		public Projectile(Texture2D texture, Vector2 position, Vector2 currentVelocity, Color color, Game1 myGame)
+			: base(position, color, texture)
 		{
-			this.startPosition = startPosition;
-			Position = startPosition;
-			color = Color.White;
-			visible = true;
-
+			AddAnimations(texture);
+			SetAnimation("IDLE");
 			this.myGame = myGame;
 
-			AddAnimations(texture);
-
-			SetAnimation("IDLE");
+			StartingPosition = Position = position;
+			Velocity = currentVelocity;
+			Color = color;
+			DeleteMe = false;
 		}
 
+		/// <summary>
+		/// Updates the projectile class.
+		/// </summary>
+		/// <param name="gameTime">The game time that the game uses.</param>
 		public override void Update(GameTime gameTime)
 		{
 			HandleAnimations(gameTime);
 
-			if (Vector2.Distance(startPosition, Position) > maxDistance)
+			if (Vector2.Distance(StartingPosition, Position) > maxDistance)
 			{
-				//visible = false;
+				//DeleteMe = true;
 			}
-			if (visible)
+			if (!DeleteMe)
 			{
-				if (myGame.gameManager.Player.isFlipped)
+				if (Velocity.X < 0)
 				{
 					FlipSprite(Axis.Y);
-					Position = new Vector2(myGame.gameManager.Player.Position.X - CurrentAnimation.frameSize.X, Position.Y + 15);
 				}
-				else
+				else if (Velocity.X > 0)
 				{
 					FlipSprite(Axis.NONE);
-					Position = new Vector2(myGame.gameManager.Player.Position.X + myGame.gameManager.Player.BoundingCollisions.Width, Position.Y + 15);
 				}
 
-				Position = new Vector2(Position.X, myGame.gameManager.Player.Position.Y);
+				Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
 			}
 
-			projectileRectangle = new Rectangle((int)Position.X, (int)Position.Y, CurrentAnimation.frameSize.X, CurrentAnimation.frameSize.Y);
+			inbounds = new Rectangle(0, 0, CurrentAnimation.frameSize.X, CurrentAnimation.frameSize.Y);
 
 			base.Update(gameTime);
 		}
 
 		public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
 		{
-			if (visible)
+			if (!DeleteMe)
 			{
 				base.Draw(gameTime, spriteBatch);
 			}
@@ -102,12 +109,10 @@ namespace Predator.Characters
 
 		public void Fire()
 		{
-			//Speed = 3;
+			MaxSpeed = 5;
 			maxDistance = 125;
 
-			DirectionX = myGame.gameManager.Player.Velocity.X;
-
-			visible = true;
+			DeleteMe = false;
 		}
 
 		protected override void AddAnimations(Texture2D texture)

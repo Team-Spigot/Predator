@@ -20,18 +20,62 @@ namespace Predator
 	/// </summary>
 	public class StatManager : Microsoft.Xna.Framework.DrawableGameComponent
 	{
-		Game1 myGame;
-		SpriteBatch spriteBatch;
+		/// <summary>
+		/// The game that the stat manager runs off of.
+		/// </summary>
+		private Game1 myGame;
+		/// <summary>
+		/// The sprite batch that the manager uses.
+		/// </summary>
+		private SpriteBatch spriteBatch;
 
-		Texture2D menuBackground;
-		Texture2D plusButtonTexture;
-		Texture2D exitButtonTextxure;
+		#region Textures.
+		/// <summary>
+		/// Loads the texture for the menu background.
+		/// </summary>
+		public Texture2D MenuBackgroundTexture;
+		/// <summary>
+		/// Loads the texture for the plus button.
+		/// </summary>
+		public Texture2D PlusButtonTexture;
+		/// <summary>
+		/// Loads the texture for the exit button.
+		/// </summary>
+		public Texture2D ExitButtonTextxure;
+		#endregion
 
-		Button plusButtonAgi;
-		Button plusButtonStr;
-		Button plusButtonDef;
-		Button exitButton;
+		#region UI
+		/// <summary>
+		/// The button to increase Agility.
+		/// </summary>
+		public Button PlusButtonAgility;
+		/// <summary>
+		/// The button to increase Strength.
+		/// </summary>
+		public Button PlusButtonStrength;
+		/// <summary>
+		/// The button to increase Defense.
+		/// </summary>
+		public Button PlusButtonDefense;
+		/// <summary>
+		/// The button to exit the stat manager.
+		/// </summary>
+		public Button ExitButton;
+		#endregion
 
+		/// <summary>
+		/// Gets or sets if the stats have changed.
+		/// </summary>
+		public bool StatsChanged
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Creates the stat manager.
+		/// </summary>
+		/// <param name="game">The game that the manager runs off of.</param>
 		public StatManager(Game1 game)
 			: base(game)
 		{
@@ -49,25 +93,31 @@ namespace Predator
 			base.Initialize();
 		}
 
+		/// <summary>
+		/// Loads the content for the stat manager.
+		/// </summary>
 		protected override void LoadContent()
 		{
 			spriteBatch = new SpriteBatch(myGame.GraphicsDevice);
 
 			LoadTextures();
 
-			plusButtonStr = new Button(plusButtonTexture, new Vector2(575, 225), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
-			plusButtonAgi = new Button(plusButtonTexture, new Vector2(575, 425), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
-			plusButtonDef = new Button(plusButtonTexture, new Vector2(575, 325), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
-			exitButton = new Button(exitButtonTextxure, new Vector2(742, 158), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
+			PlusButtonStrength = new Button(PlusButtonTexture, new Vector2(575, 225), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
+			PlusButtonAgility = new Button(PlusButtonTexture, new Vector2(575, 425), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
+			PlusButtonDefense = new Button(PlusButtonTexture, new Vector2(575, 325), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
+			ExitButton = new Button(ExitButtonTextxure, new Vector2(742, 158), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
 
 			base.LoadContent();
 		}
 
+		/// <summary>
+		/// Loads the textures for the stat manager.
+		/// </summary>
 		public void LoadTextures()
 		{
-			plusButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\statsMenu\plusButton");
-			menuBackground = Game.Content.Load<Texture2D>(@"images\gui\statsMenu\menu");
-			exitButtonTextxure = Game.Content.Load<Texture2D>(@"images\gui\global\exitButton");
+			PlusButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\statsMenu\plusButton");
+			MenuBackgroundTexture = Game.Content.Load<Texture2D>(@"images\gui\statsMenu\menu");
+			ExitButtonTextxure = Game.Content.Load<Texture2D>(@"images\gui\global\exitButton");
 		}
 
 		/// <summary>
@@ -76,44 +126,49 @@ namespace Predator
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		public override void Update(GameTime gameTime)
 		{
-			plusButtonAgi.Update(gameTime);
-			plusButtonStr.Update(gameTime);
-			plusButtonDef.Update(gameTime);
-			exitButton.Update(gameTime);
+			PlusButtonAgility.Update(gameTime);
+			PlusButtonStrength.Update(gameTime);
+			PlusButtonDefense.Update(gameTime);
+			ExitButton.Update(gameTime);
 
-			if (plusButtonAgi.Clicked() && myGame.gameManager.Player.statPoints >= 1)
+			if (PlusButtonAgility.Clicked() && myGame.gameManager.Player.StatPoints >= 1)
 			{
-				myGame.gameManager.Player.statPoints -= 1;
+				myGame.gameManager.Player.StatPoints -= 1;
 				myGame.gameManager.Player.PAgility -= 0.055f * (1 - (myGame.gameManager.Player.PAgility * .1f));
 			}
-			if (plusButtonStr.Clicked() && myGame.gameManager.Player.statPoints >= 1)
+			if (PlusButtonStrength.Clicked() && myGame.gameManager.Player.StatPoints >= 1)
 			{
-				myGame.gameManager.Player.statPoints -= 1;
+				myGame.gameManager.Player.StatPoints -= 1;
 				myGame.gameManager.Player.PStrength += 0.18f;
 				// myGame.gameManager.player.MaxHP *= myGame.gameManager.player.PStrength;
 			}
-			if (plusButtonDef.Clicked() && myGame.gameManager.Player.statPoints >= 1)
+			if (PlusButtonDefense.Clicked() && myGame.gameManager.Player.StatPoints >= 1)
 			{
-				myGame.gameManager.Player.statPoints -= 1;
+				myGame.gameManager.Player.StatPoints -= 1;
 				myGame.gameManager.Player.PDefense += 0.18f;
 			}
-			if (exitButton.Clicked())
+			if (ExitButton.Clicked())
 			{
+				StatsChanged = true;
 				myGame.SetCurrentLevel(Game1.GameLevels.GAME);
 			}
 
 			base.Update(gameTime);
 		}
 
+		/// <summary>
+		/// Draws the content of the stat manager.
+		/// </summary>
+		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		public override void Draw(GameTime gameTime)
 		{
 			spriteBatch.Begin();
 			{
-				spriteBatch.Draw(menuBackground, new Vector2(150, 150), Color.White);
-				plusButtonAgi.Draw(gameTime, spriteBatch);
-				plusButtonStr.Draw(gameTime, spriteBatch);
-				plusButtonDef.Draw(gameTime, spriteBatch);
-				exitButton.Draw(gameTime, spriteBatch);
+				spriteBatch.Draw(MenuBackgroundTexture, new Vector2(150, 150), Color.White);
+				PlusButtonAgility.Draw(gameTime, spriteBatch);
+				PlusButtonStrength.Draw(gameTime, spriteBatch);
+				PlusButtonDefense.Draw(gameTime, spriteBatch);
+				ExitButton.Draw(gameTime, spriteBatch);
 			}
 			spriteBatch.End();
 

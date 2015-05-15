@@ -20,53 +20,84 @@ namespace Predator.Managers
 	public class MainMenuManager : Microsoft.Xna.Framework.DrawableGameComponent
 	{
 		/// <summary>
-		/// The game that the main menu runs off of.
+		/// The game that the main menu manager runs off of.
 		/// </summary>
-		Game1 myGame;
+		private Game1 myGame;
 		/// <summary>
-		/// The sprite batch that the main menu uses.
+		/// The sprite batch that the main menu manager uses.
 		/// </summary>
-		SpriteBatch spriteBatch;
+		private SpriteBatch spriteBatch;
 
+		#region Textures
 		/// <summary>
-		/// The main menu Background.
+		/// Loads the texture for the menu.
 		/// </summary>
-		Texture2D menuBackgroundTexture;
+		public Texture2D MenuBackgroundTexture;
 		/// <summary>
-		/// 
+		/// Loads the texture for the title.
 		/// </summary>
-		Texture2D titleTexture;
+		public Texture2D TitleTexture;
 		/// <summary>
-		/// 
+		/// Loads the texture for the button.
 		/// </summary>
-		Texture2D buttonTexture;
+		public Texture2D ButtonTexture;
+		#endregion
 
+		#region Buttons
 		/// <summary>
 		/// The start button.
 		/// </summary>
-		Button startButton;
+		public Button StartButton;
 		/// <summary>
 		/// The quit button.
 		/// </summary>
-		Button quitButton;
+		public Button QuitButton;
 		/// <summary>
-		/// 
+		/// The options button.
 		/// </summary>
-		Button optionsButton;
+		public Button OptionsButton;
+		#endregion
 
-		float TitleScale = 1.5f;
-		float TitleMaxSca = 1.7f;
-		float TitleMinSca = 1.3f;
-		float TitleScaMov = -1;
-
-		float TitleRot = 0;
-		float TitleMaxRot = -10 * (float)Math.PI / 180;
-		float TitleMinRot = 10 * (float)Math.PI / 180;
-		float TitleMovement = -1;
+		#region Title Effect Variables
+		/// <summary>
+		/// The default title scale.
+		/// </summary>
+		protected float TitleScale = 1.5f;
+		/// <summary>
+		/// The title's max scale.
+		/// </summary>
+		protected float TitleMaxScale = 1.7f;
+		/// <summary>
+		/// The title's min scale.
+		/// </summary>
+		protected float TitleMinScale = 1.3f;
+		/// <summary>
+		/// The direction to move when scaling.
+		/// </summary>
+		protected float TitleScaleMovement = -1;
 
 		/// <summary>
-		/// Creates the game manager.
+		/// The default title rotation.
 		/// </summary>
+		protected float TitleRotation = 0.0f;
+		/// <summary>
+		/// The title's max rotation.
+		/// </summary>
+		protected float TitleMaxRotation = -10.0f * (float)Math.PI / 180;
+		/// <summary>
+		/// The title's min rotation.
+		/// </summary>
+		protected float TitleMinRotation = 10.0f * (float)Math.PI / 180;
+		/// <summary>
+		/// The direction to move when rotating.
+		/// </summary>
+		protected float TitleRotationMovement = -1;
+		#endregion
+
+		/// <summary>
+		/// Creates the main menu manager.
+		/// </summary>
+		/// <param name="game">The game that the main menu manager runs off of.</param>
 		public MainMenuManager(Game1 game)
 			: base(game)
 		{
@@ -86,7 +117,7 @@ namespace Predator.Managers
 		}
 
 		/// <summary>
-		/// Loads the main menu's content.
+		/// Loads the content of the main menu manager.
 		/// </summary>
 		protected override void LoadContent()
 		{
@@ -94,18 +125,21 @@ namespace Predator.Managers
 
 			LoadTextures();
 
-			startButton   = new Button(buttonTexture, new Vector2((myGame.WindowSize.X - 121) / 2, 300), myGame.segoeUIRegular, 1.0f, new Color(155, 155, 155), "PLAY",    Color.White);
-			optionsButton = new Button(buttonTexture, new Vector2((myGame.WindowSize.X - 121) / 2, 420), myGame.segoeUIRegular, 1.0f, new Color(155, 155, 155), "OPTIONS", Color.White);
-			quitButton    = new Button(buttonTexture, new Vector2((myGame.WindowSize.X - 121) / 2, 550), myGame.segoeUIRegular, 1.0f, new Color(155, 155, 155), "QUIT",    Color.White);
+			StartButton = new Button(ButtonTexture, new Vector2((myGame.WindowSize.X - 121) / 2, 300), myGame.segoeUIRegular, 1.0f, new Color(155, 155, 155), "PLAY", Color.White);
+			OptionsButton = new Button(ButtonTexture, new Vector2((myGame.WindowSize.X - 121) / 2, 420), myGame.segoeUIRegular, 1.0f, new Color(155, 155, 155), "OPTIONS", Color.White);
+			QuitButton = new Button(ButtonTexture, new Vector2((myGame.WindowSize.X - 121) / 2, 550), myGame.segoeUIRegular, 1.0f, new Color(155, 155, 155), "QUIT", Color.White);
 
 			base.LoadContent();
 		}
 
+		/// <summary>
+		/// Loads the textures of the main menu manager.
+		/// </summary>
 		public void LoadTextures()
 		{
-			menuBackgroundTexture = Game.Content.Load<Texture2D>(@"images\game\backgrounds\sewerBackgroundG");
-			buttonTexture = Game.Content.Load<Texture2D>(@"images\gui\global\button1");
-			titleTexture = Game.Content.Load<Texture2D>(@"images\gui\mainMenu\title");
+			MenuBackgroundTexture = Game.Content.Load<Texture2D>(@"images\game\backgrounds\sewerBackgroundG");
+			ButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\global\button1");
+			TitleTexture = Game.Content.Load<Texture2D>(@"images\gui\mainMenu\title");
 		}
 
 		/// <summary>
@@ -114,78 +148,86 @@ namespace Predator.Managers
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		public override void Update(GameTime gameTime)
 		{
-			startButton.Update(gameTime);
-			quitButton.Update(gameTime);
-			optionsButton.Update(gameTime);
+			StartButton.Update(gameTime);
+			QuitButton.Update(gameTime);
+			OptionsButton.Update(gameTime);
 
-			if (startButton.Clicked())
+			if (StartButton.Clicked())
 			{
 				myGame.SetCurrentLevel(Game1.GameLevels.GAME);
 			}
 
-			if (quitButton.Clicked())
+			if (QuitButton.Clicked())
 			{
 				Game.Exit();
 			}
 
-			if (optionsButton.Clicked())
+			if (OptionsButton.Clicked())
 			{
 				myGame.SetCurrentLevel(Game1.GameLevels.OPTIONS);
 			}
 
-			if (TitleScaMov == -1)
+			#region Title Effects
+			#region Title Scaling
+			if (TitleScaleMovement == -1)
 			{
 				TitleScale -= 0.005f;
 			}
-			if (TitleScaMov == 1)
+			if (TitleScaleMovement == 1)
 			{
 				TitleScale += 0.005f;
 			}
-			if (TitleScale <= TitleMinSca)
+			if (TitleScale <= TitleMinScale)
 			{
-				TitleScaMov = 1;
+				TitleScaleMovement = 1;
 			}
-			if (TitleScale >= TitleMaxSca)
+			if (TitleScale >= TitleMaxScale)
 			{
-				TitleScaMov = -1;
+				TitleScaleMovement = -1;
 			}
+			#endregion
 
-			if (TitleMovement == -1)
+			#region Title Rotation
+			if (TitleRotationMovement == -1)
 			{
-				TitleRot += 0.2f * (float)Math.PI / 180;
+				TitleRotation += 0.2f * (float)Math.PI / 180;
 			}
-			if (TitleMovement == 1)
+			if (TitleRotationMovement == 1)
 			{
-				TitleRot -= 0.2f * (float)Math.PI / 180;
+				TitleRotation -= 0.2f * (float)Math.PI / 180;
 			}
-			if (TitleRot >= TitleMinRot)
+			if (TitleRotation >= TitleMinRotation)
 			{
-				TitleMovement = 1;
+				TitleRotationMovement = 1;
 			}
-			if (TitleRot <= TitleMaxRot)
+			if (TitleRotation <= TitleMaxRotation)
 			{
-				TitleMovement = -1;
+				TitleRotationMovement = -1;
 			}
+			#endregion
+			#endregion
 
 			if (myGame.OptionsChanged > myGame.OldOptionsChanged)
 			{
-				startButton.Position = new Vector2((myGame.WindowSize.X - 121) / 2, 300);
-				quitButton.Position = new Vector2((myGame.WindowSize.X - 121) / 2, 550);
-				optionsButton.Position = new Vector2((myGame.WindowSize.X - 121) / 2, 420);
+				StartButton.Position = new Vector2((myGame.WindowSize.X - 121) / 2, 300);
+				QuitButton.Position = new Vector2((myGame.WindowSize.X - 121) / 2, 550);
+				OptionsButton.Position = new Vector2((myGame.WindowSize.X - 121) / 2, 420);
 			}
 		}
 
+		/// <summary>
+		/// Draws the content of the main menu manager.
+		/// </summary>
+		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		public override void Draw(GameTime gameTime)
 		{
-
 			spriteBatch.Begin();
 			{
-				spriteBatch.Draw(menuBackgroundTexture, new Rectangle(0, 0, myGame.WindowSize.X, myGame.WindowSize.Y), Color.White);
-				spriteBatch.Draw(titleTexture, new Vector2(myGame.WindowSize.X / 2, 100), new Rectangle(0, 0, titleTexture.Width, titleTexture.Height), Color.White, TitleRot, new Vector2(titleTexture.Width / 2, titleTexture.Height / 2), TitleScale, SpriteEffects.None, 0f);
-				startButton.Draw(gameTime, spriteBatch);
-				quitButton.Draw(gameTime, spriteBatch);
-				optionsButton.Draw(gameTime, spriteBatch);
-				spriteBatch.DrawString(myGame.segoeUIMonoDebug, TitleRot.ToString() + " Max=" + TitleMaxRot + " Min=" + TitleMinRot + " dir=" + TitleMovement, Vector2.Zero, Color.Lime);
+				spriteBatch.Draw(MenuBackgroundTexture, new Rectangle(0, 0, myGame.WindowSize.X, myGame.WindowSize.Y), Color.White);
+				spriteBatch.Draw(TitleTexture, new Vector2(myGame.WindowSize.X / 2, 100), new Rectangle(0, 0, TitleTexture.Width, TitleTexture.Height), Color.White, TitleRotation, new Vector2(TitleTexture.Width / 2, TitleTexture.Height / 2), TitleScale, SpriteEffects.None, 0f);
+				StartButton.Draw(gameTime, spriteBatch);
+				QuitButton.Draw(gameTime, spriteBatch);
+				OptionsButton.Draw(gameTime, spriteBatch);
 			}
 			spriteBatch.End();
 

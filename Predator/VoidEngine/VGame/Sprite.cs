@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using VoidEngine.Helpers;
 
 namespace VoidEngine.VGame
 {
@@ -379,6 +380,16 @@ namespace VoidEngine.VGame
 			spriteBatch.Draw(line, new Rectangle(BoundingCollisions.Right - 1, BoundingCollisions.Y, 1, BoundingCollisions.Height), color);
 			spriteBatch.Draw(line, new Rectangle(BoundingCollisions.X, BoundingCollisions.Bottom - 1, BoundingCollisions.Width, 1), color);
 			spriteBatch.Draw(line, new Rectangle(BoundingCollisions.X, BoundingCollisions.Y, 1, BoundingCollisions.Height), color);
+		}
+
+		public bool CheckInRadius(Vector2 position, float radius)
+		{
+			if (CollisionHelper.Magnitude(position - this.Position) < radius)
+			{
+				return true;
+			}
+
+			return false;
 		}
 	}
 }

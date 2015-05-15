@@ -51,7 +51,6 @@ namespace VoidEngine.VGUI
 		public Vector2 RelitiveCenter;
 
 		Camera Camera;
-		bool CameraExists = false;
 
 		/// <summary>
 		/// Creates a button.
@@ -71,7 +70,6 @@ namespace VoidEngine.VGUI
 			: base(position, color, animationSetList)
 		{
 			Color = color;
-			CameraExists = false;
 			AnimationSets = animationSetList;
 			Label = new Label(new Vector2(position.X + ((animationSetList[0].frameSize.X - font.MeasureString(text).X) / 2), position.Y + ((animationSetList[0].frameSize.Y - font.MeasureString(text).Y) / 2)), font, scale, fontColor, text);
 		}
@@ -90,7 +88,6 @@ namespace VoidEngine.VGUI
 			: base(position, buttonColor, texture)
 		{
 			Color = buttonColor;
-			CameraExists = false;
 			AddAnimations(texture);
 			Label = new Label(new Vector2(position.X + (((texture.Width / 3) - font.MeasureString(text).X) / 2), position.Y + ((texture.Height - font.MeasureString(text).Y) / 2)), font, scale, fontColor, text);
 		}
@@ -110,7 +107,6 @@ namespace VoidEngine.VGUI
 		{
 			Color = color;
 			this.Camera = camera;
-			CameraExists = true;
 			AnimationSets = animationSetList;
 			Label = new Label(new Vector2(position.X + ((animationSetList[0].frameSize.X - font.MeasureString(text).X) / 2), position.Y + ((animationSetList[0].frameSize.Y - font.MeasureString(text).Y) / 2)), font, scale, fontColor, text);
 		}
@@ -130,7 +126,6 @@ namespace VoidEngine.VGUI
 		{
 			Color = buttonColor;
 			this.Camera = camera;
-			CameraExists = true;
 			AddAnimations(texture);
 			Label = new Label(new Vector2(position.X + (((texture.Width / 3) - font.MeasureString(text).X) / 2), position.Y + ((texture.Height - font.MeasureString(text).Y) / 2)), font, scale, fontColor, text);
 		}

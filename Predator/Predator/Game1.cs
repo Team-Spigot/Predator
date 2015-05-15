@@ -158,36 +158,61 @@ namespace Predator
 		#endregion
 
 		#region Options Stuff
+		/// <summary>
+		/// Gets or sets if VSync is enabled.
+		/// </summary>
 		public bool VSync
 		{
 			get;
 			set;
 		}
+		/// <summary>
+		/// Gets or sets if the game should apply the current settings.
+		/// </summary>
 		public bool ApplySettings
 		{
 			get;
 			set;
 		}
+		/// <summary>
+		/// Gets or sets if the game should cancel the current settings.
+		/// </summary>
 		public bool CancelSettings
 		{
 			get;
 			set;
 		}
+		/// <summary>
+		/// Gets or sets if the game finished applying/canceling the current settings.
+		/// </summary>
 		public bool FinishedSettings
 		{
 			get;
 			set;
 		}
+		/// <summary>
+		/// Gets or sets the amount of times the options changed.
+		/// Used to check if they have against [OldOptionsChanged]
+		/// to update the positions and other things.
+		/// </summary>
 		public int OptionsChanged
 		{
 			get;
 			set;
 		}
+		/// <summary>
+		/// Gets or sets the old amount of times the options changed.
+		/// Used to check if they have against [OldOptionsChanged]
+		/// to update the positions and other things.
+		/// </summary>
 		public int OldOptionsChanged
 		{
 			get;
 			set;
 		}
+		/// <summary>
+		/// Gets or sets the temporary window size.
+		/// </summary>
 		public Point TempWindowSize
 		{
 			get;

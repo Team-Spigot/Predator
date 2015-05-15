@@ -61,20 +61,88 @@ namespace Predator.Characters
 		public bool FellFromBottom
 		{
 			get;
-			protected set;
+			set;
 		}
-		public float Damage;
-		public float Defense;
-		public int statPoints;
-
-		public int attackDelay;
-
-		public float PStrength;
-		public float PAgility;
-		public float PDefense;
-		public int PExp;
-		public int Lvl;
-		public bool LvlUp = false;
+		/// <summary>
+		/// Gets or sets the player's damage stat.
+		/// </summary>
+		public float Damage
+		{
+			get;
+			set;
+		}
+		/// <summary>
+		/// Gets or sets the player's defense stat.
+		/// </summary>
+		public float Defense
+		{
+			get;
+			set;
+		}
+		/// <summary>
+		/// Gets or sets the player's stat points.
+		/// </summary>
+		public int StatPoints
+		{
+			get;
+			set;
+		}
+		/// <summary>
+		/// Gets or sets the player's points to strength.
+		/// </summary>
+		public float PStrength
+		{
+			get;
+			set;
+		}
+		/// <summary>
+		/// Gets or sets the player's points to agility.
+		/// </summary>
+		public float PAgility
+		{
+			get;
+			set;
+		}
+		/// <summary>
+		/// Gets or sets the player's points to defense.
+		/// </summary>
+		public float PDefense
+		{
+			get;
+			set;
+		}
+		/// <summary>
+		/// Gets or sets the player's points to experiance.
+		/// </summary>
+		public int PExp
+		{
+			get;
+			set;
+		}
+		/// <summary>
+		/// Gets or sets the player's previous points to experiance.
+		/// </summary>
+		public int PreviousPExp
+		{
+			get;
+			set;
+		}
+		/// <summary>
+		/// Gets or sets the player's stat level.
+		/// </summary>
+		public int Lvl
+		{
+			get;
+			set;
+		}
+		/// <summary>
+		/// Gets or sets if the player is allowed to level up.
+		/// </summary>
+		public bool LvlUp
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Movement Stats
@@ -215,6 +283,31 @@ namespace Predator.Characters
 		}
 		#endregion
 
+		#region Debug Stuff
+		/// <summary>
+		/// Used to debug the block the player is currently touching.
+		/// </summary>
+		public Rectangle DebugBlock;
+		#endregion
+
+		#region Combat Stuff
+		/// <summary>
+		/// Gets or sets the attack counter for the player.
+		/// </summary>
+		public float AttackCounter
+		{
+			get;
+			set;
+		}
+		/// <summary>
+		/// Gets or sets the player's attack delay.
+		/// </summary>
+		public int AttackDelay
+		{
+			get;
+			set;
+		}
+
 		#region Projectile Stuff
 		/// <summary>
 		/// Gets or sets the list of projectiles.
@@ -256,67 +349,95 @@ namespace Predator.Characters
 			get;
 			set;
 		}
+		#endregion
+
+		#region Mana Stuff
 		/// <summary>
-		/// The amount of mana the player has.
+		/// Gets or sets the amount of mana the player has.
 		/// </summary>
-		protected float Mana;
+		protected float Mana
+		{
+			get;
+			set;
+		}
 		/// <summary>
-		/// The maxium mana the player can have.
+		/// Gets or sets the maxium mana the player can have.
 		/// </summary>
-		protected float MaxMana;
+		protected float MaxMana
+		{
+			get;
+			set;
+		}
 		/// <summary>
-		/// The amount of time it takes the mana to start recharging.
+		/// Gets or sets the amount of time it takes the mana to start recharging.
 		/// </summary>
-		protected float ManaRechargeTime;
+		protected float ManaRechargeTime
+		{
+			get;
+			set;
+		}
 		/// <summary>
-		/// The default amount of time it takes the mana to start recharging.
+		/// Gets or sets the default amount of time it takes the mana to start recharging.
 		/// </summary>
-		protected float DefaultManaRechargeTime;
+		protected float DefaultManaRechargeTime
+		{
+			get;
+			set;
+		}
 		/// <summary>
-		/// The amount of mana it will rechage every second.
+		/// Gets or sets the amount of mana it will rechage every second.
 		/// </summary>
-		protected float ManaRechargeInterval;
+		protected float ManaRechargeInterval
+		{
+			get;
+			set;
+		}
 		/// <summary>
-		/// The default mana recharge time.
+		/// Gets or sets the default mana recharge time.
 		/// </summary>
-		protected float DefaultManaRechargeInterval;
+		protected float DefaultManaRechargeInterval
+		{
+			get;
+			set;
+		}
 		/// <summary>
-		/// The ammount of mana it will decrease by.
+		/// Gets or sets the ammount of mana it will decrease by.
 		/// </summary>
-		protected float ManaDecreaseAmount;
+		protected float ManaDecreaseAmount
+		{
+			get;
+			set;
+		}
+		#endregion
 		#endregion
 
 		/// <summary>
-		/// Creates the Player class.
+		/// Creates the player class, with default animation set.
 		/// </summary>
-		/// <param name="position">The starting position of the player.</param>
-		/// <param name="movementKeys">The Keys to move the player with.</param>
-		/// <param name="HP">The hp that the player will start out with.</param>
-		/// <param name="color">The Color to mask the player with.</param>
-		/// <param name="animationSetList">The AnimationSet the player has.</param>
-		/// <param name="ProjectileAnimationSet">The AnimationSet of the projectile.</param>
-		public Player(Texture2D texture, Vector2 position, Keys[,] movementKeys, float HP, Color color, Game1 myGame)
+		/// <param name="texture">The texture to use with the player.</param>
+		/// <param name="position">The starting position to put the player at.</param>
+		/// <param name="movementKeys">The list of movement keys for the player.</param>
+		/// <param name="color">The color to mask the player with.</param>
+		/// <param name="myGame">The game that the player runs on.</param>
+		public Player(Texture2D texture, Vector2 position, Keys[,] movementKeys, Color color, Game1 myGame)
 			: base(position, color, texture)
 		{
 			this.myGame = myGame;
+
 			AddAnimations(texture);
+			SetAnimation("IDLE1");
 
-			Level = 1;
-			SetAnimation("IDLE" + Level);
-
-			MainHP = HP;
-			MaxHP = HP;
-
-			attackDelay = 750;
-
+			AttackDelay = 750;
 			JumpbackTimer = 1;
 
+			Level = 1;
+			StatPoints = 0;
+			PExp = 0;
 			PStrength = 2;
-			MainHP = MaxHP *= PStrength;
 			PAgility = 2;
 			PDefense = 2;
-			PExp = 0;
-			statPoints = 0;
+			MainHP = MaxHP = 100;
+			MainHP = MaxHP *= PStrength;
 
 			Mana = MaxMana = 0;
 			ManaRechargeTime = DefaultManaRechargeTime = 0.09f;
@@ -341,37 +462,33 @@ namespace Predator.Characters
 		}
 
 		/// <summary>
-		/// 
+		/// Creats the player class, with custom animation set.
 		/// </summary>
-		/// <param name="texture"></param>
-		/// <param name="position"></param>
-		/// <param name="movementKeys"></param>
-		/// <param name="HP"></param>
-		/// <param name="color"></param>
-		/// <param name="myGame"></param>
-		public Player(List<AnimationSet> animationSetList, Vector2 position, Keys[,] movementKeys, float HP, Color color, Game1 myGame)
+		/// <param name="animationSetList">The custom animation set to use with the player.</param>
+		/// <param name="defaultFrameName">The default frame to set the animation to.</param>
+		/// <param name="position">The position to set the player at.</param>
+		/// <param name="movementKeys">The list movement keys for the player.</param>
+		/// <param name="color">The color to mask the player with.</param>
+		/// <param name="myGame">The game that player runs on.</param>
+		public Player(List<AnimationSet> animationSetList, string defaultFrameName, Vector2 position, Keys[,] movementKeys, Color color, Game1 myGame)
 			: base(position, color, animationSetList)
 		{
 			this.myGame = myGame;
 
 			AnimationSets = animationSetList;
-			SetAnimation("IDLE" + Level);
+			SetAnimation(defaultFrameName);
 
-			Level = 1;
-
-			MainHP = HP;
-			MaxHP = HP;
-
-			attackDelay = 750;
-
+			AttackDelay = 750;
 			JumpbackTimer = 1;
 
-			PStrength = 2;
-			MainHP = MaxHP *= PStrength;
+			Level = 1;
+			StatPoints = 0;
+			PExp = 0;
 			PAgility = 2;
 			PDefense = 2;
-			PExp = 0;
-			statPoints = 0;
+			PStrength = 2;
+			MainHP = MaxHP = 100;
+			MainHP = MaxHP *= PStrength;
 
 			Mana = MaxMana = 0;
 			ManaRechargeTime = DefaultManaRechargeTime = 0.09f;
@@ -415,7 +532,7 @@ namespace Predator.Characters
 		/// <param name="animationSetList"></param>
 		/// <param name="position"></param>
 		/// <param name="color"></param>
-		public Player(List<AnimationSet> animationSetList, Vector2 position, Color color)
+		public Player(List<AnimationSet> animationSetList, string defaultFrameName, Vector2 position, Color color)
 			: base(position, color, animationSetList)
 		{
 			ProjectileList = new List<Projectile>();
@@ -440,7 +557,7 @@ namespace Predator.Characters
 		/// <param name="MapBoundries">The list of Rectangles that make up the boundries of the world.</param>
 		public override void Update(GameTime gameTime)
 		{
-			GetInput();
+			GetInput(gameTime);
 
 			HandleAnimations(gameTime);
 
@@ -448,40 +565,14 @@ namespace Predator.Characters
 
 			ApplyPhysics(gameTime);
 
-			HandleHealth();
+			HandleHealth(gameTime);
+
+			UpdateStats(gameTime);
 
 			foreach (Projectile p in ProjectileList)
 			{
 				p.Update(gameTime);
 			}
-
-			if (LvlUp == true)
-			{
-				statPoints += 3;
-				LvlUp = false;
-			}
-			#region Level Table
-			if (PExp >= 0 && Lvl == 0)
-			{
-				Lvl = 1;
-				LvlUp = true;
-			}
-			if (PExp >= 1000 && Lvl == 1)
-			{
-				Lvl = 2;
-				LvlUp = true;
-			}
-			if (PExp >= 2000 && Lvl == 2)
-			{
-				Lvl = 3;
-				LvlUp = true;
-			}
-			if (PExp >= 4000 && Lvl == 3)
-			{
-				Lvl = 4;
-				LvlUp = true;
-			}
-			#endregion
 
 			if (!isDead && IsGrounded)
 			{
@@ -524,14 +615,35 @@ namespace Predator.Characters
 			base.Draw(gameTime, spriteBatch);
 		}
 
-		public virtual void UpdateStats()
+		public virtual void UpdateStats(GameTime gameTime)
 		{
-			MaxMoveSpeed *= PAgility;
-			Damage = PStrength;
-			Defense = PDefense;
+			if (LvlUp == true)
+			{
+				StatPoints += 3;
+				LvlUp = false;
+			}
+
+			#region Level Table
+			if (PExp >= PreviousPExp + 1000)
+			{
+				Lvl += 1;
+				LvlUp = true;
+
+				PreviousPExp = PExp;
+			}
+			#endregion
+
+			if (myGame.statManager.StatsChanged)
+			{
+				MaxMoveSpeed *= PAgility;
+				Damage = PStrength;
+				Defense = PDefense;
+
+				myGame.statManager.StatsChanged = false;
+			}
 		}
 
-		protected virtual void HandleHealth()
+		protected virtual void HandleHealth(GameTime gameTime)
 		{
 			if (MainHP <= 0)
 			{
@@ -548,7 +660,7 @@ namespace Predator.Characters
 		/// <summary>
 		/// Gets the keyboard input to control the player.
 		/// </summary>
-		protected virtual void GetInput()
+		protected virtual void GetInput(GameTime gameTime)
 		{
 			// Ignore small movements to prevent running in place.
 			if (Math.Abs(Movement) < 0.5f)
@@ -694,26 +806,33 @@ namespace Predator.Characters
 		}
 
 		/// <summary>
-		///
+		/// Handels the projectile for the player class.
 		/// </summary>
-		/// <param name="gameTime"></param>
+		/// <param name="gameTime">The game time that the game runs.</param>
 		protected virtual void HandleProjectile(GameTime gameTime)
 		{
-			attackDelay -= gameTime.ElapsedGameTime.Milliseconds;
-			if (attackDelay == 0)
+			AttackDelay -= gameTime.ElapsedGameTime.Milliseconds;
+			if (AttackDelay == 0)
 			{
 				CanShoot = true;
 			}
 			if (IsShooting && CanShoot)
 			{
-				ProjectileList.Add(new Projectile(ProjectileTexture, Position, Color.White, myGame));
-				attackDelay--;
+				if (!isFlipped)
+				{
+					ProjectileList.Add(new Projectile(ProjectileTexture, new Vector2(Position.X + CurrentAnimation.frameSize.X, Position.Y + 15), velocity, Color.White, myGame));
+				}
+				else
+				{
+					ProjectileList.Add(new Projectile(ProjectileTexture, new Vector2(Position.X - 50, Position.Y + 15), velocity, Color.White, myGame));
+				}
+				AttackDelay--;
 				CanShoot = false;
 				IsShooting = false;
 			}
-			if (attackDelay <= 0)
+			if (AttackDelay <= 0)
 			{
-				attackDelay = 750;
+				AttackDelay = 750;
 				CanShoot = true;
 				if (ProjectileList.Count > 0)
 				{
@@ -721,6 +840,8 @@ namespace Predator.Characters
 				}
 			}
 		}
+
+		#region [OLD]
 		//    attackDelay -= gameTime.ElapsedGameTime.Milliseconds;
 		//    if (attackDelay == 0)
 		//    {
@@ -731,21 +852,21 @@ namespace Predator.Characters
 		//        ProjectileList.Add(new Projectile(ProjectileTexture, Position, Color.White, myGame));
 		//        attackDelay--;
 		//        CanShoot = false;
-
+		//
 		//    }
 		//    if (!CanShoot)
 		//    {
 		//        ManaRechargeTime -= (float)gameTime.ElapsedGameTime.TotalSeconds;
-
+		//
 		//        if (ManaRechargeTime <= 0)
 		//        {
 		//            if (ProjectileList.Count > 0)
 		//            {
 		//                ProjectileList.RemoveAt(ProjectileList.Count - 1);
 		//            }
-
+		//
 		//            ManaRechargeInterval -= (float)gameTime.ElapsedGameTime.TotalSeconds;
-
+		//
 		//            if (ManaRechargeInterval <= 0)
 		//            {
 		//                ManaRechargeTime = DefaultManaRechargeTime;
@@ -755,11 +876,12 @@ namespace Predator.Characters
 		//        }
 		//    }
 		//}
+		#endregion
 
-		public Rectangle test;
-		public float attackCounter = 1;
-		public float defaultSpeed;
-
+		/// <summary>
+		/// Handles the enemy collisions for the player.
+		/// </summary>
+		/// <param name="gameTime">The game time that the game runs.</param>
 		protected virtual void HandleEnemyCollisions(GameTime gameTime)
 		{
 			if (myGame.gameManager.EnemyList != null)
@@ -768,7 +890,7 @@ namespace Predator.Characters
 				{
 					if (BoundingCollisions.TouchLeftOf(e.BoundingCollisions) || BoundingCollisions.TouchRightOf(e.BoundingCollisions))
 					{
-						attackCounter -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+						AttackCounter -= (float)gameTime.ElapsedGameTime.TotalSeconds;
 						if (PositionCenter.X >= e.PositionCenter.X)
 						{
 							IsJumping = true;
@@ -810,24 +932,24 @@ namespace Predator.Characters
 					{
 						IsGrounded = true;
 						position.Y = t.Position.Y - BoundingCollisions.Height;
-						test = t.BoundingCollisions;
+						DebugBlock = t.BoundingCollisions;
 					}
 					if (BoundingCollisions.TouchLeftOf(t.BoundingCollisions) && t.TileType == Tile.TileCollisions.Impassable)
 					{
 						position.X = t.Position.X - BoundingCollisions.Width;
-						test = t.BoundingCollisions;
+						DebugBlock = t.BoundingCollisions;
 					}
 					if (BoundingCollisions.TouchRightOf(t.BoundingCollisions) && t.TileType == Tile.TileCollisions.Impassable)
 					{
 						position.X = t.BoundingCollisions.Right;
-						test = t.BoundingCollisions;
+						DebugBlock = t.BoundingCollisions;
 					}
 					if (BoundingCollisions.TouchBottomOf(t.BoundingCollisions) && t.TileType == Tile.TileCollisions.Impassable)
 					{
 						IsJumping = false;
 						JumpTime = 0;
 						position.Y = t.BoundingCollisions.Bottom + 2;
-						test = t.BoundingCollisions;
+						DebugBlock = t.BoundingCollisions;
 					}
 				}
 			}
@@ -837,28 +959,32 @@ namespace Predator.Characters
 				if (r.TouchBottomOf(BoundingCollisions))
 				{
 					FellFromBottom = true;
-					test = r;
+					DebugBlock = r;
 				}
 				if (r.TouchRightOf(BoundingCollisions))
 				{
 					position.X = r.Left - BoundingCollisions.Width;
-					test = r;
+					DebugBlock = r;
 				}
 				else if (r.TouchLeftOf(BoundingCollisions))
 				{
 					position.X = r.Right;
-					test = r;
+					DebugBlock = r;
 				}
 				if (r.TouchTopOf(BoundingCollisions))
 				{
 					IsJumping = false;
 					JumpTime = 0;
 					position.Y = r.Bottom + 2;
-					test = r;
+					DebugBlock = r;
 				}
 			}
 		}
 
+		/// <summary>
+		/// Creates the default animation frames for the player.
+		/// </summary>
+		/// <param name="texture">The texture to process.</param>
 		protected override void AddAnimations(Texture2D texture)
 		{
 			AddAnimation("IDLE1", texture, new Point(35, 50), new Point(1, 1), new Point(000, 000), 1600, true);
@@ -880,16 +1006,6 @@ namespace Predator.Characters
 			SetAnimation("IDLE1");
 
 			base.AddAnimations(texture);
-		}
-
-		public bool CheckInRadius(Vector2 position, float radius)
-		{
-			if (CollisionHelper.Magnitude(position - this.Position) < radius)
-			{
-				return true;
-			}
-
-			return false;
 		}
 	}
 }

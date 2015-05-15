@@ -17,14 +17,35 @@ namespace Predator.Managers
 	/// </summary>
 	public class SplashScreenManager : Microsoft.Xna.Framework.DrawableGameComponent
 	{
-		Game1 myGame;
-		SpriteBatch spriteBatch;
+		/// <summary>
+		/// The game that the splash screen manager runs off of.
+		/// </summary>
+		private Game1 myGame;
+		/// <summary>
+		/// The sprite batch that the splash screen manager uses.
+		/// </summary>
+		private SpriteBatch spriteBatch;
 
-		Texture2D spigotLogoTexture;
-		Texture2D backgroundTexture;
+		#region Textures
+		/// <summary>
+		/// Loads the texture for the Spigot Logo.
+		/// </summary>
+		public Texture2D spigotLogoTexture;
+		/// <summary>
+		/// Loads the texture for the background.
+		/// </summary>
+		public Texture2D backgroundTexture;
+		#endregion
 
-		int Timer = 5000;
-
+		/// <summary>
+		/// The timer for the duration of the splash screen.
+		/// </summary>
+		protected int Timer = 5000;
+		
+		/// <summary>
+		/// Creates the splash screen manager.
+		/// </summary>
+		/// <param name="game">The game that the manager runs off of.</param>
 		public SplashScreenManager(Game1 game)
 			: base(game)
 		{
@@ -42,6 +63,9 @@ namespace Predator.Managers
 			base.Initialize();
 		}
 
+		/// <summary>
+		/// Loads the content for the splash screen manager.
+		/// </summary>
 		protected override void LoadContent()
 		{
 			spriteBatch = new SpriteBatch(myGame.GraphicsDevice);
@@ -51,6 +75,9 @@ namespace Predator.Managers
 			base.LoadContent();
 		}
 
+		/// <summary>
+		/// Loads the textures for the splash screen manager.
+		/// </summary>
 		public void LoadImages()
 		{
 			spigotLogoTexture = Game.Content.Load<Texture2D>(@"images\gui\mainMenu\spigot");
@@ -73,6 +100,10 @@ namespace Predator.Managers
 			base.Update(gameTime);
 		}
 
+		/// <summary>
+		/// Draws the content of the splash screen manager.
+		/// </summary>
+		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		public override void Draw(GameTime gameTime)
 		{
 			spriteBatch.Begin();

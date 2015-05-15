@@ -23,24 +23,34 @@ namespace Predator.Managers
 	/// </summary>
 	public class GameManager : Microsoft.Xna.Framework.DrawableGameComponent
 	{
-		Game1 myGame;
-		SpriteBatch spriteBatch;
+		/// <summary>
+		/// The game that the game manager runs off of.
+		/// </summary>
+		private Game1 myGame;
+		/// <summary>
+		/// The sprite batch that the game manager uses.
+		/// </summary>
+		private SpriteBatch spriteBatch;
 
 		/// <summary>
 		/// Used to control the game's screen.
 		/// </summary>
-		Camera Camera;
+		protected Camera Camera;
 
 		/// <summary>
 		/// Used to get random real numbers.
 		/// </summary>
-		Random Random = new Random();
+		protected Random Random = new Random();
 
 		#region Textures
 		/// <summary>
 		/// Loads the line texture.
 		/// </summary>
 		public Texture2D LineTexture;
+		/// <summary>
+		/// Loads the shadow tile texture.
+		/// </summary>
+		public Texture2D ShadowTileTexture;
 		/// <summary>
 		/// Loads the sewer tile texture.
 		/// </summary>
@@ -50,11 +60,11 @@ namespace Predator.Managers
 		/// </summary>
 		public Texture2D TempPlayerTexture;
 		/// <summary>
-		/// Loads the projectile's texture.
+		/// Loads the projectile texture.
 		/// </summary>
 		public Texture2D ProjectileTexture;
 		/// <summary>
-		/// 
+		/// Loads the crawler enemy texture.
 		/// </summary>
 		public Texture2D CrawlerTexture;
 		/// <summary>
@@ -62,11 +72,11 @@ namespace Predator.Managers
 		/// </summary>
 		public Texture2D TempEnemyTexture;
 		/// <summary>
-		/// Loads the particle's texture.
+		/// Loads the particle texture.
 		/// </summary>
 		public Texture2D ParticleTexture;
 		/// <summary>
-		/// 
+		/// Loads the health drop texture.
 		/// </summary>
 		public Texture2D HealthDropTexture;
 		/// <summary>
@@ -74,33 +84,29 @@ namespace Predator.Managers
 		/// </summary>
 		public Texture2D TempTileTexture;
 		/// <summary>
-		/// Loads the main healthbar's background texture.
+		/// Loads the main healthbar background texture.
 		/// </summary>
 		public Texture2D HealthBackgroundTexture;
 		/// <summary>
-		/// Loads the main healthbar's foreground texture.
+		/// Loads the main healthbar foreground texture.
 		/// </summary>
 		public Texture2D HealthForegroundTexture;
 		/// <summary>
-		/// Loads the overhead healthbar's background texture.
+		/// Loads the overhead healthbar background texture.
 		/// </summary>
 		public Texture2D HealthOverheadBackgroundTexture;
 		/// <summary>
-		/// Loads the overhead healthbar's foreground texture.
+		/// Loads the overhead healthbar foreground texture.
 		/// </summary>
 		public Texture2D HealthOverheadForegroundTexture;
 		/// <summary>
-		/// 
+		/// Loads the sewer background spray texture.
 		/// </summary>
-		Texture2D sewerBackgroundSprayTexture;
+		public Texture2D SewerBackgroundSprayTexture;
 		/// <summary>
-		/// 
+		/// Loads the sewer background texture.
 		/// </summary>
-		Texture2D sewerBackgroundTexture;
-		/// <summary>
-		/// 
-		/// </summary>
-		Texture2D shadowTileTexture;
+		public Texture2D SewerBackgroundTexture;
 		#endregion
 
 		#region Enemy Stuff
@@ -116,14 +122,17 @@ namespace Predator.Managers
 		/// The tile objects
 		/// </summary>
 		public List<Tile> TilesList = new List<Tile>();
+		#endregion
+
+		#region Background Stuff
 		/// <summary>
-		/// 
+		/// The sewer background parallax.
 		/// </summary>
-		public Parallax sewerBackgroundParallax;
+		public Parallax SewerBackgroundParallax;
 		/// <summary>
-		/// 
+		/// The sewer background spray parallax.
 		/// </summary>
-		public Parallax sewerBackgroundSprayParallax;
+		public Parallax SewerBackgroundSprayParallax;
 		#endregion
 
 		#region Player Stuff
@@ -143,7 +152,10 @@ namespace Predator.Managers
 		/// The overhead healthbar.
 		/// </summary>
 		public HealthBar OverheadHealthBar;
-		public List<HealthPickUp> dropList = new List<HealthPickUp>();
+		/// <summary>
+		/// The drop list for the pickups.
+		/// </summary>
+		public List<HealthPickUp> DropList = new List<HealthPickUp>();
 		#endregion
 
 		#region Level & Transition Stuff
@@ -174,7 +186,7 @@ namespace Predator.Managers
 		/// <summary>
 		/// The list of the particles.
 		/// </summary>
-		List<Particle> ParticleList = new List<Particle>();
+		public List<Particle> ParticleList = new List<Particle>();
 		/// <summary>
 		/// Gets or sets the blood's minimum radius.
 		/// </summary>
@@ -194,9 +206,9 @@ namespace Predator.Managers
 		#endregion
 
 		/// <summary>
-		/// Creates the game manager
+		/// Creates the game manager.
 		/// </summary>
-		/// <param name="game">The game that the manager is running off of.</param>
+		/// <param name="game">The game that the game manager is running off of.</param>
 		public GameManager(Game1 game)
 			: base(game)
 		{
@@ -218,7 +230,7 @@ namespace Predator.Managers
 		}
 
 		/// <summary>
-		/// Loads the game component's content.
+		/// Loads the content for the game manager.
 		/// </summary>
 		protected override void LoadContent()
 		{
@@ -238,12 +250,12 @@ namespace Predator.Managers
 			MovementKeys[1, 2] = Keys.Right;
 			MovementKeys[1, 3] = Keys.Down;
 
-			Player = new Player(TempPlayerTexture, new Vector2(100, 100), MovementKeys, 100f, Color.White, myGame);
+			Player = new Player(TempPlayerTexture, new Vector2(100, 100), MovementKeys, Color.White, myGame);
 			Player.ProjectileTexture = ProjectileTexture;
 
-			HealthBar = new HealthBar(HealthForegroundTexture, new Vector2(20, 25), Color.White, Player);
+			HealthBar = new HealthBar(HealthForegroundTexture, new Vector2(20, 25), Color.White);
 
-			OverheadHealthBar = new HealthBar(HealthOverheadForegroundTexture, new Vector2(Player.Position.X - ((48 - 35) / 2), Player.Position.Y - 10), Color.White, Player);
+			OverheadHealthBar = new HealthBar(HealthOverheadForegroundTexture, new Vector2(Player.Position.X - ((48 - 35) / 2), Player.Position.Y - 10), Color.White);
 			#endregion
 
 			#region Game Stuff
@@ -254,15 +266,15 @@ namespace Predator.Managers
 			MapBoundries.Add(new Rectangle(Camera.Size.X, -105, 5, Camera.Size.Y + 10));
 			MapBoundries.Add(new Rectangle(-5, Camera.Size.Y, Camera.Size.X + 10, 5));
 
-			sewerBackgroundParallax = new Parallax(sewerBackgroundTexture, new Vector2(Camera.Position.X, Camera.Position.Y), Color.White, new Vector2(0.50f, 0.00f), Camera);
-			sewerBackgroundSprayParallax = new Parallax(sewerBackgroundSprayTexture, new Vector2(Camera.Position.X, Camera.Position.Y), Color.White, new Vector2(0.50f, 0.00f), Camera);
+			SewerBackgroundParallax = new Parallax(SewerBackgroundTexture, new Vector2(Camera.Position.X, Camera.Position.Y), Color.White, new Vector2(0.50f, 0.00f), Camera);
+			SewerBackgroundSprayParallax = new Parallax(SewerBackgroundSprayTexture, new Vector2(Camera.Position.X, Camera.Position.Y), Color.White, new Vector2(0.50f, 0.00f), Camera);
 			#endregion
 
 			base.LoadContent();
 		}
 
 		/// <summary>
-		/// Loads all of the textures.
+		/// Loads the textures for the game manager.
 		/// </summary>
 		protected void LoadTextures()
 		{
@@ -272,7 +284,7 @@ namespace Predator.Managers
 			// Tiles
 			TempTileTexture = Game.Content.Load<Texture2D>(@"images\tiles\tempTiles");
 			SewerTileTexture = Game.Content.Load<Texture2D>(@"images\tiles\sewerTiles");
-			shadowTileTexture = Game.Content.Load<Texture2D>(@"images\tiles\fadeTiles");
+			ShadowTileTexture = Game.Content.Load<Texture2D>(@"images\tiles\fadeTiles");
 
 			// Player and entities
 			TempPlayerTexture = Game.Content.Load<Texture2D>(@"images\player\temp");
@@ -293,8 +305,8 @@ namespace Predator.Managers
 			HealthDropTexture = Game.Content.Load<Texture2D>(@"images\game\drops\healthDrop");
 
 			// Backgrounds
-			sewerBackgroundSprayTexture = Game.Content.Load<Texture2D>(@"images\game\backgrounds\funBackground");
-			sewerBackgroundTexture = Game.Content.Load<Texture2D>(@"images\game\backgrounds\sewerBackground");
+			SewerBackgroundSprayTexture = Game.Content.Load<Texture2D>(@"images\game\backgrounds\funBackground");
+			SewerBackgroundTexture = Game.Content.Load<Texture2D>(@"images\game\backgrounds\sewerBackground");
 		}
 
 		/// <summary>
@@ -346,9 +358,9 @@ namespace Predator.Managers
 
 			#region Menu Controls
 			// Open the map.
-			if (myGame.CheckKey(Keys.M) && !myGame.mapScreenManager.isTransitioningIn)
+			if (myGame.CheckKey(Keys.M) && !myGame.mapScreenManager.IsTransitioningIn)
 			{
-				myGame.mapScreenManager.isTransitioningIn = true;
+				myGame.mapScreenManager.IsTransitioningIn = true;
 				myGame.SetCurrentLevel(Game1.GameLevels.MAP);
 			}
 			// Open the stats screen.
@@ -391,7 +403,7 @@ namespace Predator.Managers
 				playerData.PExp = Player.PExp;
 				playerData.Position = Player.Position;
 				playerData.PStrength = Player.PStrength;
-				playerData.StatPoints = Player.statPoints;
+				playerData.StatPoints = Player.StatPoints;
 				tempSaveFile.FileSaveVersion = "0.0.0.1";
 				tempSaveFile.GameData = gameData;
 				tempSaveFile.OptionsData = optionsData;
@@ -420,7 +432,7 @@ namespace Predator.Managers
 					Player.PExp = tempSaveFile.PlayerData.PExp;
 					Player.Position = tempSaveFile.PlayerData.Position;
 					Player.PStrength = tempSaveFile.PlayerData.PStrength;
-					Player.statPoints = tempSaveFile.PlayerData.StatPoints;
+					Player.StatPoints = tempSaveFile.PlayerData.StatPoints;
 					Camera.Position = Player.Position;
 				}
 			}
@@ -437,12 +449,21 @@ namespace Predator.Managers
 				OverheadHealthBar.Position = new Vector2(Player.Position.X - ((44 - 35) / 2), Player.Position.Y - 7);
 				#endregion
 
+				if (myGame.CheckKey(Keys.Z))
+				{
+					Player.StatPoints += 500;
+				}
+				if (myGame.CheckKey(Keys.X))
+				{
+					Player.PExp += 500;
+				}
+
 				#region Update Enemy Stuff
 				for (int i = 0; i < EnemyList.Count; i++)
 				{
 					if (EnemyList[i].isDead)
 					{
-						dropList.Add(new HealthPickUp(HealthDropTexture, EnemyList[i].Position, myGame));
+						DropList.Add(new HealthPickUp(HealthDropTexture, EnemyList[i].Position, myGame));
 						EnemyList.RemoveAt(i);
 						i--;
 					}
@@ -450,10 +471,10 @@ namespace Predator.Managers
 					{
 						EnemyList[i].Update(gameTime);
 
-						if (EnemyList[i].isHit)
+						if (EnemyList[i].IsHit)
 						{
 							ParticleSystem.CreateParticles(EnemyList[i].PositionCenter - new Vector2(0, 15), ParticleTexture, Random, ParticleList, 230, 255, 0, 0, 0, 0, 5, 10, (int)BloodMinRadius, (int)BloodMaxRadius, 100, 250, 3, 5, 200, 255);
-							EnemyList[i].isHit = false;
+							EnemyList[i].IsHit = false;
 						}
 					}
 				}
@@ -475,17 +496,17 @@ namespace Predator.Managers
 				#endregion
 
 				#region Update Pickups
-				for (int i = 0; i < dropList.Count; i++)
+				for (int i = 0; i < DropList.Count; i++)
 				{
-					if (dropList[i].deleteMe)
+					if (DropList[i].DeleteMe)
 					{
-						dropList.RemoveAt(i);
+						DropList.RemoveAt(i);
 						Player.MainHP += 5;
 						i--;
 					}
 					else
 					{
-						dropList[i].Update(gameTime);
+						DropList[i].Update(gameTime);
 					}
 				}
 				#endregion
@@ -495,10 +516,15 @@ namespace Predator.Managers
 			#region Debug Stuff
 			if (myGame.IsGameDebug)
 			{
+				DebugTable debugTable = new DebugTable();
+				string[,] rawTable = {
+										 { "Player", "Tings", "Stats" }
+									 };
+				debugTable.initalizeTable(rawTable);
 
-				myGame.debugStrings[0] = "Player     || ";
-				myGame.debugStrings[1] = "- Tings    || Postition=(" + Player.Position.X + "," + Player.Position.Y + ") Velocity=(" + Player.Velocity.X + "," + Player.Velocity.Y + ")";
-				myGame.debugStrings[2] = "- Stats    || Agility=" + Player.PAgility + " Strength=" + Player.PStrength + " Defense=" + Player.PDefense + " StatPoints=" + Player.statPoints + "Stat Level=" + Player.Lvl;
+				myGame.debugStrings[0] = debugTable.ReturnStringSegment(0, 0);
+				myGame.debugStrings[1] = debugTable.ReturnStringSegment(0, 1) + "Postition=(" + Player.Position.X + "," + Player.Position.Y + ") Velocity=(" + Player.Velocity.X + "," + Player.Velocity.Y + ")";
+				myGame.debugStrings[2] = debugTable.ReturnStringSegment(0, 2) + "Agility=" + Player.PAgility + " Strength=" + Player.PStrength + " Defense=" + Player.PDefense + " StatPoints=" + Player.StatPoints + "Stat Level=" + Player.Lvl;
 			}
 			#endregion
 
@@ -506,15 +532,15 @@ namespace Predator.Managers
 		}
 
 		/// <summary>
-		/// Draws the game component's content.
+		/// Draws the content of the game manager.
 		/// </summary>
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		public override void Draw(GameTime gameTime)
 		{
 			spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null);
 			{
-				sewerBackgroundParallax.Draw(gameTime, spriteBatch);
-				sewerBackgroundSprayParallax.Draw(gameTime, spriteBatch);
+				SewerBackgroundParallax.Draw(gameTime, spriteBatch);
+				SewerBackgroundSprayParallax.Draw(gameTime, spriteBatch);
 			}
 			spriteBatch.End();
 
@@ -544,7 +570,7 @@ namespace Predator.Managers
 					p.Draw(gameTime, spriteBatch);
 
 				}
-				foreach (HealthPickUp h in dropList)
+				foreach (HealthPickUp h in DropList)
 				{
 					h.Draw(gameTime, spriteBatch);
 				}
@@ -593,10 +619,10 @@ namespace Predator.Managers
 						e.DrawBoundingCollisions(LineTexture, Color.Magenta, spriteBatch);
 					}
 
-					spriteBatch.Draw(LineTexture, new Rectangle(Player.test.X, Player.test.Y, Player.test.Width, 1), Color.White);
-					spriteBatch.Draw(LineTexture, new Rectangle(Player.test.Right - 1, Player.test.Y, 1, Player.test.Height), Color.White);
-					spriteBatch.Draw(LineTexture, new Rectangle(Player.test.X, Player.test.Bottom - 1, Player.test.Width, 1), Color.White);
-					spriteBatch.Draw(LineTexture, new Rectangle(Player.test.X, Player.test.Y, 1, Player.test.Height), Color.White);
+					spriteBatch.Draw(LineTexture, new Rectangle(Player.DebugBlock.X, Player.DebugBlock.Y, Player.DebugBlock.Width, 1), Color.White);
+					spriteBatch.Draw(LineTexture, new Rectangle(Player.DebugBlock.Right - 1, Player.DebugBlock.Y, 1, Player.DebugBlock.Height), Color.White);
+					spriteBatch.Draw(LineTexture, new Rectangle(Player.DebugBlock.X, Player.DebugBlock.Bottom - 1, Player.DebugBlock.Width, 1), Color.White);
+					spriteBatch.Draw(LineTexture, new Rectangle(Player.DebugBlock.X, Player.DebugBlock.Y, 1, Player.DebugBlock.Height), Color.White);
 
 					Player.DrawBoundingCollisions(LineTexture, Color.Blue, spriteBatch);
 				}
@@ -661,7 +687,14 @@ namespace Predator.Managers
 					}
 					else if (tiles[y, x] == 78)
 					{
-						EnemyList.Add(new Enemy(CrawlerTexture, new Vector2(x * 35, y * 35), Enemy.EnemyType.RAT, Color.DarkSeaGreen, myGame));
+						Enemy tempCrawler = new Enemy(CrawlerTexture, new Vector2(x * 35, y * 35), Enemy.EnemyTypes.RAT, Color.DarkSeaGreen, myGame);
+						tempCrawler.Scale = 0.70f;
+						int width = (int)(tempCrawler.CurrentAnimation.frameSize.X * tempCrawler.Scale);
+						int left = (int)(tempCrawler.CurrentAnimation.frameSize.X * tempCrawler.Scale - width);
+						int height = (int)(tempCrawler.CurrentAnimation.frameSize.Y * tempCrawler.Scale);
+						int top = (int)(tempCrawler.CurrentAnimation.frameSize.Y * tempCrawler.Scale - height);
+						tempCrawler.Inbounds = new Rectangle(left, top, width, height);
+						EnemyList.Add(tempCrawler);
 					}
 
 					if (tiles[y, x] > 69)
@@ -672,7 +705,7 @@ namespace Predator.Managers
 					if (tiles[y, x] > 0)
 					{
 						TilesList.Add(new Tile(SewerTileTexture, new Vector2(x * 35, y * 35), Tile.TileCollisions.Impassable, TilesList, 1, Color.White));
-						TilesList.Add(new Tile(shadowTileTexture, new Vector2(x * 35, y * 35), Tile.TileCollisions.Impassable, TilesList, 1, Color.White));
+						TilesList.Add(new Tile(ShadowTileTexture, new Vector2(x * 35, y * 35), Tile.TileCollisions.Impassable, TilesList, 1, Color.White));
 					}
 				}
 			}

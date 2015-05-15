@@ -17,28 +17,92 @@ namespace Predator.Managers
 	/// </summary>
 	public class OptionsManager : Microsoft.Xna.Framework.DrawableGameComponent
 	{
-		Game1 myGame;
-		SpriteBatch spriteBatch;
+		/// <summary>
+		/// The game that the options manager runs off of.
+		/// </summary>
+		private Game1 myGame;
+		/// <summary>
+		/// The sprite batch that the options manager uses.
+		/// </summary>
+		private SpriteBatch spriteBatch;
 
-		Texture2D BackgroundTexture;
-		Texture2D Button1Texture;
-		Texture2D Button2Texture;
-		Texture2D CheckboxTexture;
-		Texture2D ArrowButton1Texture;
+		#region Textures
+		/// <summary>
+		/// Loads the texture of the background
+		/// </summary>
+		public Texture2D BackgroundTexture;
+		/// <summary>
+		/// Loads the texture for button type one.
+		/// </summary>
+		public Texture2D Button1Texture;
+		/// <summary>
+		/// Loads the texture for button type two.
+		/// </summary>
+		public Texture2D Button2Texture;
+		/// <summary>
+		/// Loads the texture for the checkbox.
+		/// </summary>
+		public Texture2D CheckboxTexture;
+		/// <summary>
+		/// Loads the texture for the arrow button.
+		/// </summary>
+		public Texture2D ArrowButton1Texture;
+		/// <summary>
+		/// Loads the texture for the arrow button.
+		/// </summary>
 		Texture2D ArrowButton2Texture;
+		#endregion
 
-		Button ApplyButton;
-		Button CancelButton;
-		Button VSyncButton;
-		Checkbox VSyncCheckbox;
-		Button WindowSizeButton;
-		Button DecWindowSizeButton;
-		Button IncWindowSizeButton;
+		#region UI
+		/// <summary>
+		/// The apply button.
+		/// </summary>
+		public Button ApplyButton;
+		/// <summary>
+		/// The cancel button.
+		/// </summary>
+		public Button CancelButton;
+		/// <summary>
+		/// The button for the label for VSync.
+		/// </summary>
+		public Button VSyncButton;
+		/// <summary>
+		/// The checkbox to toggle VSync.
+		/// </summary>
+		public Checkbox VSyncCheckbox;
+		/// <summary>
+		/// The button for the label for the window size.
+		/// </summary>
+		public Button WindowSizeButton;
+		/// <summary>
+		/// The button to decrease the window size.
+		/// </summary>
+		public Button DecWindowSizeButton;
+		/// <summary>
+		/// The button to increase the window size.
+		/// </summary>
+		public Button IncWindowSizeButton;
+		#endregion
 
-		string WindowSizeString;
-		Point[] WindowSizes = new Point[2];
-		int WindowIndex = 1;
+		#region Window Size Stuff
+		/// <summary>
+		/// The string to tell what the window size is.
+		/// </summary>
+		protected string WindowSizeString;
+		/// <summary>
+		/// The different sizes of the window.
+		/// </summary>
+		protected Point[] WindowSizes = new Point[2];
+		/// <summary>
+		/// The current window size index.
+		/// </summary>
+		protected int WindowIndex = 1;
+		#endregion
 
+		/// <summary>
+		/// Creates the options manager.
+		/// </summary>
+		/// <param name="game">The game that the options manager runs off of.</param>
 		public OptionsManager(Game1 game)
 			: base(game)
 		{
@@ -56,6 +120,9 @@ namespace Predator.Managers
 			base.Initialize();
 		}
 
+		/// <summary>
+		/// Loads the content for the options manager.
+		/// </summary>
 		protected override void LoadContent()
 		{
 			spriteBatch = new SpriteBatch(myGame.GraphicsDevice);
@@ -78,6 +145,9 @@ namespace Predator.Managers
 			base.LoadContent();
 		}
 
+		/// <summary>
+		/// Loads the textures for the options manager.
+		/// </summary>
 		public void LoadTextures()
 		{
 			BackgroundTexture = Game.Content.Load<Texture2D>(@"images\game\backgrounds\sewerBackgroundG");
@@ -170,6 +240,10 @@ namespace Predator.Managers
 			base.Update(gameTime);
 		}
 
+		/// <summary>
+		/// Draws the content of the options manager.
+		/// </summary>
+		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		public override void Draw(GameTime gameTime)
 		{
 			spriteBatch.Begin();

@@ -100,12 +100,15 @@
     <Compile Include="Particles\Particle.cs" />
     <Compile Include="Particles\ParticleSystem.cs" />
     <Compile Include="VGame\Camera.cs" />
+    <Compile Include="VGame\EnemyTemplate.cs" />
     <Compile Include="VGame\Parallax.cs" />
+    <Compile Include="VGame\PlayerTemplate.cs" />
     <Compile Include="VGame\Sprite.cs" />
     <Compile Include="VGame\Tile.cs" />
     <Compile Include="VGenerator\DoubleArrayExtensionMethods.cs" />
     <Compile Include="VGenerator\MapGenerator.cs" />
     <Compile Include="VGUI\Checkbox.cs" />
+    <Compile Include="VGUI\DebugTable.cs" />
     <Compile Include="VGUI\GUI.cs" />
     <Compile Include="Pathing\GridPathing.cs" />
     <Compile Include="Helpers\RectangleHelper.cs" />
