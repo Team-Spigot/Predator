@@ -268,7 +268,7 @@ namespace Predator
 			TempWindowSize = WindowSize;
 			ApplySettings = true;
 
-			SetCurrentLevel(GameLevels.MENU);
+			SetCurrentLevel(GameLevels.MAP);
 		}
 
 		/// <summary>

@@ -216,11 +216,14 @@ namespace Predator.Characters
 			{
 				foreach (Tile t in myGame.gameManager.TilesList)
 				{
-					if (t.TileType == Tile.TileCollisions.Impassable)
+					if (CheckInRadius(t.Position, 55))
 					{
-						if (BoundingCollisions.TouchLeftOf(t.BoundingCollisions) || BoundingCollisions.TouchRightOf(t.BoundingCollisions))
+						if (t.TileType == Tile.TileCollisions.Impassable)
 						{
-							isJumping2 = true;
+							if (BoundingCollisions.TouchLeftOf(t.BoundingCollisions) || BoundingCollisions.TouchRightOf(t.BoundingCollisions))
+							{
+								isJumping2 = true;
+							}
 						}
 					}
 				}

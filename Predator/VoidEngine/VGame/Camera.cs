@@ -47,6 +47,10 @@ namespace VoidEngine.VGame
 			origin = screenCenter / zoom;
 		}
 
+		public Camera()
+		{
+		}
+
 		/// <summary>
 		/// Gets or sets the zoom of the camera.
 		/// </summary>

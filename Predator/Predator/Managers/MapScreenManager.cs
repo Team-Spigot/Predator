@@ -27,7 +27,7 @@ namespace Predator.Managers
 		/// <summary>
 		/// Loads the line texture.
 		/// </summary>
-		public Texture2D line;
+		public Texture2D LineTexture;
 		Texture2D mapBackground;
 		Texture2D mapHudTexture;
 		Texture2D buttonTexture;
@@ -108,15 +108,16 @@ namespace Predator.Managers
 
 			LoadTextures();
 
-			level1Button = new Button(buttonTexture, new Vector2(700, 400), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
-			level2Button = new Button(buttonTexture, new Vector2(100, 120), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
+			camera = new Camera(myGame.GraphicsDevice.Viewport, new Point(2048, 1536), 1f);
+			camera.Position = new Vector2(512, 256);
+			camera.Zoom = 0.5f;
+
+			level1Button = new Button(buttonTexture, new Vector2(700, 400), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, camera);
+			level2Button = new Button(buttonTexture, new Vector2(100, 120), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, camera);
 			backButton = new Button(buttonTexture, new Vector2(50, 700), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
 			hudBackButton = new Button(buttonTexture, new Vector2(100, 700), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
 
 			debugLabel = new Label(new Vector2(350, 15), myGame.segoeUIMonoDebug, 1.0f, Color.White, "");
-
-			camera = new Camera(myGame.GraphicsDevice.Viewport, new Point(2048, 1536), 1f);
-			camera.Position = new Vector2(512, 256);
 
 			base.LoadContent();
 		}
@@ -128,6 +129,7 @@ namespace Predator.Managers
 			hudBackButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\tempMapButton");
 			backButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\tempMapButton");
 			mapHudTexture = Game.Content.Load<Texture2D>(@"images\gui\map\tempMapHud");
+			LineTexture = Game.Content.Load<Texture2D>(@"images\other\line");
 		}
 
 		/// <summary>
@@ -177,29 +179,53 @@ namespace Predator.Managers
 				camera.Position -= Direction * Speed;
 
 			}
-			if (camera.Zoom <= 1.0f)
+			if (camera.Zoom <= 0.5f)
 			{
-				camera.Zoom = 1.0f;
+				camera.Zoom = 0.5f;
 				camera.Position = new Vector2(0, 0);
 				isZoomingOut = false;
 			}
 
 			if (isHudScrollingIn)
 			{
-				HudScroll -= 10;
-				if (HudScroll <= 527)
+				if (camera.Position.X < myGame.WindowSize.X / 2)
 				{
-					HudScroll = 527;
-					isHudScrollingIn = false;
+					HudScroll -= 10;
+					if (HudScroll <= 527)
+					{
+						HudScroll = 527;
+						isHudScrollingIn = false;
+					}
+				}
+				else
+				{
+					HudScroll += 10;
+					if (HudScroll >= 0)
+					{
+						HudScroll = 0;
+						isHudScrollingIn = false;
+					}
 				}
 			}
 			if (isHudScrollingOut)
 			{
-				HudScroll += 10;
-				if (HudScroll >= 1024)
+				if (camera.Position.X < myGame.WindowSize.X / 2)
 				{
-					HudScroll = 1024;
-					isHudScrollingOut = false;
+					HudScroll += 10;
+					if (HudScroll >= 1024)
+					{
+						HudScroll = 1024;
+						isHudScrollingOut = false;
+					}
+				}
+				else
+				{
+					HudScroll -= 10;
+					if (HudScroll <= -527)
+					{
+						HudScroll = -527;
+						isHudScrollingIn = false;
+					}
 				}
 			}
 			switch (levelSelect)
@@ -211,7 +237,7 @@ namespace Predator.Managers
 					}
 					break;
 				case 2:
-					if (camera.Position.X - level2Button.Position.X <= 100 && camera.Position.Y - level1Button.Position.Y <= 100)
+					if (camera.Position.X - level2Button.Position.X <= 100 && camera.Position.Y - level2Button.Position.Y <= 100)
 					{
 						Speed = 0.0f;
 					}
@@ -341,6 +367,11 @@ namespace Predator.Managers
 						hudBackButton.Draw(gameTime, spriteBatch);
 					}
 				}
+
+				spriteBatch.Draw(LineTexture, new Rectangle((int)level1Button.RelitiveCenter.X, (int)level1Button.RelitiveCenter.Y, 1000, 1), Color.Red);
+				spriteBatch.Draw(LineTexture, new Rectangle((int)level1Button.RelitiveCenter.X, (int)level1Button.RelitiveCenter.Y, 1, 1000), Color.Red);
+				spriteBatch.Draw(LineTexture, new Rectangle((int)level2Button.RelitiveCenter.X, (int)level2Button.RelitiveCenter.Y, 1000, 1), Color.Blue);
+				spriteBatch.Draw(LineTexture, new Rectangle((int)level2Button.RelitiveCenter.X, (int)level2Button.RelitiveCenter.Y, 1, 1000), Color.Blue);
 
 				debugLabel.Draw(gameTime, spriteBatch);
 			}

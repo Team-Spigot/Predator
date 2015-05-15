@@ -8,11 +8,11 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
-using VoidEngine.VGUI;
-using VoidEngine.VGame;
 using VoidEngine.Helpers;
-using Predator.Characters;
 using VoidEngine.Particles;
+using VoidEngine.VGame;
+using VoidEngine.VGUI;
+using Predator.Characters;
 using Predator.Game;
 using Predator.Other;
 
@@ -344,23 +344,6 @@ namespace Predator.Managers
 			}
 			#endregion
 
-			if (myGame.KeyboardState.IsKeyDown(Keys.Up))
-			{
-				Player.Position -= new Vector2(0, 15);
-			}
-			if (myGame.KeyboardState.IsKeyDown(Keys.Down))
-			{
-				Player.Position += new Vector2(0, 15);
-			}
-			if (myGame.KeyboardState.IsKeyDown(Keys.Left))
-			{
-				Player.Position -= new Vector2(15, 0);
-			}
-			if (myGame.KeyboardState.IsKeyDown(Keys.Right))
-			{
-				Player.Position += new Vector2(15, 0);
-			}
-
 			#region Menu Controls
 			// Open the map.
 			if (myGame.CheckKey(Keys.M) && !myGame.mapScreenManager.isTransitioningIn)
@@ -385,6 +368,61 @@ namespace Predator.Managers
 			{
 				CurrentLevel = 0;
 				RegenerateMap();
+			}
+
+			if (myGame.CheckKey(Keys.F6))
+			{
+				SaveFile tempSaveFile = new SaveFile();
+				FileManagerTemplate.Game gameData = new FileManagerTemplate.Game();
+				gameData.CurrentLevel = CurrentLevel;
+				FileManagerTemplate.Options optionsData = new FileManagerTemplate.Options();
+				optionsData.VSync = myGame.VSync;
+				optionsData.WindowSize = myGame.WindowSize;
+				FileManagerTemplate.PlayerData playerData = new FileManagerTemplate.PlayerData();
+				playerData.Damage = Player.Damage;
+				playerData.Defense = Player.Defense;
+				playerData.Level = Player.Level;
+				playerData.Lvl = Player.Lvl;
+				playerData.MainHP = Player.MainHP;
+				playerData.MaxHP = Player.MaxHP;
+				playerData.MovementKeys = Player.MovementKeys;
+				playerData.PAgility = Player.PAgility;
+				playerData.PDefense = Player.PDefense;
+				playerData.PExp = Player.PExp;
+				playerData.Position = Player.Position;
+				playerData.PStrength = Player.PStrength;
+				playerData.StatPoints = Player.statPoints;
+				tempSaveFile.FileSaveVersion = "0.0.0.1";
+				tempSaveFile.GameData = gameData;
+				tempSaveFile.OptionsData = optionsData;
+				tempSaveFile.PlayerData = playerData;
+				SaveFileManager.SaveFile(tempSaveFile, "", "Save1.sav");
+			}
+
+			if (myGame.CheckKey(Keys.F5))
+			{
+				SaveFile tempSaveFile = SaveFileManager.LoadFile("", "Save1.sav");
+				if (tempSaveFile.FileSaveVersion == "0.0.0.1")
+				{
+					CurrentLevel = tempSaveFile.GameData.CurrentLevel;
+					myGame.VSync = tempSaveFile.OptionsData.VSync;
+					myGame.WindowSize = tempSaveFile.OptionsData.WindowSize;
+					myGame.ApplySettings = true;
+					Player.Damage = tempSaveFile.PlayerData.Damage;
+					Player.Defense = tempSaveFile.PlayerData.Defense;
+					Player.Level = tempSaveFile.PlayerData.Level;
+					Player.Lvl = tempSaveFile.PlayerData.Lvl;
+					Player.MainHP = tempSaveFile.PlayerData.MainHP;
+					Player.MaxHP = tempSaveFile.PlayerData.MaxHP;
+					Player.MovementKeys = tempSaveFile.PlayerData.MovementKeys;
+					Player.PAgility = tempSaveFile.PlayerData.PAgility;
+					Player.PDefense = tempSaveFile.PlayerData.PDefense;
+					Player.PExp = tempSaveFile.PlayerData.PExp;
+					Player.Position = tempSaveFile.PlayerData.Position;
+					Player.PStrength = tempSaveFile.PlayerData.PStrength;
+					Player.statPoints = tempSaveFile.PlayerData.StatPoints;
+					Camera.Position = Player.Position;
+				}
 			}
 
 			#region Update when level is loaded.
@@ -433,13 +471,6 @@ namespace Predator.Managers
 					{
 						ParticleList[i].Update(gameTime);
 					}
-				}
-				#endregion
-
-				#region Update Tile stuff
-				for (int i = 0; i < TilesList.Count; i++)
-				{
-					TilesList[i].Update(gameTime);
 				}
 				#endregion
 
@@ -561,6 +592,11 @@ namespace Predator.Managers
 					{
 						e.DrawBoundingCollisions(LineTexture, Color.Magenta, spriteBatch);
 					}
+
+					spriteBatch.Draw(LineTexture, new Rectangle(Player.test.X, Player.test.Y, Player.test.Width, 1), Color.White);
+					spriteBatch.Draw(LineTexture, new Rectangle(Player.test.Right - 1, Player.test.Y, 1, Player.test.Height), Color.White);
+					spriteBatch.Draw(LineTexture, new Rectangle(Player.test.X, Player.test.Bottom - 1, Player.test.Width, 1), Color.White);
+					spriteBatch.Draw(LineTexture, new Rectangle(Player.test.X, Player.test.Y, 1, Player.test.Height), Color.White);
 
 					Player.DrawBoundingCollisions(LineTexture, Color.Blue, spriteBatch);
 				}

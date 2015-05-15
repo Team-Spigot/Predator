@@ -21,7 +21,7 @@ namespace VoidEngine.VGUI
 		/// <summary>
 		/// This is the Void Engine button's state enum
 		/// </summary>
-		protected enum bState
+		protected enum ButtonStates
 		{
 			HOVER,
 			UP,
@@ -29,25 +29,29 @@ namespace VoidEngine.VGUI
 			RELEASED
 		}
 
-		protected Label label; // This is the label that the button has overlayed on it.
+		protected Label Label; // This is the label that the button has overlayed on it.
 
 		public string Text
 		{
 			get
 			{
-				return label.Text;
+				return Label.Text;
 			}
 			set
 			{
-				label.Text = value;
+				Label.Text = value;
 			}
 		}
 
-		protected bState buttonState = new bState(); // This is the button state variable
-		protected bool mousePress = false; // This
-		protected bool previousMousePress = false;
-		protected Point mouseCords;
-		protected Rectangle testCollision;
+		protected ButtonStates CurrentButtonState = new ButtonStates(); // This is the button state variable
+		protected bool MousePress = false; // This
+		protected bool PreviousMousePress = false;
+		protected Point MouseCords;
+		protected Rectangle CollisionBounds;
+		public Vector2 RelitiveCenter;
+
+		Camera Camera;
+		bool CameraExists = false;
 
 		/// <summary>
 		/// Creates a button.
@@ -67,16 +71,68 @@ namespace VoidEngine.VGUI
 			: base(position, color, animationSetList)
 		{
 			Color = color;
+			CameraExists = false;
 			AnimationSets = animationSetList;
-			label = new Label(new Vector2(position.X + ((animationSetList[0].frameSize.X - font.MeasureString(text).X) / 2), position.Y + ((animationSetList[0].frameSize.Y - font.MeasureString(text).Y) / 2)), font, scale, fontColor, text);
+			Label = new Label(new Vector2(position.X + ((animationSetList[0].frameSize.X - font.MeasureString(text).X) / 2), position.Y + ((animationSetList[0].frameSize.Y - font.MeasureString(text).Y) / 2)), font, scale, fontColor, text);
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="texture"></param>
+		/// <param name="position"></param>
+		/// <param name="font"></param>
+		/// <param name="scale"></param>
+		/// <param name="fontColor"></param>
+		/// <param name="text"></param>
+		/// <param name="buttonColor"></param>
 		public Button(Texture2D texture, Vector2 position, SpriteFont font, float scale, Color fontColor, string text, Color buttonColor)
 			: base(position, buttonColor, texture)
 		{
 			Color = buttonColor;
+			CameraExists = false;
 			AddAnimations(texture);
-			label = new Label(new Vector2(position.X + (((texture.Width / 3) - font.MeasureString(text).X) / 2), position.Y + ((texture.Height - font.MeasureString(text).Y) / 2)), font, scale, fontColor, text);
+			Label = new Label(new Vector2(position.X + (((texture.Width / 3) - font.MeasureString(text).X) / 2), position.Y + ((texture.Height - font.MeasureString(text).Y) / 2)), font, scale, fontColor, text);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="position"></param>
+		/// <param name="font"></param>
+		/// <param name="scale"></param>
+		/// <param name="fontColor"></param>
+		/// <param name="text"></param>
+		/// <param name="color"></param>
+		/// <param name="animationSetList"></param>
+		public Button(Vector2 position, SpriteFont font, float scale, Color fontColor, string text, Color color, List<Sprite.AnimationSet> animationSetList, Camera camera)
+			: base(position, color, animationSetList)
+		{
+			Color = color;
+			this.Camera = camera;
+			CameraExists = true;
+			AnimationSets = animationSetList;
+			Label = new Label(new Vector2(position.X + ((animationSetList[0].frameSize.X - font.MeasureString(text).X) / 2), position.Y + ((animationSetList[0].frameSize.Y - font.MeasureString(text).Y) / 2)), font, scale, fontColor, text);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="texture"></param>
+		/// <param name="position"></param>
+		/// <param name="font"></param>
+		/// <param name="scale"></param>
+		/// <param name="fontColor"></param>
+		/// <param name="text"></param>
+		/// <param name="buttonColor"></param>
+		public Button(Texture2D texture, Vector2 position, SpriteFont font, float scale, Color fontColor, string text, Color buttonColor, Camera camera)
+			: base(position, buttonColor, texture)
+		{
+			Color = buttonColor;
+			this.Camera = camera;
+			CameraExists = true;
+			AddAnimations(texture);
+			Label = new Label(new Vector2(position.X + (((texture.Width / 3) - font.MeasureString(text).X) / 2), position.Y + ((texture.Height - font.MeasureString(text).Y) / 2)), font, scale, fontColor, text);
 		}
 
 		/// <summary>
@@ -88,11 +144,9 @@ namespace VoidEngine.VGUI
 		/// <param name="x">the x of mouse</param>
 		/// <param name="y">the y of mouse</param>
 		/// <returns>Boolean</returns>
-		protected Boolean hitButtonAlpha(Vector2 textureSize, Point frameSize, Point mouseCords)
+		protected Boolean hitButtonAlpha(Point mouseCords)
 		{
-			testCollision = new Rectangle((int)textureSize.X, (int)textureSize.Y, frameSize.X, frameSize.Y);
-
-			if (testCollision.Intersects(new Rectangle(mouseCords.X, mouseCords.Y, 1, 1)))
+			if (CollisionBounds.Intersects(new Rectangle(mouseCords.X, mouseCords.Y, 1, 1)))
 			{
 				return true;
 			}
@@ -108,36 +162,47 @@ namespace VoidEngine.VGUI
 		{
 			MouseState mState = Mouse.GetState();
 
-			mouseCords = new Point(mState.X, mState.Y);
-			previousMousePress = mousePress;
-			mousePress = mState.LeftButton == ButtonState.Pressed;
-
-			label.Position = new Vector2(position.X + ((CurrentAnimation.frameSize.X - label.GetFont.MeasureString(label.Text).X) / 2), position.Y + ((CurrentAnimation.frameSize.Y - label.GetFont.MeasureString(label.Text).Y) / 2));
-
-			if (hitButtonAlpha(position, CurrentAnimation.frameSize, mouseCords))
+			if (Camera != null)
 			{
-				if (mousePress)
+				CollisionBounds = new Rectangle((int)(position.X * Camera.Zoom), (int)(position.Y * Camera.Zoom), (int)(CurrentAnimation.frameSize.X * Camera.Zoom), (int)(CurrentAnimation.frameSize.Y * Camera.Zoom));
+			}
+			else
+			{
+				CollisionBounds = new Rectangle((int)position.X, (int)position.Y, CurrentAnimation.frameSize.X, CurrentAnimation.frameSize.Y);
+			}
+
+			RelitiveCenter = new Vector2(CollisionBounds.Center.X, CollisionBounds.Center.Y);
+
+			MouseCords = new Point(mState.X, mState.Y);
+			PreviousMousePress = MousePress;
+			MousePress = mState.LeftButton == ButtonState.Pressed;
+
+			Label.Position = new Vector2(position.X + ((CurrentAnimation.frameSize.X - Label.GetFont.MeasureString(Label.Text).X) / 2), position.Y + ((CurrentAnimation.frameSize.Y - Label.GetFont.MeasureString(Label.Text).Y) / 2));
+
+			if (hitButtonAlpha(MouseCords))
+			{
+				if (MousePress)
 				{
-					buttonState = bState.DOWN;
+					CurrentButtonState = ButtonStates.DOWN;
 					SetAnimation("PRESSED");
 				}
-				else if (!mousePress && previousMousePress)
+				else if (!MousePress && PreviousMousePress)
 				{
-					if (buttonState == bState.DOWN)
+					if (CurrentButtonState == ButtonStates.DOWN)
 					{
-						buttonState = bState.RELEASED;
+						CurrentButtonState = ButtonStates.RELEASED;
 						SetAnimation("IDLE");
 					}
 				}
 				else
 				{
-					buttonState = bState.HOVER;
+					CurrentButtonState = ButtonStates.HOVER;
 					SetAnimation("HOVER");
 				}
 			}
 			else
 			{
-				buttonState = bState.UP;
+				CurrentButtonState = ButtonStates.UP;
 				SetAnimation("IDLE");
 			}
 		}
@@ -148,7 +213,7 @@ namespace VoidEngine.VGUI
 		/// <returns>Boolean</returns>
 		public bool Clicked()
 		{
-			if (buttonState == bState.RELEASED)
+			if (CurrentButtonState == ButtonStates.RELEASED)
 			{
 				return true;
 			}
@@ -165,7 +230,7 @@ namespace VoidEngine.VGUI
 		{
 			base.Draw(gameTime, spriteBatch);
 
-			label.Draw(gameTime, spriteBatch);
+			Label.Draw(gameTime, spriteBatch);
 		}
 
 		protected override void AddAnimations(Texture2D texture)

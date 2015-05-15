@@ -19,7 +19,7 @@ namespace Predator.Characters
 		public int Level
 		{
 			get;
-			protected set;
+			set;
 		}
 		/// <summary>
 		/// Gets or sets if the player is dead.
@@ -53,7 +53,7 @@ namespace Predator.Characters
 		public float MaxHP
 		{
 			get;
-			protected set;
+			set;
 		}
 		/// <summary>
 		/// Gets or sets if the player fell out the map.
@@ -804,7 +804,7 @@ namespace Predator.Characters
 
 			foreach (Tile t in myGame.gameManager.TilesList)
 			{
-				if (CheckInRadius(t.Position, new Vector2(t.BoundingCollisions.Width, t.BoundingCollisions.Height), 1500))
+				if (CheckInRadius(t.Position, 55))
 				{
 					if (BoundingCollisions.TouchTopOf(t.BoundingCollisions) && t.TileType != Tile.TileCollisions.Passable)
 					{
@@ -882,14 +882,9 @@ namespace Predator.Characters
 			base.AddAnimations(texture);
 		}
 
-		public bool CheckInRadius(Vector2 position, Vector2 area, float raidus)
+		public bool CheckInRadius(Vector2 position, float radius)
 		{
-			if (position.X + area.X < this.Position.X + raidus && position.X > this.Position.X + raidus)
-			{
-				return true;
-			}
-
-			if (position.Y + area.Y < this.Position.Y + raidus && position.Y > this.Position.Y + raidus)
+			if (CollisionHelper.Magnitude(position - this.Position) < radius)
 			{
 				return true;
 			}
