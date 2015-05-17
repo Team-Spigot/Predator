@@ -444,8 +444,8 @@ namespace Predator.Managers
 				Player.UpdateKeyboardState(gameTime, myGame.KeyboardState);
 				Player.Update(gameTime);
 				//HealthBar.SetPlayer = Player;
-				HealthBar.Update(gameTime);
-				OverheadHealthBar.Update(gameTime);
+				HealthBar.Update(gameTime, Player.HP, Player.MaxHP);
+				OverheadHealthBar.Update(gameTime, Player.HP, Player.MaxHP);
 				OverheadHealthBar.Position = new Vector2(Player.Position.X - ((44 - 35) / 2), Player.Position.Y - 7);
 				#endregion
 

@@ -194,7 +194,7 @@ namespace Predator.Managers
 
 			Camera = new Camera(myGame.GraphicsDevice.Viewport, new Point(2048, 1536), 1f);
 			Camera.Position = new Vector2(512, 256);
-			Camera.Zoom = 0.5f;
+			Camera.Zoom = 1.0f;
 
 			Level1Button = new Button(ButtonTexture, new Vector2(700, 400), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, Camera);
 			Level2Button = new Button(ButtonTexture, new Vector2(100, 120), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, Camera);
@@ -223,7 +223,8 @@ namespace Predator.Managers
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		public override void Update(GameTime gameTime)
 		{
-			// TODO: Add your update code here
+			Vector2 tempDirection;
+
 			if (IsTransitioningIn)
 			{
 				IsTransitioningOut = false;
@@ -264,9 +265,9 @@ namespace Predator.Managers
 				Camera.Position -= Direction * Speed;
 
 			}
-			if (Camera.Zoom <= 0.5f)
+			if (Camera.Zoom <= 1.0f)
 			{
-				Camera.Zoom = 0.5f;
+				Camera.Zoom = 1.0f;
 				Camera.Position = new Vector2(0, 0);
 				IsZoomingOut = false;
 			}
@@ -326,24 +327,21 @@ namespace Predator.Managers
 					{
 						Speed = 0.0f;
 					}
-					break;
-				/*
-				case 3:
-					if (camera.Position.X - level3Button.GetPosition.X >= 150 && camera.Position.Y - level1Button.GetPosition.Y <= 50)
-					{
-						Speed = 0.0f;
-					}
-					break;
-				*/
+					break; 
+				//case 3:
+				//	if (camera.Position.X - level3Button.GetPosition.X >= 150 && camera.Position.Y - level1Button.GetPosition.Y <= 50)
+				//	{
+				//		Speed = 0.0f;
+				//	}
+				//	break;
 			}
 			if (LevelPullUp == false)
 			{
-				Vector2 tempDirection;
 
 				Level1Button.Update(gameTime);
 				Level2Button.Update(gameTime);
-
 				ExitButton.Update(gameTime);
+
 				if (Level1Button.Clicked()) // Zooming into zone 1
 				{
 					Speed = 10.0f;
@@ -374,8 +372,6 @@ namespace Predator.Managers
 			}
 			if (LevelPullUp == true)
 			{
-				Vector2 tempDirection;
-
 				HUDBackButton.Update(gameTime);
 
 				if (HUDBackButton.Clicked())
@@ -411,6 +407,7 @@ namespace Predator.Managers
 
 				myGame.debugStrings[0] = debugTable.ReturnStringSegment(0, 0);
 				myGame.debugStrings[1] = debugTable.ReturnStringSegment(0, 1) + "IsTransitioningIn=" + IsTransitioningIn + " IsTransitioningOut=" + IsTransitioningOut + " TranitionAlpha=" + TransitionAlpha;
+				myGame.debugStrings[2] = "";
 			}
 
 			base.Update(gameTime);
@@ -438,7 +435,7 @@ namespace Predator.Managers
 			{
 				if (IsTransitioningIn || IsTransitioningOut)
 				{
-					//spriteBatch.Draw(line, new Rectangle(0, 0, myGame.WindowSize.X, myGame.WindowSize.X), new Color(0, 0, 0, TransitionAlpha));
+					spriteBatch.Draw(LineTexture, new Rectangle(0, 0, myGame.WindowSize.X, myGame.WindowSize.X), new Color(0, 0, 0, TransitionAlpha));
 				}
 				if (!IsTransitioningIn && !IsTransitioningOut)
 				{
