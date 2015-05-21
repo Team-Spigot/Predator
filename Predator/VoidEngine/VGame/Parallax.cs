@@ -26,11 +26,10 @@ namespace VoidEngine.VGame
 		/// <summary>
 		///
 		/// </summary>
-		public Vector2 position
-		{
-			get;
-			set;
-		}
+		public Vector2 position1;
+		public Vector2 position2;
+		public Vector2 position3;
+		public Vector2 position4;
 		/// <summary>
 		///
 		/// </summary>
@@ -72,6 +71,9 @@ namespace VoidEngine.VGame
 			set;
 		}
 
+		// An array of positions of the parallaxing background
+		public Vector2[] positions;
+
 		/// <summary>
 		///
 		/// </summary>
@@ -83,21 +85,19 @@ namespace VoidEngine.VGame
 		public Parallax(Texture2D texture, Vector2 position, Color color, Vector2 multiplier, Camera camera)
 		{
 			this.texture = texture;
-			this.position = position;
 			this.color = color;
 			this.multiplier = multiplier;
 			this.camera = camera;
-			defaultPosition = position;
-		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		public Vector2 ParallaxPosition
-		{
-			get
+			// If we divide the screen with the texture width then we can determine the number of tiles need.
+			// We add 1 to it so that we won't have a gap in the tiling
+			positions = new Vector2[(int)(camera.Size.X / camera.viewportSize.X + 1)];
+
+			// Set the initial positions of the parallaxing background
+			for (int i = 0; i < positions.Length; i++)
 			{
-				return new Vector2(MathHelper.Clamp((float)(camera.Position.X), (float)camera.Bounds.Left, (float)camera.Bounds.Right), MathHelper.Clamp((float)(camera.Position.Y), (float)camera.Bounds.Top, (float)camera.Bounds.Bottom));
+				// We need the tiles to be side by side to create a tiling effect
+				positions[i] = new Vector2(i * camera.viewportSize.X, 0);
 			}
 		}
 
@@ -108,7 +108,8 @@ namespace VoidEngine.VGame
 		/// <param name="spriteBatch"></param>
 		public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
 		{
-			spriteBatch.Draw(texture, new Rectangle((int)(position.X), (int)(position.Y), (int)camera.viewportSize.X, (int)camera.viewportSize.Y), new Rectangle((int)((camera.Position.X * multiplier.X)), (int)((camera.Position.Y * multiplier.Y)), (int)texture.Width, (int)texture.Height), color);
+			Rectangle rectBg = new Rectangle((int)(((texture.Width - camera.viewportSize.X) / camera.Size.X) + camera.Position.X), (int)0, (int)texture.Width, (int)texture.Height);
+			spriteBatch.Draw(texture, new Rectangle(0, 0, (int)camera.viewportSize.X, (int)camera.viewportSize.Y), rectBg, Color.White);
 		}
 	}
 }

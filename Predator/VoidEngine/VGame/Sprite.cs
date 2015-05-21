@@ -76,6 +76,7 @@ namespace VoidEngine.VGame
 		/// <summary>
 		/// The axis of the sprite to flip at.
 		/// </summary>
+        protected float speed;
 		public enum Axis
 		{
 			X,
@@ -374,12 +375,12 @@ namespace VoidEngine.VGame
 		{
 		}
 
-		public void DrawBoundingCollisions(Texture2D line, Color color, SpriteBatch spriteBatch)
+		public static void DrawBoundingCollisions(Texture2D line, Rectangle boundingCollisions, Color color, SpriteBatch spriteBatch)
 		{
-			spriteBatch.Draw(line, new Rectangle(BoundingCollisions.X, BoundingCollisions.Y, BoundingCollisions.Width, 1), color);
-			spriteBatch.Draw(line, new Rectangle(BoundingCollisions.Right - 1, BoundingCollisions.Y, 1, BoundingCollisions.Height), color);
-			spriteBatch.Draw(line, new Rectangle(BoundingCollisions.X, BoundingCollisions.Bottom - 1, BoundingCollisions.Width, 1), color);
-			spriteBatch.Draw(line, new Rectangle(BoundingCollisions.X, BoundingCollisions.Y, 1, BoundingCollisions.Height), color);
+			spriteBatch.Draw(line, new Rectangle(boundingCollisions.X, boundingCollisions.Y, boundingCollisions.Width, 1), color);
+			spriteBatch.Draw(line, new Rectangle(boundingCollisions.Right - 1, boundingCollisions.Y, 1, boundingCollisions.Height), color);
+			spriteBatch.Draw(line, new Rectangle(boundingCollisions.X, boundingCollisions.Bottom - 1, boundingCollisions.Width, 1), color);
+			spriteBatch.Draw(line, new Rectangle(boundingCollisions.X, boundingCollisions.Y, 1, boundingCollisions.Height), color);
 		}
 
 		public bool CheckInRadius(Vector2 position, float radius)

@@ -102,6 +102,7 @@
     <Compile Include="VGame\Camera.cs" />
     <Compile Include="VGame\EnemyTemplate.cs" />
     <Compile Include="VGame\Parallax.cs" />
+    <Compile Include="VGame\PlaceableObject.cs" />
     <Compile Include="VGame\PlayerTemplate.cs" />
     <Compile Include="VGame\Sprite.cs" />
     <Compile Include="VGame\Tile.cs" />

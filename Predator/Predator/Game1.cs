@@ -11,9 +11,9 @@ using Microsoft.Xna.Framework.Media;
 using Predator.Managers;
 using VoidEngine.VGUI;
 
-// ====================================== //
-// Possible Title: "The Curse of Chimera" //
-// ====================================== //
+// ========================= //
+// Possible Title: "Chimera" //
+// ========================= //
 
 namespace Predator
 {
@@ -220,6 +220,7 @@ namespace Predator
 		}
 		#endregion
 
+        public Random rng = new Random();
 		/// <summary>
 		/// Creates the game.
 		/// </summary>

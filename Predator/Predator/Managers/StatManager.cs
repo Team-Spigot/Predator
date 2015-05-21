@@ -71,6 +71,9 @@ namespace Predator
 			get;
 			set;
 		}
+        public int agilityAmount = 1;
+        public int strengthAmount = 1;
+        public int defenseAmount = 1;
 
 		/// <summary>
 		/// Creates the stat manager.
@@ -131,22 +134,25 @@ namespace Predator
 			PlusButtonDefense.Update(gameTime);
 			ExitButton.Update(gameTime);
 
-			if (PlusButtonAgility.Clicked() && myGame.gameManager.Player.StatPoints >= 1)
-			{
-				myGame.gameManager.Player.StatPoints -= 1;
-				myGame.gameManager.Player.PAgility -= 0.055f * (1 - (myGame.gameManager.Player.PAgility * .1f));
-			}
-			if (PlusButtonStrength.Clicked() && myGame.gameManager.Player.StatPoints >= 1)
-			{
-				myGame.gameManager.Player.StatPoints -= 1;
-				myGame.gameManager.Player.PStrength += 0.18f;
-				// myGame.gameManager.player.MaxHP *= myGame.gameManager.player.PStrength;
-			}
-			if (PlusButtonDefense.Clicked() && myGame.gameManager.Player.StatPoints >= 1)
-			{
-				myGame.gameManager.Player.StatPoints -= 1;
-				myGame.gameManager.Player.PDefense += 0.18f;
-			}
+            if (PlusButtonAgility.Clicked() && myGame.gameManager.Player.StatPoints >= 1)
+            {
+                agilityAmount += 1;
+                myGame.gameManager.Player.StatPoints -= 1;
+                myGame.gameManager.Player.PAgility -= .025f;
+            }
+            if (PlusButtonStrength.Clicked() && myGame.gameManager.Player.StatPoints >= 1)
+            {
+                strengthAmount += 1;
+                myGame.gameManager.Player.StatPoints -= 1;
+                myGame.gameManager.Player.PStrength += 0.15f;
+                // myGame.gameManager.player.MaxHP *= myGame.gameManager.player.PStrength;
+            }
+            if (PlusButtonDefense.Clicked() && myGame.gameManager.Player.StatPoints >= 1)
+            {
+                defenseAmount += 1;
+                myGame.gameManager.Player.StatPoints -= 1;
+                myGame.gameManager.Player.PDefense += 0.1f;
+            }
 			if (ExitButton.Clicked())
 			{
 				StatsChanged = true;
@@ -164,11 +170,18 @@ namespace Predator
 		{
 			spriteBatch.Begin();
 			{
-				spriteBatch.Draw(MenuBackgroundTexture, new Vector2(150, 150), Color.White);
-				PlusButtonAgility.Draw(gameTime, spriteBatch);
-				PlusButtonStrength.Draw(gameTime, spriteBatch);
-				PlusButtonDefense.Draw(gameTime, spriteBatch);
-				ExitButton.Draw(gameTime, spriteBatch);
+                spriteBatch.Draw(MenuBackgroundTexture, new Vector2(150, 150), Color.White);
+                PlusButtonAgility.Draw(gameTime, spriteBatch);
+                PlusButtonStrength.Draw(gameTime, spriteBatch);
+                PlusButtonDefense.Draw(gameTime, spriteBatch);
+                ExitButton.Draw(gameTime, spriteBatch);
+                spriteBatch.DrawString(myGame.grimGhostRegular, "Attack", new Vector2(325, 237), Color.Black);
+                spriteBatch.DrawString(myGame.grimGhostRegular, "Defense", new Vector2(325, 337), Color.Black);
+                spriteBatch.DrawString(myGame.grimGhostRegular, "Speed", new Vector2(325, 437), Color.Black);
+                spriteBatch.DrawString(myGame.grimGhostRegular, "" + agilityAmount, new Vector2(690, 433), Color.LimeGreen);
+                spriteBatch.DrawString(myGame.grimGhostRegular, "" + strengthAmount, new Vector2(690, 233), Color.LimeGreen);
+                spriteBatch.DrawString(myGame.grimGhostRegular, "" + defenseAmount, new Vector2(690, 333), Color.LimeGreen);
+                spriteBatch.DrawString(myGame.grimGhostRegular, "Ability Points: " + myGame.gameManager.Player.StatPoints, new Vector2(165, 590), Color.LimeGreen);
 			}
 			spriteBatch.End();
 

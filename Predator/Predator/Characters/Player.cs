@@ -27,7 +27,7 @@ namespace Predator.Characters
 		public bool isDead
 		{
 			get;
-			protected set;
+			set;
 		}
 		/// <summary>
 		/// Gets or sets the player's HP in float.
@@ -153,7 +153,7 @@ namespace Predator.Characters
 		{
 			get
 			{
-				return Position + new Vector2(BoundingCollisions.Center.X, BoundingCollisions.Center.Y);
+				return new Vector2(BoundingCollisions.Center.X, BoundingCollisions.Center.Y);
 			}
 		}
 		/// <summary>
@@ -428,16 +428,15 @@ namespace Predator.Characters
 			SetAnimation("IDLE1");
 
 			AttackDelay = 750;
-			JumpbackTimer = 1;
+            JumpbackTimer = 1;
 
-			Level = 1;
-			StatPoints = 0;
-			PExp = 0;
-			PStrength = 2;
-			PAgility = 2;
-			PDefense = 2;
-			MainHP = MaxHP = 100;
-			MainHP = MaxHP *= PStrength;
+            Level = 1;
+            StatPoints = 0;
+            PExp = 0;
+            PAgility = 3.375f;
+            PDefense = 2;
+            PStrength = 2;
+            MainHP = MaxHP = 500;
 
 			Mana = MaxMana = 0;
 			ManaRechargeTime = DefaultManaRechargeTime = 0.09f;
@@ -479,16 +478,15 @@ namespace Predator.Characters
 			SetAnimation(defaultFrameName);
 
 			AttackDelay = 750;
-			JumpbackTimer = 1;
+            JumpbackTimer = 1;
 
-			Level = 1;
-			StatPoints = 0;
-			PExp = 0;
-			PAgility = 2;
-			PDefense = 2;
-			PStrength = 2;
-			MainHP = MaxHP = 100;
-			MainHP = MaxHP *= PStrength;
+            Level = 1;
+            StatPoints = 0;
+            PExp = 0;
+            PAgility = 3.375f;
+            PDefense = 2;
+            PStrength = 2;
+            MainHP = MaxHP = 500;
 
 			Mana = MaxMana = 0;
 			ManaRechargeTime = DefaultManaRechargeTime = 0.09f;
@@ -616,31 +614,132 @@ namespace Predator.Characters
 		}
 
 		public virtual void UpdateStats(GameTime gameTime)
-		{
-			if (LvlUp == true)
-			{
-				StatPoints += 3;
-				LvlUp = false;
-			}
+        {
+            if (LvlUp == true)
+            {
+                StatPoints += 3;
+                LvlUp = false;
+            }
 
-			#region Level Table
-			if (PExp >= PreviousPExp + 1000)
-			{
-				Lvl += 1;
-				LvlUp = true;
+            #region Level Table
+            if (PExp >= 0 && Lvl == 0)
+            {
+                Lvl = 1;
+                LvlUp = true;
+            }
+            if (PExp >= 1000 && Lvl == 1)
+            {
+                Lvl = 2;
+                LvlUp = true;
+            }
+            if (PExp >= 2000 && Lvl == 2)
+            {
+                Lvl = 3;
+                LvlUp = true;
+            }
+            if (PExp >= 4000 && Lvl == 3)
+            {
+                Lvl = 4;
+                LvlUp = true;
+            }
+            if (PExp >= 5000 && Lvl == 4)
+            {
+                Lvl = 5;
+                LvlUp = true;
+            }
+            if (PExp >= 6000 && Lvl == 5)
+            {
+                Lvl = 6;
+                LvlUp = true;
+            }
+            if (PExp >= 7000 && Lvl == 6)
+            {
+                Lvl = 7;
+                LvlUp = true;
+            }
+            if (PExp >= 8000 && Lvl == 7)
+            {
+                Lvl = 8;
+                LvlUp = true;
+            }
+            if (PExp >= 9000 && Lvl == 8)
+            {
+                Lvl = 9;
+                LvlUp = true;
+            }
+            if (PExp >= 10000 && Lvl == 9)
+            {
+                Lvl = 10;
+                LvlUp = true;
+            }
+            if (PExp >= 11000 && Lvl == 10)
+            {
+                Lvl = 11;
+                LvlUp = true;
+            }
+            if (PExp >= 12000 && Lvl == 11)
+            {
+                Lvl = 12;
+                LvlUp = true;
+            }
+            if (PExp >= 13000 && Lvl == 12)
+            {
+                Lvl = 13;
+                LvlUp = true;
+            }
+            if (PExp >= 14000 && Lvl == 13)
+            {
+                Lvl = 14;
+                LvlUp = true;
+            }
+            if (PExp >= 15000 && Lvl == 14)
+            {
+                Lvl = 15;
+                LvlUp = true;
+            }
+            if (PExp >= 16000 && Lvl == 15)
+            {
+                Lvl = 16;
+                LvlUp = true;
+            }
+            if (PExp >= 17000 && Lvl == 16)
+            {
+                Lvl = 17;
+                LvlUp = true;
+            }
+            if (PExp >= 18000 && Lvl == 17)
+            {
+                Lvl = 18;
+                LvlUp = true;
+            }
+            if (PExp >= 19000 && Lvl == 18)
+            {
+                Lvl = 19;
+                LvlUp = true;
+            }
+            if (PExp >= 20000 && Lvl == 19)
+            {
+                Lvl = 20;
+                LvlUp = true;
+            }
+            #endregion
 
-				PreviousPExp = PExp;
-			}
-			#endregion
+            if (KeyboardState.IsKeyDown(Keys.X) && KeyboardState.IsKeyDown(Keys.O) && KeyboardState.IsKeyDown(Keys.Multiply))
+            {
+                PExp += 1000;
+            }
 
-			if (myGame.statManager.StatsChanged)
-			{
-				MaxMoveSpeed *= PAgility;
-				Damage = PStrength;
-				Defense = PDefense;
+            MaxMoveSpeed *= PAgility;
+            Damage = PStrength;
+            Defense = PDefense;
+            MaxHP = 200 + (PDefense * 150);
+            GroundDragFactor = ((1.325f + (float)(PAgility * .02)) / PAgility);
+            AirDragFactor = ((1.325f + (float)(PAgility * .02)) / PAgility);
 
-				myGame.statManager.StatsChanged = false;
-			}
+            if (PAgility < 1.55)
+            {
+                PAgility = 1.55f;
+            }
 		}
 
 		protected virtual void HandleHealth(GameTime gameTime)
@@ -685,6 +784,12 @@ namespace Predator.Characters
 			{
 				MainHP -= 1;
 			}
+            if (KeyboardState.IsKeyDown(Keys.N))
+            {
+                Movement = -1;
+                velocity = new Vector2(MoveAcceleration * (float)gameTime.ElapsedGameTime.TotalSeconds * Movement);
+                
+            }
 
 			Movement = MathHelper.Clamp(Movement, -1, 1);
 
@@ -888,29 +993,32 @@ namespace Predator.Characters
 			{
 				foreach (Enemy e in myGame.gameManager.EnemyList)
 				{
-					if (BoundingCollisions.TouchLeftOf(e.BoundingCollisions) || BoundingCollisions.TouchRightOf(e.BoundingCollisions))
+                    if (BoundingCollisions.TouchLeftOf(e.BoundingCollisions) || BoundingCollisions.TouchTopOf(e.BoundingCollisions) || BoundingCollisions.TouchRightOf(e.BoundingCollisions) || BoundingCollisions.TouchBottomOf(e.BoundingCollisions))
 					{
 						AttackCounter -= (float)gameTime.ElapsedGameTime.TotalSeconds;
 						if (PositionCenter.X >= e.PositionCenter.X)
 						{
-							IsJumping = true;
-							Movement += 1;
-							velocity.X = MaxMoveSpeed * (float)gameTime.ElapsedGameTime.TotalMilliseconds * Movement;
-							velocity.Y = DoJump(velocity.Y, gameTime);
+                            Movement += 1;
+                            JumpbackTimer = 100;
 							MainHP -= 2;
 						}
 						else if (PositionCenter.X < e.PositionCenter.X)
 						{
-							IsJumping = true;
-							Movement += -1;
-							velocity.X = MaxMoveSpeed * (float)gameTime.ElapsedGameTime.TotalMilliseconds * Movement;
-							velocity.Y = DoJump(velocity.Y, gameTime);
+                            JumpbackTimer = 100;
 							MainHP -= 2;
 						}
 					}
 
 				}
 			}
+
+            if (JumpbackTimer > 0)
+            {
+                JumpbackTimer -= gameTime.ElapsedGameTime.Milliseconds;
+
+                Movement = -1;
+                velocity = new Vector2(MaxMoveSpeed * ((float)gameTime.ElapsedGameTime.TotalSeconds) * Movement, -(MoveAcceleration * ((float)gameTime.ElapsedGameTime.TotalSeconds * 6)));
+            }
 		}
 
 		/// <summary>
@@ -936,12 +1044,12 @@ namespace Predator.Characters
 					}
 					if (BoundingCollisions.TouchLeftOf(t.BoundingCollisions) && t.TileType == Tile.TileCollisions.Impassable)
 					{
-						position.X = t.Position.X - BoundingCollisions.Width;
+						position.X = t.Position.X - BoundingCollisions.Width - 1;
 						DebugBlock = t.BoundingCollisions;
 					}
 					if (BoundingCollisions.TouchRightOf(t.BoundingCollisions) && t.TileType == Tile.TileCollisions.Impassable)
 					{
-						position.X = t.BoundingCollisions.Right;
+						position.X = t.BoundingCollisions.Right + 1;
 						DebugBlock = t.BoundingCollisions;
 					}
 					if (BoundingCollisions.TouchBottomOf(t.BoundingCollisions) && t.TileType == Tile.TileCollisions.Impassable)
@@ -963,12 +1071,12 @@ namespace Predator.Characters
 				}
 				if (r.TouchRightOf(BoundingCollisions))
 				{
-					position.X = r.Left - BoundingCollisions.Width;
+					position.X = r.Left - BoundingCollisions.Width - 1;
 					DebugBlock = r;
 				}
 				else if (r.TouchLeftOf(BoundingCollisions))
 				{
-					position.X = r.Right;
+					position.X = r.Right + 1;
 					DebugBlock = r;
 				}
 				if (r.TouchTopOf(BoundingCollisions))

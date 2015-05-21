@@ -19,116 +19,42 @@ namespace Predator.Managers
 	/// </summary>
 	public class MapScreenManager : Microsoft.Xna.Framework.DrawableGameComponent
 	{
-		/// <summary>
-		/// The game that the map screen manager runs off of.
-		/// </summary>
-		private Game1 myGame;
-		/// <summary>
-		/// The sprite batch that the map screen manager uses.
-		/// </summary>
-		private SpriteBatch spriteBatch;
+		Game1 myGame;
+		SpriteBatch spriteBatch;
+
+		Camera camera;
 
 		/// <summary>
-		/// The camrea used by the map screen.
+		/// Loads the line texture.
 		/// </summary>
-		protected Camera Camera;
+		public Texture2D line;
+		Texture2D mapBackground;
+		Texture2D mapHudTexture;
+		Texture2D buttonTexture;
+		Texture2D backButtonTexture;
+		Texture2D hudBackButtonTexture;
 
-		#region Textures
-		/// <summary>
-		/// Loads the texture for the line.
-		/// </summary>
-		public Texture2D LineTexture;
-		/// <summary>
-		/// Loads the texture for the map.
-		/// </summary>
-		public Texture2D MapBackgroundTexture;
-		/// <summary>
-		/// Loads the texture for the map screen HUD.
-		/// </summary>
-		public Texture2D MapHUDTexture;
-		/// <summary>
-		/// Loads the texture for the button.
-		/// </summary>
-		public Texture2D ButtonTexture;
-		/// <summary>
-		/// Loads the texture for the back button.
-		/// </summary>
-		public Texture2D BackButtonTexture;
-		/// <summary>
-		/// Loads the texture for the HUD back button.
-		/// </summary>
-		public Texture2D HUDBackButtonTexture;
-		#endregion
+		float Speed = 10;
+		int HudScroll = 1024;
+		public int levelSelect = 0; //when zoomed in the hud is always the same(same start button) so when you first click on the level it will set this value so when you click on the start it will load the level using a switch
+		// level 1 = 1, level 2 = 2... etc.
 
-		#region Map Stuff
-		/// <summary>
-		/// The default speed to move the camera at.
-		/// </summary>
-		protected float Speed = 10;
-		/// <summary>
-		/// The default position to move the HUD at.
-		/// </summary>
-		protected int HudScroll = 1024;
-		/// <summary>
-		/// The current level to select.
-		/// when zoomed in the hud is always the same(same start button) so when
-		/// you first click on the level it will set this value so when you click
-		/// on the start it will load the level using a switch
-		/// level 1 = 1, level 2 = 2... etc.
-		/// </summary>
-		public int LevelSelect = 0;
+		Vector2 Direction;
 
-		/// <summary>
-		/// The direction that the camera is moving at.
-		/// </summary>
-		protected Vector2 Direction;
+		public bool levelPullUp = false; //becomes true when you select a level pulling up level info hud
+		public bool isZoomingIn = false;
+		public bool isZoomingOut = false;
+		public bool isHudScrollingIn = false;
+		public bool isHudScrollingOut = false;
 
-		/// <summary>
-		/// Becomes true when you select a level pulling up level info HUD
-		/// </summary>
-		protected bool LevelPullUp = false;
-		/// <summary>
-		/// Tells if the the camera is zooming in.
-		/// </summary>
-		public bool IsZoomingIn = false;
-		/// <summary>
-		/// Tells if the camera is zomming out.
-		/// </summary>
-		public bool IsZoomingOut = false;
-		/// <summary>
-		/// Tells if the HUD should scroll in.
-		/// </summary>
-		public bool IsHUDScrollingIn = false;
-		/// <summary>
-		/// Tells if the HUD should scroll out.
-		/// </summary>
-		public bool IsHUDScrollingOut = false;
-		#endregion
+		List<Sprite.AnimationSet> buttonAnimationSet;
 
-		#region Buttons
-		/// <summary>
-		/// The button for level 1.
-		/// </summary>
-		public Button Level1Button;
-		/// <summary>
-		/// The button for level 2.
-		/// </summary>
-		public Button Level2Button;
-		/// <summary>
-		/// The button for level 3.
-		/// </summary>
-		public Button Level3Button;
-		/// <summary>
-		/// The back button for exiting the map.
-		/// </summary>
-		public Button ExitButton;
-		/// <summary>
-		/// The HUD back button for zooming out.
-		/// </summary>
-		public Button HUDBackButton;
-		#endregion
+		Button level1Button;
+		Button level2Button;
+		//Button level3Button;
+		Button backButton;
+		Button hudBackButton;
 
-		#region Transitioning Stuff
 		/// <summary>
 		/// Gets or sets the tranition alpha variable.
 		/// </summary>
@@ -140,7 +66,7 @@ namespace Predator.Managers
 		/// <summary>
 		/// Gets or sets if the level is transitioning into the map screen.
 		/// </summary>
-		public bool IsTransitioningIn
+		public bool isTransitioningIn
 		{
 			get;
 			set;
@@ -148,29 +74,25 @@ namespace Predator.Managers
 		/// <summary>
 		/// Gets or sets if the level is transitioning out of the map screen.
 		/// </summary>
-		public bool IsTransitioningOut
+		public bool isTransitioningOut
 		{
 			get;
 			set;
 		}
-		/// <summary>
-		/// Gets or sets the alpha to transition in or out of the map screen.
-		/// </summary>
 		public bool SetAlpha
 		{
 			get;
 			set;
 		}
-		#endregion
 
-		/// <summary>
-		/// Creates the map screen manager.
-		/// </summary>
-		/// <param name="game">The game that the map screen manager runs off of.</param>
+		Label debugLabel;
+		string[] debugStrings = new string[10];
+
 		public MapScreenManager(Game1 game)
 			: base(game)
 		{
 			myGame = game;
+			spriteBatch = new SpriteBatch(myGame.GraphicsDevice);
 			Initialize();
 		}
 
@@ -180,41 +102,51 @@ namespace Predator.Managers
 		/// </summary>
 		public override void Initialize()
 		{
+			buttonAnimationSet = new List<Sprite.AnimationSet>();
+
+			// TODO: Add your initialization code here
+
 			base.Initialize();
 		}
 
-		/// <summary>
-		/// Loads the content for the map screen manager.
-		/// </summary>
 		protected override void LoadContent()
 		{
 			spriteBatch = new SpriteBatch(myGame.GraphicsDevice);
 
-			LoadTextures();
+			line = Game.Content.Load<Texture2D>(@"images\other\line");
+			mapBackground = Game.Content.Load<Texture2D>(@"images\gui\map\PIECE_OF_SHITEV2");
+			buttonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\mapButtonTest");
+			hudBackButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\mapButtonTest");
+			backButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\mapButtonTest");
 
-			Camera = new Camera(myGame.GraphicsDevice.Viewport, new Point(2048, 1536), 1f);
-			Camera.Position = new Vector2(512, 256);
-			Camera.Zoom = 1.0f;
+			mapHudTexture = Game.Content.Load<Texture2D>(@"images\gui\map\mapHud");
 
-			Level1Button = new Button(ButtonTexture, new Vector2(700, 400), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, Camera);
-			Level2Button = new Button(ButtonTexture, new Vector2(100, 120), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, Camera);
-			ExitButton = new Button(ButtonTexture, new Vector2(50, 700), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
-			HUDBackButton = new Button(ButtonTexture, new Vector2(100, 700), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
+			camera = new Camera(myGame.GraphicsDevice.Viewport, new Point(2048, 1536), 1f);
+			camera.Position = new Vector2(512, 256);
+
+			// The Map Buttons
+			buttonAnimationSet.Add(new Sprite.AnimationSet("IDLE", buttonTexture, new Point(20, 20), new Point(1, 1), new Point(0, 0), 16000, false));
+			buttonAnimationSet.Add(new Sprite.AnimationSet("HOVER", buttonTexture, new Point(20, 20), new Point(1, 1), new Point(20, 0), 16000, false));
+			buttonAnimationSet.Add(new Sprite.AnimationSet("PRESSED", buttonTexture, new Point(20, 20), new Point(1, 1), new Point(40, 0), 16000, false));
+			// Hud Back Button
+			buttonAnimationSet.Add(new Sprite.AnimationSet("IDLE", buttonTexture, new Point(20, 20), new Point(1, 1), new Point(0, 0), 16000, false));
+			buttonAnimationSet.Add(new Sprite.AnimationSet("HOVER", buttonTexture, new Point(20, 20), new Point(1, 1), new Point(20, 0), 16000, false));
+			buttonAnimationSet.Add(new Sprite.AnimationSet("PRESSED", buttonTexture, new Point(20, 20), new Point(1, 1), new Point(40, 0), 16000, false));
+			// Back Button
+			buttonAnimationSet.Add(new Sprite.AnimationSet("IDLE", buttonTexture, new Point(20, 20), new Point(1, 1), new Point(0, 0), 16000, false));
+			buttonAnimationSet.Add(new Sprite.AnimationSet("HOVER", buttonTexture, new Point(20, 20), new Point(1, 1), new Point(20, 0), 16000, false));
+			buttonAnimationSet.Add(new Sprite.AnimationSet("PRESSED", buttonTexture, new Point(20, 20), new Point(1, 1), new Point(40, 0), 16000, false));
+
+			level1Button = new Button(new Vector2(700, 400), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, buttonAnimationSet);
+			level2Button = new Button(new Vector2(100, 120), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, buttonAnimationSet);
+
+			backButton = new Button(new Vector2(50, 700), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, buttonAnimationSet);
+
+			hudBackButton = new Button(new Vector2(100, 700), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, buttonAnimationSet);
+
+			debugLabel = new Label(new Vector2(350, 15), myGame.segoeUIMonoDebug, 1.0f, Color.White, "");
 
 			base.LoadContent();
-		}
-
-		/// <summary>
-		/// Loads the textures for the map screen manager.
-		/// </summary>
-		public void LoadTextures()
-		{
-			MapBackgroundTexture = Game.Content.Load<Texture2D>(@"images\gui\map\tempMapScreen");
-			ButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\tempMapButton");
-			HUDBackButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\tempMapButton");
-			BackButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\tempMapButton");
-			MapHUDTexture = Game.Content.Load<Texture2D>(@"images\gui\map\tempMapHud");
-			LineTexture = Game.Content.Load<Texture2D>(@"images\other\line");
 		}
 
 		/// <summary>
@@ -223,240 +155,213 @@ namespace Predator.Managers
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		public override void Update(GameTime gameTime)
 		{
-			Vector2 tempDirection;
-
-			if (IsTransitioningIn)
+			// TODO: Add your update code here
+			if (isTransitioningIn)
 			{
-				IsTransitioningOut = false;
+				isTransitioningOut = false;
 
 				TransitionAlpha += 1.0f / (float)gameTime.ElapsedGameTime.Milliseconds;
 
 				if (TransitionAlpha > 1.0f)
 				{
-					IsTransitioningIn = false;
+					isTransitioningIn = false;
 					TransitionAlpha = 1.0f;
 				}
 			}
 
-			if (IsTransitioningOut)
+			if (isTransitioningOut)
 			{
-				IsTransitioningIn = false;
+				isTransitioningIn = false;
 
 				TransitionAlpha -= 1.0f / (float)gameTime.ElapsedGameTime.Milliseconds;
 
 				if (TransitionAlpha <= 0.0f)
 				{
-					IsTransitioningOut = false;
+					isTransitioningOut = false;
 					TransitionAlpha = 0.0f;
 
 					myGame.SetCurrentLevel(Game1.GameLevels.GAME);
 				}
 			}
 
-			if (IsZoomingIn == true)
+			if (isZoomingIn == true)
 			{
-				Camera.Zoom += 0.01f;
-				Camera.Position += Direction * Speed;
+				camera.Zoom += 0.01f;
+				camera.Position += Direction * Speed;
 
 			}
-			if (IsZoomingOut == true)
+			if (isZoomingOut == true)
 			{
-				Camera.Zoom -= 0.01f;
-				Camera.Position -= Direction * Speed;
+				camera.Zoom -= 0.01f;
+				camera.Position -= Direction * Speed;
 
 			}
-			if (Camera.Zoom <= 1.0f)
+			if (camera.Zoom <= 1.0f)
 			{
-				Camera.Zoom = 1.0f;
-				Camera.Position = new Vector2(0, 0);
-				IsZoomingOut = false;
+				camera.Zoom = 1.0f;
+				camera.Position = new Vector2(0, 0);
+				isZoomingOut = false;
 			}
 
-			if (IsHUDScrollingIn)
+			if (isHudScrollingIn)
 			{
-				if (Camera.Position.X < myGame.WindowSize.X / 2)
+				HudScroll -= 10;
+				if (HudScroll <= 527)
 				{
-					HudScroll -= 10;
-					if (HudScroll <= 527)
-					{
-						HudScroll = 527;
-						IsHUDScrollingIn = false;
-					}
-				}
-				else
-				{
-					HudScroll += 10;
-					if (HudScroll >= 0)
-					{
-						HudScroll = 0;
-						IsHUDScrollingIn = false;
-					}
+					HudScroll = 527;
+					isHudScrollingIn = false;
 				}
 			}
-			if (IsHUDScrollingOut)
+			if (isHudScrollingOut)
 			{
-				if (Camera.Position.X < myGame.WindowSize.X / 2)
+				HudScroll += 10;
+				if (HudScroll >= 1024)
 				{
-					HudScroll += 10;
-					if (HudScroll >= 1024)
-					{
-						HudScroll = 1024;
-						IsHUDScrollingOut = false;
-					}
-				}
-				else
-				{
-					HudScroll -= 10;
-					if (HudScroll <= -527)
-					{
-						HudScroll = -527;
-						IsHUDScrollingIn = false;
-					}
+					HudScroll = 1024;
+					isHudScrollingOut = false;
 				}
 			}
-			switch (LevelSelect)
+			switch (levelSelect)
 			{
 				case 1:
-					if (Camera.Position.X - Level1Button.Position.X >= 100 && Camera.Position.Y - Level1Button.Position.Y <= 100)
+					if (camera.Position.X - level1Button.Position.X >= 100 && camera.Position.Y - level1Button.Position.Y <= 100)
 					{
 						Speed = 0.0f;
 					}
 					break;
 				case 2:
-					if (Camera.Position.X - Level2Button.Position.X <= 100 && Camera.Position.Y - Level2Button.Position.Y <= 100)
+					if (camera.Position.X - level2Button.Position.X <= 100 && camera.Position.Y - level1Button.Position.Y <= 100)
 					{
 						Speed = 0.0f;
 					}
-					break; 
-				//case 3:
-				//	if (camera.Position.X - level3Button.GetPosition.X >= 150 && camera.Position.Y - level1Button.GetPosition.Y <= 50)
-				//	{
-				//		Speed = 0.0f;
-				//	}
-				//	break;
+					break;
+				/*
+				case 3:
+					if (camera.Position.X - level3Button.GetPosition.X >= 150 && camera.Position.Y - level1Button.GetPosition.Y <= 50)
+					{
+						Speed = 0.0f;
+					}
+					break;
+				*/
 			}
-			if (LevelPullUp == false)
+			if (levelPullUp == false)
 			{
+				Vector2 tempDirection;
 
-				Level1Button.Update(gameTime);
-				Level2Button.Update(gameTime);
-				ExitButton.Update(gameTime);
+				level1Button.Update(gameTime);
+				level2Button.Update(gameTime);
 
-				if (Level1Button.Clicked()) // Zooming into zone 1
+				backButton.Update(gameTime);
+				if (level1Button.Clicked()) // Zooming into zone 1
 				{
 					Speed = 10.0f;
-					LevelSelect = 1;
-					IsHUDScrollingIn = true;
-					LevelPullUp = true;
-					IsZoomingIn = true;
-					IsZoomingOut = false;
-					tempDirection = new Vector2(Level1Button.Position.X - Camera.Position.X, Level1Button.Position.Y - Camera.Position.Y);
+					levelSelect = 1;
+					isHudScrollingIn = true;
+					levelPullUp = true;
+					isZoomingIn = true;
+					isZoomingOut = false;
+					tempDirection = new Vector2(level1Button.Position.X - camera.Position.X, level1Button.Position.Y - camera.Position.Y);
 					Direction = CollisionHelper.UnitVector(tempDirection);
 				}
-				if (Level2Button.Clicked()) // Zooming into zone 2
+				if (level2Button.Clicked()) // Zooming into zone 2
 				{
 					Speed = 10.0f;
-					LevelSelect = 2;
-					IsHUDScrollingIn = true;
-					LevelPullUp = true;
-					IsZoomingIn = true;
-					IsZoomingOut = false;
-					tempDirection = new Vector2(Level2Button.Position.X - Camera.Position.X, Level2Button.Position.Y - Camera.Position.Y);
+					levelSelect = 2;
+					isHudScrollingIn = true;
+					levelPullUp = true;
+					isZoomingIn = true;
+					isZoomingOut = false;
+					tempDirection = new Vector2(level2Button.Position.X - camera.Position.X, level2Button.Position.Y - camera.Position.Y);
 					Direction = CollisionHelper.UnitVector(tempDirection);
 				}
 
-				if (ExitButton.Clicked())
+				if (backButton.Clicked())
 				{
-					IsTransitioningOut = true;
+					isTransitioningOut = true;
 				}
 			}
-			if (LevelPullUp == true)
+			if (levelPullUp == true)
 			{
-				HUDBackButton.Update(gameTime);
+				Vector2 tempDirection;
 
-				if (HUDBackButton.Clicked())
+				hudBackButton.Update(gameTime);
+
+				if (hudBackButton.Clicked())
 				{
-					LevelPullUp = false;
-					IsZoomingOut = true;
-					IsZoomingIn = false;
-					IsHUDScrollingOut = true;
+					levelPullUp = false;
+					isZoomingOut = true;
+					isZoomingIn = false;
+					isHudScrollingOut = true;
 
-					switch (LevelSelect) // Zooming out
+					switch (levelSelect) // Zooming out
 					{
 						case 1:
 							Speed = 10.0f;
-							tempDirection = new Vector2(Camera.Position.X - Level1Button.Position.X, Camera.Position.Y - Level1Button.Position.Y);
+							tempDirection = new Vector2(camera.Position.X - level1Button.Position.X, camera.Position.Y - level1Button.Position.Y);
 							Direction = CollisionHelper.UnitVector(tempDirection);
 							break;
 						case 2:
 							Speed = 10.0f;
-							tempDirection = new Vector2(Camera.Position.X - Level2Button.Position.X, Camera.Position.Y - Level2Button.Position.Y);
+							tempDirection = new Vector2(camera.Position.X - level2Button.Position.X, camera.Position.Y - level2Button.Position.Y);
 							Direction = CollisionHelper.UnitVector(tempDirection);
 							break;
 					}
 				}
 			}
 
-			if (myGame.IsGameDebug)
-			{
-				DebugTable debugTable = new DebugTable();
-				string[,] rawTable = {
-										 { "Map Screen", "Fade" }
-									 };
-				debugTable.initalizeTable(rawTable);
+			debugStrings[0] = "IsTransitioningIn=" + isTransitioningIn + " IsTransitioningOut=" + isTransitioningOut + " TranitionAlpha=" + TransitionAlpha;
 
-				myGame.debugStrings[0] = debugTable.ReturnStringSegment(0, 0);
-				myGame.debugStrings[1] = debugTable.ReturnStringSegment(0, 1) + "IsTransitioningIn=" + IsTransitioningIn + " IsTransitioningOut=" + IsTransitioningOut + " TranitionAlpha=" + TransitionAlpha;
-				myGame.debugStrings[2] = "";
-			}
+			debugLabel.Text = debugStrings[0] + "\n" +
+							  debugStrings[1] + "\n" +
+							  debugStrings[2] + "\n" +
+							  debugStrings[3] + "\n" +
+							  debugStrings[4] + "\n" +
+							  debugStrings[5] + "\n" +
+							  debugStrings[6] + "\n" +
+							  debugStrings[7] + "\n" +
+							  debugStrings[8] + "\n" +
+							  debugStrings[9];
 
 			base.Update(gameTime);
 		}
 
-		/// <summary>
-		/// Draws the content of the map screen manager.
-		/// </summary>
-		/// <param name="gameTime">Provides a snapshot of timing values.</param>
+
+
 		public override void Draw(GameTime gameTime)
 		{
 			//zooming, buttons on map
-			spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, Camera.GetTransformation());
+			spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, camera.GetTransformation());
 			{
-				if (!IsTransitioningIn && !IsTransitioningOut)
+				if (!isTransitioningIn && !isTransitioningOut)
 				{
-					spriteBatch.Draw(MapBackgroundTexture, Vector2.Zero, Color.White);
-					Level1Button.Draw(gameTime, spriteBatch);
-					Level2Button.Draw(gameTime, spriteBatch);
+					spriteBatch.Draw(mapBackground, Vector2.Zero, Color.White);
+					level1Button.Draw(gameTime, spriteBatch);
+					level2Button.Draw(gameTime, spriteBatch);
 				}
 			}
 			spriteBatch.End();
 
 			spriteBatch.Begin();
 			{
-				if (IsTransitioningIn || IsTransitioningOut)
+				if (isTransitioningIn || isTransitioningOut)
 				{
-					spriteBatch.Draw(LineTexture, new Rectangle(0, 0, myGame.WindowSize.X, myGame.WindowSize.X), new Color(0, 0, 0, TransitionAlpha));
+					spriteBatch.Draw(line, new Rectangle(0, 0, myGame.WindowSize.X, myGame.WindowSize.X), new Color(0, 0, 0, TransitionAlpha));
 				}
-				if (!IsTransitioningIn && !IsTransitioningOut)
+				if (!isTransitioningIn && !isTransitioningOut)
 				{
-					spriteBatch.Draw(MapHUDTexture, new Vector2(HudScroll, 0), Color.White);
+					spriteBatch.Draw(mapHudTexture, new Vector2(HudScroll, 0), Color.White);
 
-					if (LevelPullUp == false)
+					if (levelPullUp == false)
 					{
-						ExitButton.Draw(gameTime, spriteBatch);
+						backButton.Draw(gameTime, spriteBatch);
 					}
-					if (LevelPullUp == true)
+					if (levelPullUp == true)
 					{
-						HUDBackButton.Draw(gameTime, spriteBatch);
+						hudBackButton.Draw(gameTime, spriteBatch);
 					}
 				}
 
-				spriteBatch.Draw(LineTexture, new Rectangle((int)Level1Button.RelitiveCenter.X, (int)Level1Button.RelitiveCenter.Y, 1000, 1), Color.Red);
-				spriteBatch.Draw(LineTexture, new Rectangle((int)Level1Button.RelitiveCenter.X, (int)Level1Button.RelitiveCenter.Y, 1, 1000), Color.Red);
-				spriteBatch.Draw(LineTexture, new Rectangle((int)Level2Button.RelitiveCenter.X, (int)Level2Button.RelitiveCenter.Y, 1000, 1), Color.Blue);
-				spriteBatch.Draw(LineTexture, new Rectangle((int)Level2Button.RelitiveCenter.X, (int)Level2Button.RelitiveCenter.Y, 1, 1000), Color.Blue);
-
-				myGame.debugLabel.Draw(gameTime, spriteBatch);
+				debugLabel.Draw(gameTime, spriteBatch);
 			}
 			spriteBatch.End();
 

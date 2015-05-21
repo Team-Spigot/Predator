@@ -22,8 +22,18 @@ namespace Predator.Characters
 			SLIMEBALL,
 			RAT,
 			CHARGER,
+			SPITTER,
+			ROLLER,
+			JUMPER,
+			BOSS,
 			NONE
 		}
+
+		public List<SlimeBullet> EnemyProjectileList = new List<SlimeBullet>();
+		public bool RollerStart;
+		public bool Moveleft;
+		public bool IsAttacking;
+		public int EnemyAttackDelay;
 
 		#region General Enemy Stuff
 		/// <summary>
@@ -130,16 +140,15 @@ namespace Predator.Characters
 			AddAnimations(texture);
 			SetAnimation("IDLE");
 
-			#region Set default variables
-			EnemyType = enemyType;
-			CanShoot = true;
-			Level = 1;
-			MainHP = 100;
-			MaxHP = 100;
-			JumpbackTimer = 0;
-			MaxMoveSpeed = 175;
-			GroundDragFactor = 0.46f;
-			AirDragFactor = 0.50f;
+            #region Set default variables
+            this.EnemyType = enemyType;
+            this.CanShoot = true;
+            Level = 1;
+            JumpbackTimer = 0;
+            MaxMoveSpeed = 175;
+            MaxHP = MainHP = 150;
+            GroundDragFactor = 0.46f;
+            AirDragFactor = 0.50f;
 			#endregion
 
 			if (enemyType == EnemyTypes.BIRD)
@@ -170,17 +179,18 @@ namespace Predator.Characters
 			AnimationSets = animationSetList;
 			SetAnimation(defaultFrameName);
 
-			#region Set default variables
-			this.EnemyType = enemyType;
-			this.CanShoot = true;
-			Level = 1;
-			MainHP = 100;
-			MaxHP = 100;
-			JumpbackTimer = 0;
-			MaxMoveSpeed = 175;
-			GroundDragFactor = 0.46f;
-			AirDragFactor = 0.50f;
+            #region Set default variables
+            this.EnemyType = enemyType;
+            this.CanShoot = true;
+            Level = 1;
+            JumpbackTimer = 0;
+            MaxMoveSpeed = 175;
+            MaxHP = MainHP = 150;
+            GroundDragFactor = 0.46f;
+            AirDragFactor = 0.50f;
 			#endregion
+
+            //CanMove = false;
 
 			if (enemyType == EnemyTypes.BIRD)
 			{
@@ -201,16 +211,38 @@ namespace Predator.Characters
 		/// <param name="gameTime">The game time that the game uses.</param>
 		public override void Update(GameTime gameTime)
 		{
+            KeyboardState = Keyboard.GetState();
 			if (Math.Abs(Movement) < 0.5f)
 			{
 				Movement = 0.0f;
 			}
+
+           
 
 			HandleAnimations(gameTime);
 
 			ApplyPhysics(gameTime);
 
 			HandleHealth(gameTime);
+
+            HandleEnemyProjectile(gameTime);
+
+            SpitterAttack(gameTime);
+
+            for (int i = 0; i < EnemyProjectileList.Count; i++)
+            {
+                if (EnemyProjectileList[i].deleteMe)
+                {
+                    EnemyProjectileList.RemoveAt(i);
+
+                    i--;
+                }
+                else
+                {
+                    EnemyProjectileList[i].Update(gameTime);
+                }
+            }
+            
 
 			if (!isDead && IsGrounded)
 			{
@@ -263,25 +295,25 @@ namespace Predator.Characters
 				if (BoundingCollisions.TouchLeftOf(p.BoundingCollisions) || BoundingCollisions.TouchRightOf(p.BoundingCollisions))
 				{
 					AttackCounter -= (float)gameTime.ElapsedGameTime.TotalSeconds;
-					if (PositionCenter.X >= p.BoundingCollisions.X + (p.BoundingCollisions.Width / 2))
+					if (BoundingCollisions.TouchRightOf(p.BoundingCollisions))
 					{
 						IsJumping = true;
 						Movement += -1;
-						velocity.X = MaxMoveSpeed * (float)gameTime.ElapsedGameTime.TotalMilliseconds * Movement;
+                        velocity.X = MoveAcceleration * (float)gameTime.ElapsedGameTime.TotalSeconds * Movement;
 						velocity.Y = DoJump(velocity.Y, gameTime);
 						myGame.gameManager.BloodMinRadius = 330;
-						myGame.gameManager.BloodMaxRadius = 350;
+						myGame.gameManager.BloodMaxRadius = 400;
 						IsHit = true;
 						MainHP -= myGame.gameManager.Player.PStrength;
 					}
-					else if (PositionCenter.X < p.BoundingCollisions.X + (p.BoundingCollisions.Width / 2))
+					else if (BoundingCollisions.TouchLeftOf(p.BoundingCollisions))
 					{
 						IsJumping = true;
 						Movement += 1;
-						velocity.X = MaxMoveSpeed * (float)gameTime.ElapsedGameTime.TotalMilliseconds * Movement;
+                        velocity.X = MoveAcceleration * (float)gameTime.ElapsedGameTime.TotalSeconds * Movement;
 						velocity.Y = DoJump(velocity.Y, gameTime);
 						myGame.gameManager.BloodMinRadius = 180;
-						myGame.gameManager.BloodMaxRadius = 200;
+						myGame.gameManager.BloodMaxRadius = 250;
 						IsHit = true;
 						MainHP -= myGame.gameManager.Player.PStrength;
 					}
@@ -299,22 +331,68 @@ namespace Predator.Characters
 		/// <param name="gameTime">The game time that the game uses.</param>
 		protected override void HandleCollisions(GameTime gameTime)
 		{
-			if (EnemyType != EnemyTypes.SLIMEBALL && EnemyType != EnemyTypes.BIRD)
+			foreach (Tile t in myGame.gameManager.TilesList)
 			{
-				foreach (Tile t in myGame.gameManager.TilesList)
+				if (CheckInRadius(t.Position, 120))
 				{
-					if (CheckInRadius(t.Position, 55))
+					if (t.TileType == Tile.TileCollisions.Impassable)
 					{
-						if (t.TileType == Tile.TileCollisions.Impassable)
+						if (BoundingCollisions.TouchTopOf(t.BoundingCollisions) && t.TileType != Tile.TileCollisions.Passable)
 						{
-							if (BoundingCollisions.TouchLeftOf(t.BoundingCollisions) || BoundingCollisions.TouchRightOf(t.BoundingCollisions))
-							{
-								IsJumping = true;
-							}
+							IsGrounded = true;
+							position.Y = t.Position.Y - BoundingCollisions.Height;
+							DebugBlock = t.BoundingCollisions;
+						}
+						if (BoundingCollisions.TouchLeftOf(t.BoundingCollisions) && t.TileType == Tile.TileCollisions.Impassable)
+						{
+							position.X = t.Position.X - BoundingCollisions.Width - 1;
+							DebugBlock = t.BoundingCollisions;
+						}
+						if (BoundingCollisions.TouchRightOf(t.BoundingCollisions) && t.TileType == Tile.TileCollisions.Impassable)
+						{
+							position.X = t.BoundingCollisions.Right + 1;
+							DebugBlock = t.BoundingCollisions;
+						}
+						if (BoundingCollisions.TouchBottomOf(t.BoundingCollisions) && t.TileType == Tile.TileCollisions.Impassable)
+						{
+							IsJumping = false;
+							JumpTime = 0;
+							position.Y = t.BoundingCollisions.Bottom + 2;
+							DebugBlock = t.BoundingCollisions;
+						}
+						if (BoundingCollisions.TouchLeftOf(t.BoundingCollisions) || BoundingCollisions.TouchRightOf(t.BoundingCollisions))
+						{
+							//IsJumping = true;
 						}
 					}
 				}
-			}
+            }
+
+            foreach (Rectangle r in myGame.gameManager.MapBoundries)
+            {
+                if (r.TouchBottomOf(BoundingCollisions))
+                {
+                    FellFromBottom = true;
+                    DebugBlock = r;
+                }
+                if (r.TouchRightOf(BoundingCollisions))
+                {
+                    position.X = r.Left - BoundingCollisions.Width - 1;
+                    DebugBlock = r;
+                }
+                else if (r.TouchLeftOf(BoundingCollisions))
+                {
+                    position.X = r.Right + 1;
+                    DebugBlock = r;
+                }
+                if (r.TouchTopOf(BoundingCollisions))
+                {
+                    IsJumping = false;
+                    JumpTime = 0;
+                    position.Y = r.Bottom + 2;
+                    DebugBlock = r;
+                }
+            }
 
 			base.HandleCollisions(gameTime);
 		}
@@ -326,42 +404,49 @@ namespace Predator.Characters
 		public override void ApplyPhysics(GameTime gameTime)
 		{
 			TempVelocity = new Vector2(myGame.gameManager.Player.PositionCenter.X - PositionCenter.X, myGame.gameManager.Player.PositionCenter.Y - PositionCenter.Y);
-
-			if (CollisionHelper.Magnitude(TempVelocity) <= 400)
+			if (CanMove == true && EnemyType != EnemyTypes.ROLLER)
 			{
-				if (myGame.gameManager.Player.PositionCenter.X - PositionCenter.X < 0)
+				if (CollisionHelper.Magnitude(TempVelocity) <= 800)
 				{
-					Movement = -1;
-				}
-				else if (myGame.gameManager.Player.PositionCenter.X - PositionCenter.X > 0)
-				{
-					Movement = 1;
-				}
-				else if (myGame.gameManager.Player.PositionCenter.X == PositionCenter.X)
-				{
-					Movement = 0;
+					if (myGame.gameManager.Player.PositionCenter.X - PositionCenter.X < 0)
+					{
+						Movement = -1;
+						PlayerDetected = true;
+					}
+					else if (myGame.gameManager.Player.PositionCenter.X - PositionCenter.X > 0)
+					{
+						Movement = 1;
+						PlayerDetected = true;
+					}
+					else if (myGame.gameManager.Player.PositionCenter.X == PositionCenter.X)
+					{
+						Movement = 0;
+						PlayerDetected = false;
+					}
+
+					if (EnemyType != EnemyTypes.SLIMEBALL)
+					{
+						SetAnimation("WALK");
+					}
+
+					if (EnemyType == EnemyTypes.BIRD)
+					{
+						Rotation += 0.05f;
+					}
 				}
 
-				if (EnemyType != EnemyTypes.SLIMEBALL)
+				else
 				{
-					SetAnimation("WALK");
-				}
-
-				if (EnemyType == EnemyTypes.BIRD)
-				{
-					Rotation += 0.05f;
-				}
-			}
-			else
-			{
-				if (EnemyType != EnemyTypes.SLIMEBALL)
-				{
-					SetAnimation("IDLE");
+					if (EnemyType != EnemyTypes.SLIMEBALL)
+					{
+						SetAnimation("IDLE");
+					}
 				}
 			}
 
 			HandleEnemyCollisions(gameTime);
 			HandleCollisions(gameTime);
+            SlimeDirection(gameTime);
 
 			if (EnemyType == EnemyTypes.SLIMEBALL)
 			{
@@ -387,8 +472,135 @@ namespace Predator.Characters
 				}
 			}
 
+            if (EnemyType == EnemyTypes.ROLLER)
+            {
+                RotationCenter = new Vector2(CurrentAnimation.frameSize.X / 2, CurrentAnimation.frameSize.Y / 2);
+                Offset = new Vector2(-(CurrentAnimation.frameSize.X / 4), -(CurrentAnimation.frameSize.Y / 4));
+                //Rotation += 180;
+
+                if (RollerStart == true)
+                {
+                    Movement = 1;
+                } 
+                foreach (Tile t in myGame.gameManager.TilesList)
+                {
+                    if (t.TileType == Tile.TileCollisions.Impassable)
+                    {
+                        if (BoundingCollisions.TouchLeftOf(t.BoundingCollisions))
+                        {
+                            RollerStart = false;
+                            Moveleft = true;
+                            //Rotation += myGame.rng.Next(-180, 180) * (float)Math.PI / 180;
+                            //Scale = (float)myGame.rng.Next(0, 10);
+                            SetAnimation("WALK");
+                        }
+                        if (BoundingCollisions.TouchRightOf(t.BoundingCollisions))
+                        {
+                            RollerStart = false;
+                            Moveleft = false;
+                            //Rotation -= myGame.rng.Next(-180, 180) * (float)Math.PI / 180;
+                            //Scale = (float)myGame.rng.Next(0, 10);
+                            SetAnimation("WALK");
+                        }
+                    }
+                }
+
+                if (Moveleft == true)
+                {
+                    Movement = -1;
+                    
+                }
+                else
+                {
+                    Movement = 1;
+                    
+                }
+            }
+
+            if (EnemyType == EnemyTypes.JUMPER)
+            {
+                MaxMoveSpeed = 200;
+                if (CollisionHelper.Magnitude(TempVelocity) <= 300)
+                {
+                    if (PlayerDetected == true)
+                    {
+                        IsJumping = true;
+                        //GroundDragFactor = 0.01f;
+                        //AirDragFactor = 4f;
+                        
+                    }
+
+                    if (PlayerDetected == false)
+                    {
+                        IsJumping = false;
+                        
+                    }
+                }
+            }
+
+            if (EnemyType == EnemyTypes.BOSS)
+            {
+
+            }
+
 			base.ApplyPhysics(gameTime);
 		}
+
+        public void SpitterAttack(GameTime gameTime)
+        {
+            if (EnemyType == EnemyTypes.SPITTER)
+            {
+                CanMove = true;
+                IsAttacking = true;
+            }
+        }
+       
+        protected Vector2 SlimeDirection(GameTime gametime)
+        {
+            if (myGame.gameManager.Player.Position.X < position.X)
+            {
+                return new Vector2(-1, 0);
+            }
+            else
+            {
+                return new Vector2(1, 0);
+                
+            }
+        }
+
+        protected virtual void HandleEnemyProjectile(GameTime gameTime)
+        {
+            if (EnemyType == EnemyTypes.SPITTER)
+            {
+                
+                EnemyAttackDelay -= gameTime.ElapsedGameTime.Milliseconds;
+                if (EnemyAttackDelay == 0)
+                {
+                    CanShoot = true;
+                }
+                if (CanShoot)
+                {
+                    EnemyProjectileList.Add(new SlimeBullet(myGame.gameManager.SlimeTexture, new Vector2 (Position.X + (CurrentAnimation.frameSize.X /2) , Position.Y + (CurrentAnimation.frameSize.Y / 6)), 4, SlimeDirection(gameTime), Color.LimeGreen, myGame));
+                    EnemyAttackDelay--;
+                    CanShoot = false;
+                    IsShooting = false;
+                }
+                if (EnemyAttackDelay <= 0)
+                {
+                    EnemyAttackDelay = 1000;
+                    CanShoot = true;
+                }
+            }
+        }
+
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        {
+            foreach (SlimeBullet e in EnemyProjectileList)
+            {
+                e.Draw(gameTime, spriteBatch);
+            }
+            base.Draw(gameTime, spriteBatch);
+        }
 
 		/// <summary>
 		/// Adds animations for the enemy.
@@ -396,9 +608,8 @@ namespace Predator.Characters
 		/// <param name="texture">The spritesheet texture to process when creating the animations.</param>
 		protected override void AddAnimations(Texture2D texture)
 		{
-			AddAnimation("IDLE", texture, new Point(120, 60), new Point(1, 1), new Point(360, 000), 1600, false);
-			AddAnimation("WALK", texture, new Point(120, 60), new Point(2, 2), new Point(0, 000), 100, true);
-
+			AddAnimation("IDLE", texture, new Point(texture.Width / 7, texture.Height / 2), new Point(1, 1), new Point(0, 0), 16000, false);
+            AddAnimation("WALK", texture, new Point(texture.Width / 7, texture.Height / 2), new Point(6, 1), new Point(120, 0), 80, true);
 
 			SetAnimation("IDLE");
 

@@ -290,5 +290,45 @@ namespace VoidEngine.Helpers
 
 			return tileArray;
 		}
+
+		public static int[,] ImgToLevel(Texture2D texture)
+		{
+			int[,] tempIntArray = new int[texture.Width, texture.Height];
+			Color[] tempColorArray = new Color[texture.Width * texture.Height];
+			texture.GetData(tempColorArray);
+
+			for (int i = 0; i < tempColorArray.Length; i++)
+			{
+				int x = i / texture.Width;
+				int y = i % texture.Width;
+
+				if (tempColorArray[i] == new Color(0, 0, 0, 0))
+				{
+					tempIntArray[y, x] = 0;
+				}
+				if (tempColorArray[i] == new Color(128, 128, 128))
+				{
+					tempIntArray[y, x] = 1;
+				}
+				if (tempColorArray[i] == new Color(0, 255, 255))
+				{
+					tempIntArray[y, x] = 77;
+				}
+				if (tempColorArray[i] == new Color(255, 255, 0))
+				{
+					tempIntArray[y, x] = 25;
+				}
+				if (tempColorArray[i] == new Color(255, 0, 0))
+				{
+					tempIntArray[y, x] = 78;
+				}
+				if (tempColorArray[i] == new Color(249, 0, 0))
+				{
+					tempIntArray[y, x] = 81;
+				}
+			}
+
+			return tempIntArray;
+		}
 	}
 }

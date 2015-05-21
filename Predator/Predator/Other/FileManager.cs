@@ -41,6 +41,7 @@ namespace Predator.Other
 			public int Lvl;
 			public Vector2 Position;
 			public Keys[,] MovementKeys;
+			public int LastCheckpoint;
 		}
 
 		[Serializable]

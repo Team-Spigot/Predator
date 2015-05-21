@@ -43,6 +43,8 @@ namespace Predator.Managers
 		protected Random Random = new Random();
 
 		#region Textures
+		public Texture2D SlimeTexture;
+		public Texture2D SpitterTexture;
 		/// <summary>
 		/// Loads the line texture.
 		/// </summary>
@@ -80,6 +82,10 @@ namespace Predator.Managers
 		/// </summary>
 		public Texture2D HealthDropTexture;
 		/// <summary>
+		/// Loads the exp drop texture.
+		/// </summary>
+		public Texture2D ExpDropTexture;
+		/// <summary>
 		/// Loads the temp tile texture.
 		/// </summary>
 		public Texture2D TempTileTexture;
@@ -107,6 +113,10 @@ namespace Predator.Managers
 		/// Loads the sewer background texture.
 		/// </summary>
 		public Texture2D SewerBackgroundTexture;
+		/// <summary>
+		/// Loads the checkpoint texture.
+		/// </summary>
+		public Texture2D CheckpointTexture;
 		#endregion
 
 		#region Enemy Stuff
@@ -115,6 +125,26 @@ namespace Predator.Managers
 		/// Enemy: UNKNOWN
 		/// </summary>
 		public List<Enemy> EnemyList = new List<Enemy>();
+        /// <summary>
+        /// 
+        /// </summary>
+		public List<Sprite.AnimationSet> SpitterAnimationSet = new List<Sprite.AnimationSet>();
+        /// <summary>
+        /// 
+        /// </summary>
+		public List<Sprite.AnimationSet> JumperAnimationSet = new List<Sprite.AnimationSet>();
+        /// <summary>
+        /// 
+        /// </summary>
+		public List<Sprite.AnimationSet> RollerAnimationSet = new List<Sprite.AnimationSet>();
+        /// <summary>
+        /// 
+        /// </summary>
+        public List<Sprite.AnimationSet> CrawlerAnimationSet = new List<Sprite.AnimationSet>();
+        /// <summary>
+        /// 
+        /// </summary>
+        public int EnemyLevel;
 		#endregion
 
 		#region Tile Stuff
@@ -153,9 +183,21 @@ namespace Predator.Managers
 		/// </summary>
 		public HealthBar OverheadHealthBar;
 		/// <summary>
-		/// The drop list for the pickups.
+		/// The drop list for the health pickups.
 		/// </summary>
-		public List<HealthPickUp> DropList = new List<HealthPickUp>();
+		public List<HealthPickUp> HpDropList = new List<HealthPickUp>();
+		/// <summary>
+		/// The drop list for the exp pickups.
+		/// </summary>
+        public List<ExpPickUp> ExpDropList = new List<ExpPickUp>();
+		/// <summary>
+		/// Gets or sets the amount of time to take the player to respawn.
+		/// </summary>
+		public float playerDeathTimer
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Level & Transition Stuff
@@ -180,6 +222,15 @@ namespace Predator.Managers
 			get;
 			set;
 		}
+		/// <summary>
+		/// Sets the camera to the player if true.
+		/// </summary>
+		public bool CameraToPlayer
+		{
+			get;
+			set;
+		}
+		protected Texture2D TestLevelTextureMap;
 		#endregion
 
 		#region Partical System
@@ -203,6 +254,29 @@ namespace Predator.Managers
 			get;
 			set;
 		}
+		#endregion
+
+		#region Checkpoints
+		/// <summary>
+		/// 
+		/// </summary>
+		public int LastCheckpoint
+		{
+			get;
+			set;
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		public Vector2[] ListOfCheckpoints = new Vector2[5];
+		/// <summary>
+		/// 
+		/// </summary>
+		int checkpointNum = 1;
+		#endregion
+
+		#region Objects
+		public List<PlaceableObject> PlaceableObjectsList = new List<PlaceableObject>();
 		#endregion
 
 		/// <summary>
@@ -252,6 +326,7 @@ namespace Predator.Managers
 
 			Player = new Player(TempPlayerTexture, new Vector2(100, 100), MovementKeys, Color.White, myGame);
 			Player.ProjectileTexture = ProjectileTexture;
+			CameraToPlayer = true;
 
 			HealthBar = new HealthBar(HealthForegroundTexture, new Vector2(20, 25), Color.White);
 
@@ -266,8 +341,8 @@ namespace Predator.Managers
 			MapBoundries.Add(new Rectangle(Camera.Size.X, -105, 5, Camera.Size.Y + 10));
 			MapBoundries.Add(new Rectangle(-5, Camera.Size.Y, Camera.Size.X + 10, 5));
 
-			SewerBackgroundParallax = new Parallax(SewerBackgroundTexture, new Vector2(Camera.Position.X, Camera.Position.Y), Color.White, new Vector2(0.50f, 0.00f), Camera);
-			SewerBackgroundSprayParallax = new Parallax(SewerBackgroundSprayTexture, new Vector2(Camera.Position.X, Camera.Position.Y), Color.White, new Vector2(0.50f, 0.00f), Camera);
+			SewerBackgroundParallax = new Parallax(SewerBackgroundTexture, new Vector2(Camera.Position.X, Camera.Position.Y), Color.White, new Vector2(2.50f, 2.50f), Camera);
+			SewerBackgroundSprayParallax = new Parallax(SewerBackgroundSprayTexture, new Vector2(Camera.Position.X, Camera.Position.Y), Color.White, new Vector2(2.50f, 2.50f), Camera);
 			#endregion
 
 			base.LoadContent();
@@ -296,6 +371,8 @@ namespace Predator.Managers
 			HealthBackgroundTexture = Game.Content.Load<Texture2D>(@"images\gui\game\healthBarBack");
 			HealthOverheadForegroundTexture = Game.Content.Load<Texture2D>(@"images\gui\game\healthBarOverFore");
 			HealthOverheadBackgroundTexture = Game.Content.Load<Texture2D>(@"images\gui\game\healthBarOverback");
+			SlimeTexture = Game.Content.Load<Texture2D>(@"images\enemy\Spit_Glob");
+			SpitterTexture = Game.Content.Load<Texture2D>(@"images\enemy\spitter1");
 
 			// Effects
 			ProjectileTexture = Game.Content.Load<Texture2D>(@"images\player\attackTemp");
@@ -303,10 +380,32 @@ namespace Predator.Managers
 
 			// Drops
 			HealthDropTexture = Game.Content.Load<Texture2D>(@"images\game\drops\healthDrop");
+            ExpDropTexture = Game.Content.Load<Texture2D>(@"images\game\drops\XPSprite");
 
 			// Backgrounds
 			SewerBackgroundSprayTexture = Game.Content.Load<Texture2D>(@"images\game\backgrounds\funBackground");
 			SewerBackgroundTexture = Game.Content.Load<Texture2D>(@"images\game\backgrounds\sewerBackground");
+
+			// Objects
+			CheckpointTexture = Game.Content.Load<Texture2D>(@"images\objects\checkpoint");
+
+			// Levels
+			TestLevelTextureMap = Game.Content.Load<Texture2D>(@"levels\testlevel");
+
+			// Sprite sheets
+			CrawlerAnimationSet.Add(new Sprite.AnimationSet("IDLE", CrawlerTexture, new Point(122, 65), new Point(1, 1), new Point(0, 0), 16000, false));
+			CrawlerAnimationSet.Add(new Sprite.AnimationSet("WALK", CrawlerTexture, new Point(120, 61), new Point(2, 2), new Point(0, 0), 80, true));
+			CrawlerAnimationSet.Add(new Sprite.AnimationSet("DEATH", CrawlerTexture, new Point(122, 65), new Point(1, 1), new Point(0, 0), 16000, false));
+
+			SpitterAnimationSet.Add(new Sprite.AnimationSet("IDLE", SpitterTexture, new Point(120, 240), new Point(1, 1), new Point(0, 0), 16000, false));
+			SpitterAnimationSet.Add(new Sprite.AnimationSet("WALK", SpitterTexture, new Point(120, 240), new Point(6, 1), new Point(120, 0), 100, true));
+			SpitterAnimationSet.Add(new Sprite.AnimationSet("SHOOT", SpitterTexture, new Point(120, 240), new Point(5, 1), new Point(120, 240), 130, true));
+
+			RollerAnimationSet.Add(new Sprite.AnimationSet("ROLL", CrawlerTexture, new Point(122, 65), new Point(1, 1), new Point(0, 0), 16000, false));
+
+			JumperAnimationSet.Add(new Sprite.AnimationSet("IDLE", CrawlerTexture, new Point(122, 65), new Point(1, 1), new Point(0, 0), 16000, false));
+			JumperAnimationSet.Add(new Sprite.AnimationSet("WALK", CrawlerTexture, new Point(122, 65), new Point(1, 1), new Point(0, 0), 16000, false));
+			JumperAnimationSet.Add(new Sprite.AnimationSet("DIVE", CrawlerTexture, new Point(122, 65), new Point(1, 1), new Point(0, 0), 16000, false));
 		}
 
 		/// <summary>
@@ -350,17 +449,17 @@ namespace Predator.Managers
 			#endregion
 
 			// Update the camera's position.
-			if (Camera.IsInView(Player.Position, new Vector2(Player.CurrentAnimation.frameSize.X, Player.CurrentAnimation.frameSize.Y)))
+			if (CameraToPlayer)
 			{
-				Camera.Position = Player.Position;
+				Camera.Position = Player.PositionCenter;
 			}
 			#endregion
 
 			#region Menu Controls
 			// Open the map.
-			if (myGame.CheckKey(Keys.M) && !myGame.mapScreenManager.IsTransitioningIn)
+			if (myGame.CheckKey(Keys.M) && !myGame.mapScreenManager.isTransitioningIn)
 			{
-				myGame.mapScreenManager.IsTransitioningIn = true;
+				myGame.mapScreenManager.isTransitioningIn = true;
 				myGame.SetCurrentLevel(Game1.GameLevels.MAP);
 			}
 			// Open the stats screen.
@@ -375,6 +474,11 @@ namespace Predator.Managers
 			}
 			#endregion
 
+            if (myGame.CheckKey(Keys.X))
+            {
+                myGame.gameManager.Player.PExp += 500;
+            }
+
 			// Reset The level
 			if (!LevelLoaded)
 			{
@@ -382,6 +486,7 @@ namespace Predator.Managers
 				RegenerateMap();
 			}
 
+			#region Saving & Loading
 			if (myGame.CheckKey(Keys.F6))
 			{
 				SaveFile tempSaveFile = new SaveFile();
@@ -404,6 +509,7 @@ namespace Predator.Managers
 				playerData.Position = Player.Position;
 				playerData.PStrength = Player.PStrength;
 				playerData.StatPoints = Player.StatPoints;
+				playerData.LastCheckpoint = LastCheckpoint;
 				tempSaveFile.FileSaveVersion = "0.0.0.1";
 				tempSaveFile.GameData = gameData;
 				tempSaveFile.OptionsData = optionsData;
@@ -433,9 +539,11 @@ namespace Predator.Managers
 					Player.Position = tempSaveFile.PlayerData.Position;
 					Player.PStrength = tempSaveFile.PlayerData.PStrength;
 					Player.StatPoints = tempSaveFile.PlayerData.StatPoints;
+					LastCheckpoint = tempSaveFile.PlayerData.LastCheckpoint;
 					Camera.Position = Player.Position;
 				}
 			}
+			#endregion
 
 			#region Update when level is loaded.
 			if (LevelLoaded)
@@ -447,6 +555,27 @@ namespace Predator.Managers
 				HealthBar.Update(gameTime, Player.HP, Player.MaxHP);
 				OverheadHealthBar.Update(gameTime, Player.HP, Player.MaxHP);
 				OverheadHealthBar.Position = new Vector2(Player.Position.X - ((44 - 35) / 2), Player.Position.Y - 7);
+				if (Player.isDead)
+				{
+					playerDeathTimer -= gameTime.ElapsedGameTime.Milliseconds;
+
+					if (playerDeathTimer <= 0)
+					{
+						if (LastCheckpoint > 0)
+						{
+							Player.Position = ListOfCheckpoints[LastCheckpoint - 1];
+							Player.MainHP = Player.MaxHP * 0.75f;
+							Player.isDead = false;
+						}
+						else
+						{
+							RegenerateMap();
+							Player.MainHP += gameTime.ElapsedGameTime.Seconds;
+							Player.MainHP = Player.MaxHP * 0.75f;
+							Player.isDead = false;
+						}
+					}
+				}
 				#endregion
 
 				if (myGame.CheckKey(Keys.Z))
@@ -463,17 +592,21 @@ namespace Predator.Managers
 				{
 					if (EnemyList[i].isDead)
 					{
-						DropList.Add(new HealthPickUp(HealthDropTexture, EnemyList[i].Position, myGame));
+						HpDropList.Add(new HealthPickUp(HealthDropTexture, EnemyList[i].Position, myGame));
+                        ExpDropList.Add(new ExpPickUp(ExpDropTexture,EnemyList[i].Position, myGame));
 						EnemyList.RemoveAt(i);
 						i--;
 					}
 					else
 					{
-						EnemyList[i].Update(gameTime);
+						if (Camera.IsInView(EnemyList[i].Position, new Vector2(EnemyList[i].BoundingCollisions.Width, EnemyList[i].BoundingCollisions.Height)))
+						{
+							EnemyList[i].Update(gameTime);
+						}
 
 						if (EnemyList[i].IsHit)
 						{
-							ParticleSystem.CreateParticles(EnemyList[i].PositionCenter - new Vector2(0, 15), ParticleTexture, Random, ParticleList, 230, 255, 0, 0, 0, 0, 5, 10, (int)BloodMinRadius, (int)BloodMaxRadius, 100, 250, 3, 5, 200, 255);
+							ParticleSystem.CreateParticles(EnemyList[i].Position, ParticleTexture, Random, ParticleList, 230, 255, 0, 0, 0, 0, 5, 10, (int)BloodMinRadius, (int)BloodMaxRadius, 100, 250, 3, 5, 200, 255);
 							EnemyList[i].IsHit = false;
 						}
 					}
@@ -496,35 +629,64 @@ namespace Predator.Managers
 				#endregion
 
 				#region Update Pickups
-				for (int i = 0; i < DropList.Count; i++)
+				for (int i = 0; i < HpDropList.Count; i++)
 				{
-					if (DropList[i].DeleteMe)
+					if (HpDropList[i].DeleteMe)
 					{
-						DropList.RemoveAt(i);
+						HpDropList.RemoveAt(i);
 						Player.MainHP += 5;
 						i--;
 					}
 					else
 					{
-						DropList[i].Update(gameTime);
+						HpDropList[i].Update(gameTime);
+					}
+				}
+                for (int i = 0; i < ExpDropList.Count; i++)
+                {
+                    if (ExpDropList[i].DeleteMe)
+                    {
+                        ExpDropList.RemoveAt(i);
+                        Player.PExp += myGame.rng.Next(500, 1000);
+                        i--;
+                    }
+                    else
+                    {
+                        ExpDropList[i].Update(gameTime);
+                    }
+                }
+				#endregion
+
+				#region Update Checkpoints
+				foreach (PlaceableObject po in PlaceableObjectsList)
+				{
+					if (po is CheckPoint)
+					{
+						po.Update(gameTime);
 					}
 				}
 				#endregion
+
 			}
 			#endregion
 
 			#region Debug Stuff
-			if (myGame.IsGameDebug)
+			if (myGame.IsGameDebug && LevelLoaded)
 			{
 				DebugTable debugTable = new DebugTable();
 				string[,] rawTable = {
-										 { "Player", "Tings", "Stats" }
+										 { "Player", "Tings", "Stats" },
+										 { "Enemy[0]", "Tings", "" },
+										 { "CheckPoint", "Tings", "Stuff" }
 									 };
 				debugTable.initalizeTable(rawTable);
 
 				myGame.debugStrings[0] = debugTable.ReturnStringSegment(0, 0);
 				myGame.debugStrings[1] = debugTable.ReturnStringSegment(0, 1) + "Postition=(" + Player.Position.X + "," + Player.Position.Y + ") Velocity=(" + Player.Velocity.X + "," + Player.Velocity.Y + ")";
 				myGame.debugStrings[2] = debugTable.ReturnStringSegment(0, 2) + "Agility=" + Player.PAgility + " Strength=" + Player.PStrength + " Defense=" + Player.PDefense + " StatPoints=" + Player.StatPoints + "Stat Level=" + Player.Lvl;
+				myGame.debugStrings[3] = debugTable.ReturnStringSegment(2, 0);
+				myGame.debugStrings[4] = debugTable.ReturnStringSegment(2, 1) + "Position[0]=(" + ListOfCheckpoints[0].X + "," + ListOfCheckpoints[0].Y + ") Position[1]=(" + ListOfCheckpoints[1].X + "," + ListOfCheckpoints[1].Y + ")";
+				myGame.debugStrings[5] = debugTable.ReturnStringSegment(2, 2) + "CurrentCheckPoint=" + LastCheckpoint + " CheckPointIndex[0]=" + (PlaceableObjectsList[0] as CheckPoint).CheckpointIndex + " CheckPointIndex[1]=" + (PlaceableObjectsList[1] as CheckPoint).CheckpointIndex + " Index=" + checkpointNum;
 			}
 			#endregion
 
@@ -537,19 +699,22 @@ namespace Predator.Managers
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		public override void Draw(GameTime gameTime)
 		{
-			spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null);
+			spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.LinearWrap, null, null);
 			{
 				SewerBackgroundParallax.Draw(gameTime, spriteBatch);
 				SewerBackgroundSprayParallax.Draw(gameTime, spriteBatch);
 			}
 			spriteBatch.End();
 
-			spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null, null, Camera.GetTransformation());
+			spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, Camera.GetTransformation());
 			{
-				foreach (Enemy e in EnemyList)
+				foreach (PlaceableObject po in PlaceableObjectsList)
 				{
-					e.Draw(gameTime, spriteBatch);
+					po.Draw(gameTime, spriteBatch);
 				}
+
+				spriteBatch.Draw(HealthOverheadBackgroundTexture, new Vector2(Player.Position.X - ((50 - 35) / 2), Player.Position.Y - 12), Color.White);
+				OverheadHealthBar.Draw(gameTime, spriteBatch);
 
 				foreach (Tile t in TilesList)
 				{
@@ -559,9 +724,20 @@ namespace Predator.Managers
 					}
 				}
 
-				spriteBatch.Draw(HealthOverheadBackgroundTexture, new Vector2(Player.Position.X - ((50 - 35) / 2), Player.Position.Y - 12), Color.White);
+				foreach (HealthPickUp h in HpDropList)
+				{
+					h.Draw(gameTime, spriteBatch);
+				}
 
-				OverheadHealthBar.Draw(gameTime, spriteBatch);
+				foreach (ExpPickUp e in ExpDropList)
+				{
+					e.Draw(gameTime, spriteBatch);
+				}
+
+				foreach (Enemy e in EnemyList)
+				{
+					e.Draw(gameTime, spriteBatch);
+				}
 
 				Player.Draw(gameTime, spriteBatch);
 
@@ -570,22 +746,16 @@ namespace Predator.Managers
 					p.Draw(gameTime, spriteBatch);
 
 				}
-				foreach (HealthPickUp h in DropList)
-				{
-					h.Draw(gameTime, spriteBatch);
-				}
 			}
 			spriteBatch.End();
 
-			spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointWrap, null, null);
+			spriteBatch.Begin();
 			{
 				spriteBatch.Draw(HealthBackgroundTexture, new Vector2(15, 15), Color.White);
 
 				HealthBar.Draw(gameTime, spriteBatch);
 
 				myGame.debugLabel.Draw(gameTime, spriteBatch);
-
-				//spriteBatch.DrawString(myGame.grimGhostRegular, "Hello World!", new Vector2((myGame.WindowSize.X - myGame.grimGhostRegular.MeasureString("Hello World!").X) / 2, (myGame.WindowSize.Y - myGame.grimGhostRegular.MeasureString("Hellow World!").Y) / 2), Color.Black);
 			}
 			spriteBatch.End();
 
@@ -594,18 +764,6 @@ namespace Predator.Managers
 			{
 				if (myGame.IsGameDebug && LevelLoaded)
 				{
-					foreach (Tile t in TilesList)
-					{
-						if (t.TileType == Tile.TileCollisions.Impassable)
-						{
-							//t.DrawBoundingCollisions(LineTexture, Color.White, spriteBatch);
-						}
-
-						if (t.TileType == Tile.TileCollisions.Platform)
-						{
-							//t.DrawBoundingCollisions(LineTexture, Color.Blue, spriteBatch);
-						}
-					}
 					foreach (Rectangle r in MapBoundries)
 					{
 						spriteBatch.Draw(LineTexture, new Rectangle(r.X, r.Y, r.Width, 1), Color.White);
@@ -614,17 +772,18 @@ namespace Predator.Managers
 						spriteBatch.Draw(LineTexture, new Rectangle(r.X, r.Y, 1, r.Height), Color.White);
 					}
 
-					foreach (Enemy e in EnemyList)
+					foreach (PlaceableObject po in PlaceableObjectsList)
 					{
-						e.DrawBoundingCollisions(LineTexture, Color.Magenta, spriteBatch);
+						Sprite.DrawBoundingCollisions(LineTexture, po.BoundingCollisions, Color.Red, spriteBatch);
 					}
 
-					spriteBatch.Draw(LineTexture, new Rectangle(Player.DebugBlock.X, Player.DebugBlock.Y, Player.DebugBlock.Width, 1), Color.White);
-					spriteBatch.Draw(LineTexture, new Rectangle(Player.DebugBlock.Right - 1, Player.DebugBlock.Y, 1, Player.DebugBlock.Height), Color.White);
-					spriteBatch.Draw(LineTexture, new Rectangle(Player.DebugBlock.X, Player.DebugBlock.Bottom - 1, Player.DebugBlock.Width, 1), Color.White);
-					spriteBatch.Draw(LineTexture, new Rectangle(Player.DebugBlock.X, Player.DebugBlock.Y, 1, Player.DebugBlock.Height), Color.White);
+					foreach (Enemy e in EnemyList)
+					{
+						Sprite.DrawBoundingCollisions(LineTexture, e.BoundingCollisions, Color.Magenta, spriteBatch);
+					}
 
-					Player.DrawBoundingCollisions(LineTexture, Color.Blue, spriteBatch);
+					Sprite.DrawBoundingCollisions(LineTexture, Player.DebugBlock, Color.Lime, spriteBatch);
+					Sprite.DrawBoundingCollisions(LineTexture, Player.BoundingCollisions, Color.Blue, spriteBatch);
 				}
 			}
 			spriteBatch.End();
@@ -670,39 +829,78 @@ namespace Predator.Managers
 			switch (level)
 			{
 				case 0:
-					tiles = Maps.TestLevel();
-					Size = new Point(Maps.TestLevel().GetLength(1), Maps.TestLevel().GetLength(0));
+					tiles = MapHelper.ImgToLevel(TestLevelTextureMap);
+					Size = new Point(tiles.GetLength(1), tiles.GetLength(0));
 					break;
 			}
 
 			Camera.Size = new Point(Size.X * 35, Size.Y * 35);
 
-			for (int x = 0; x < Size.X; x++)
+			for (int x = 0; x < Size.Y; x++)
 			{
-				for (int y = 0; y < Size.Y; y++)
+				for (int y = 0; y < Size.X; y++)
 				{
-					if (tiles[y, x] == 77)
+					if (tiles[x, y] == 77)
 					{
 						Player.Position = new Vector2(x * 35, y * 35);
 					}
-					else if (tiles[y, x] == 78)
+					else if (tiles[x, y] == 78)
 					{
-						Enemy tempCrawler = new Enemy(CrawlerTexture, new Vector2(x * 35, y * 35), Enemy.EnemyTypes.RAT, Color.DarkSeaGreen, myGame);
-						tempCrawler.Scale = 0.70f;
-						int width = (int)(tempCrawler.CurrentAnimation.frameSize.X * tempCrawler.Scale);
-						int left = (int)(tempCrawler.CurrentAnimation.frameSize.X * tempCrawler.Scale - width);
-						int height = (int)(tempCrawler.CurrentAnimation.frameSize.Y * tempCrawler.Scale);
-						int top = (int)(tempCrawler.CurrentAnimation.frameSize.Y * tempCrawler.Scale - height);
-						tempCrawler.Inbounds = new Rectangle(left, top, width, height);
-						EnemyList.Add(tempCrawler);
+						Enemy tempEnemy1 = new Enemy(SpitterAnimationSet, "IDLE", new Vector2(x * 35, y * 35), Enemy.EnemyTypes.ROLLER, new Color(myGame.gameManager.Random.Next(0, 255), myGame.gameManager.Random.Next(0, 255), myGame.gameManager.Random.Next(0, 255)), myGame);
+						tempEnemy1.Scale = 0.5f;
+						int width = (int)(tempEnemy1.CurrentAnimation.frameSize.X * tempEnemy1.Scale);
+						int left = (int)(tempEnemy1.CurrentAnimation.frameSize.X * tempEnemy1.Scale - width);
+						int height = (int)(tempEnemy1.CurrentAnimation.frameSize.Y * tempEnemy1.Scale);
+						int top = (int)(tempEnemy1.CurrentAnimation.frameSize.Y * tempEnemy1.Scale - height);
+						tempEnemy1.Inbounds = new Rectangle(left, top, width, height);
+						EnemyList.Add(tempEnemy1);
 					}
-
-					if (tiles[y, x] > 69)
+                    else if (tiles[x, y] == 79)
+                    {
+                        Enemy tempEnemy2 = new Enemy(SpitterAnimationSet, "IDLE", new Vector2(x * 35, y * 35), Enemy.EnemyTypes.SPITTER, new Color(myGame.gameManager.Random.Next(0, 255), myGame.gameManager.Random.Next(0, 255), myGame.gameManager.Random.Next(0, 255)), myGame);
+                        tempEnemy2.Scale = 0.5f;
+                        int width = (int)(tempEnemy2.CurrentAnimation.frameSize.X * tempEnemy2.Scale);
+                        int left = (int)(tempEnemy2.CurrentAnimation.frameSize.X * tempEnemy2.Scale - width);
+                        int height = (int)(tempEnemy2.CurrentAnimation.frameSize.Y * tempEnemy2.Scale);
+                        int top = (int)(tempEnemy2.CurrentAnimation.frameSize.Y * tempEnemy2.Scale - height);
+                        tempEnemy2.Inbounds = new Rectangle(left, top, width, height);
+                        EnemyList.Add(tempEnemy2);
+                    }
+                    else if (tiles[x, y] == 80)
+                    {
+                        Enemy tempEnemy3 = new Enemy(SpitterAnimationSet, "IDLE", new Vector2(x * 35, y * 35), Enemy.EnemyTypes.JUMPER, new Color(myGame.gameManager.Random.Next(0, 255), myGame.gameManager.Random.Next(0, 255), myGame.gameManager.Random.Next(0, 255)), myGame);
+                        tempEnemy3.Scale = 0.5f;
+                        int width = (int)(tempEnemy3.CurrentAnimation.frameSize.X * tempEnemy3.Scale);
+                        int left = (int)(tempEnemy3.CurrentAnimation.frameSize.X * tempEnemy3.Scale - width);
+                        int height = (int)(tempEnemy3.CurrentAnimation.frameSize.Y * tempEnemy3.Scale);
+                        int top = (int)(tempEnemy3.CurrentAnimation.frameSize.Y * tempEnemy3.Scale - height);
+                        tempEnemy3.Inbounds = new Rectangle(left, top, width, height);
+                        EnemyList.Add(tempEnemy3);
+                    }
+                    else if (tiles[x, y] == 81)
+                    {
+                        Enemy tempEnemy4 = new Enemy(CrawlerAnimationSet, "IDLE", new Vector2(x * 35, y * 35), Enemy.EnemyTypes.CHARGER, new Color(myGame.gameManager.Random.Next(0, 255), myGame.gameManager.Random.Next(0, 255), myGame.gameManager.Random.Next(0, 255)), myGame);
+                        tempEnemy4.Scale = 0.5f;
+                        int width = (int)(tempEnemy4.CurrentAnimation.frameSize.X * tempEnemy4.Scale);
+                        int left = (int)(tempEnemy4.CurrentAnimation.frameSize.X * tempEnemy4.Scale - width);
+                        int height = (int)(tempEnemy4.CurrentAnimation.frameSize.Y * tempEnemy4.Scale);
+                        int top = (int)(tempEnemy4.CurrentAnimation.frameSize.Y * tempEnemy4.Scale - height);
+                        tempEnemy4.Inbounds = new Rectangle(left, top, width, height);
+                        EnemyList.Add(tempEnemy4);
+					}
+					if (tiles[x, y] == 25)
+					{
+						CheckPoint tempCheckPoint = new CheckPoint(CheckpointTexture, new Vector2(x * 35, y * 35), Color.White, checkpointNum, myGame);
+						PlaceableObjectsList.Add(tempCheckPoint);
+						ListOfCheckpoints[checkpointNum - 1] = new Vector2(x * 35, y * 35);
+						checkpointNum += 1;
+					}
+					if (tiles[x, y] > 25)
 					{
 						tiles[y, x] = 0;
 					}
 
-					if (tiles[y, x] > 0)
+					if (tiles[x, y] > 0 && tiles[x, y] < 25)
 					{
 						TilesList.Add(new Tile(SewerTileTexture, new Vector2(x * 35, y * 35), Tile.TileCollisions.Impassable, TilesList, 1, Color.White));
 						TilesList.Add(new Tile(ShadowTileTexture, new Vector2(x * 35, y * 35), Tile.TileCollisions.Impassable, TilesList, 1, Color.White));
@@ -716,6 +914,6 @@ namespace Predator.Managers
 			}
 
 			Camera.Position = Player.Position;
-		}
+		} 
 	}
 }
