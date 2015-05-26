@@ -320,7 +320,7 @@ namespace VoidEngine.Helpers
 				}
 				if (tempColorArray[i] == new Color(255, 0, 0))
 				{
-					tempIntArray[y, x] = 78;
+					tempIntArray[y, x] = 79;
 				}
 				if (tempColorArray[i] == new Color(249, 0, 0))
 				{

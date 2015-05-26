@@ -12,6 +12,8 @@ namespace Predator.Characters
 	{
 		protected Game1 myGame;
 
+		protected MouseState mouseState;
+
 		#region Player Stats
 		/// <summary>
 		/// Gets or sets the player's level.
@@ -788,8 +790,17 @@ namespace Predator.Characters
             {
                 Movement = -1;
                 velocity = new Vector2(MoveAcceleration * (float)gameTime.ElapsedGameTime.TotalSeconds * Movement);
-                
             }
+
+			mouseState = Mouse.GetState();
+
+			if (mouseState.LeftButton == ButtonState.Pressed)
+			{
+				//if (new Rectangle(mouseState.X, mouseState.Y, 1, 1).Intersects(BoundingCollisions))
+				{
+					position = new Vector2(mouseState.X, mouseState.Y) + (myGame.gameManager.Camera.Position - (myGame.gameManager.Camera.viewportSize / 2));
+				}
+			}
 
 			Movement = MathHelper.Clamp(Movement, -1, 1);
 

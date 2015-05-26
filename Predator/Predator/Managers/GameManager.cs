@@ -35,7 +35,7 @@ namespace Predator.Managers
 		/// <summary>
 		/// Used to control the game's screen.
 		/// </summary>
-		protected Camera Camera;
+		public Camera Camera;
 
 		/// <summary>
 		/// Used to get random real numbers.
@@ -231,6 +231,7 @@ namespace Predator.Managers
 			set;
 		}
 		protected Texture2D TestLevelTextureMap;
+		Point Size = new Point();
 		#endregion
 
 		#region Partical System
@@ -268,7 +269,7 @@ namespace Predator.Managers
 		/// <summary>
 		/// 
 		/// </summary>
-		public Vector2[] ListOfCheckpoints = new Vector2[5];
+		public Vector2[] ListOfCheckpoints = new Vector2[20];
 		/// <summary>
 		/// 
 		/// </summary>
@@ -599,7 +600,7 @@ namespace Predator.Managers
 					}
 					else
 					{
-						if (Camera.IsInView(EnemyList[i].Position, new Vector2(EnemyList[i].BoundingCollisions.Width, EnemyList[i].BoundingCollisions.Height)))
+						if (Camera.IsInView(EnemyList[i].Position, new Vector2(EnemyList[i].CurrentAnimation.frameSize.X, EnemyList[i].CurrentAnimation.frameSize.Y)))
 						{
 							EnemyList[i].Update(gameTime);
 						}
@@ -623,7 +624,10 @@ namespace Predator.Managers
 					}
 					else
 					{
-						ParticleList[i].Update(gameTime);
+						if (Camera.IsInView(ParticleList[i].Position, new Vector2(ParticleList[i].CurrentAnimation.frameSize.X, ParticleList[i].CurrentAnimation.frameSize.Y)))
+						{
+							ParticleList[i].Update(gameTime);
+						}
 					}
 				}
 				#endregion
@@ -639,7 +643,10 @@ namespace Predator.Managers
 					}
 					else
 					{
-						HpDropList[i].Update(gameTime);
+						if (Camera.IsInView(HpDropList[i].Position, new Vector2(HpDropList[i].CurrentAnimation.frameSize.X, HpDropList[i].CurrentAnimation.frameSize.Y)))
+						{
+							HpDropList[i].Update(gameTime);
+						}
 					}
 				}
                 for (int i = 0; i < ExpDropList.Count; i++)
@@ -652,7 +659,10 @@ namespace Predator.Managers
                     }
                     else
                     {
-                        ExpDropList[i].Update(gameTime);
+						if (Camera.IsInView(ExpDropList[i].Position, new Vector2(ExpDropList[i].CurrentAnimation.frameSize.X, ExpDropList[i].CurrentAnimation.frameSize.Y)))
+						{
+							ExpDropList[i].Update(gameTime);
+						}
                     }
                 }
 				#endregion
@@ -663,26 +673,6 @@ namespace Predator.Managers
 					if (po is CheckPoint)
 					{
 						po.Update(gameTime);
-					}
-				}
-
-				if (Player.isDead)
-				{
-					playerDeathTimer -= gameTime.ElapsedGameTime.Milliseconds;
-
-					if (LastCheckpoint > 0)
-					{
-						if (playerDeathTimer < 0)
-						{
-							Player.Position = ListOfCheckpoints[LastCheckpoint];
-						}
-					}
-					else
-					{
-						if (playerDeathTimer < 0)
-						{
-							RegenerateMap();
-						}
 					}
 				}
 				#endregion
@@ -734,7 +724,10 @@ namespace Predator.Managers
 			{
 				foreach (PlaceableObject po in PlaceableObjectsList)
 				{
-					po.Draw(gameTime, spriteBatch);
+					if (Camera.IsInView(po.Position, new Vector2(po.CurrentAnimation.frameSize.X, po.CurrentAnimation.frameSize.Y)))
+					{
+						po.Draw(gameTime, spriteBatch);
+					}
 				}
 
 				spriteBatch.Draw(HealthOverheadBackgroundTexture, new Vector2(Player.Position.X - ((50 - 35) / 2), Player.Position.Y - 12), Color.White);
@@ -742,7 +735,7 @@ namespace Predator.Managers
 
 				foreach (Tile t in TilesList)
 				{
-					if (Camera.IsInView(t.Position, new Vector2(35, 35)))
+					if (Camera.IsInView(t.Position, new Vector2(t.CurrentAnimation.frameSize.X, t.CurrentAnimation.frameSize.Y)))
 					{
 						t.Draw(gameTime, spriteBatch);
 					}
@@ -750,17 +743,26 @@ namespace Predator.Managers
 
 				foreach (HealthPickUp h in HpDropList)
 				{
-					h.Draw(gameTime, spriteBatch);
+					if (Camera.IsInView(h.Position, new Vector2(h.CurrentAnimation.frameSize.X, h.CurrentAnimation.frameSize.Y)))
+					{
+						h.Draw(gameTime, spriteBatch);
+					}
 				}
 
 				foreach (ExpPickUp e in ExpDropList)
 				{
-					e.Draw(gameTime, spriteBatch);
+					if (Camera.IsInView(e.Position, new Vector2(e.CurrentAnimation.frameSize.X, e.CurrentAnimation.frameSize.Y)))
+					{
+						e.Draw(gameTime, spriteBatch);
+					}
 				}
 
 				foreach (Enemy e in EnemyList)
 				{
-					e.Draw(gameTime, spriteBatch);
+					if (Camera.IsInView(e.Position, new Vector2(e.CurrentAnimation.frameSize.X, e.CurrentAnimation.frameSize.Y)))
+					{
+						e.Draw(gameTime, spriteBatch);
+					}
 				}
 
 				Player.Draw(gameTime, spriteBatch);
@@ -798,12 +800,18 @@ namespace Predator.Managers
 
 					foreach (PlaceableObject po in PlaceableObjectsList)
 					{
-						Sprite.DrawBoundingCollisions(LineTexture, po.BoundingCollisions, Color.Red, spriteBatch);
+						if (Camera.IsInView(po.Position, new Vector2(po.CurrentAnimation.frameSize.X, po.CurrentAnimation.frameSize.Y)))
+						{
+							Sprite.DrawBoundingCollisions(LineTexture, po.BoundingCollisions, Color.Red, spriteBatch);
+						}
 					}
 
 					foreach (Enemy e in EnemyList)
 					{
-						Sprite.DrawBoundingCollisions(LineTexture, e.BoundingCollisions, Color.Magenta, spriteBatch);
+						if (Camera.IsInView(e.Position, new Vector2(e.CurrentAnimation.frameSize.X, e.CurrentAnimation.frameSize.Y)))
+						{
+							Sprite.DrawBoundingCollisions(LineTexture, e.BoundingCollisions, Color.Magenta, spriteBatch);
+						}
 					}
 
 					Sprite.DrawBoundingCollisions(LineTexture, Player.DebugBlock, Color.Lime, spriteBatch);
@@ -847,7 +855,6 @@ namespace Predator.Managers
 		/// <param name="level">The level to spawn.</param>
 		public void SpawnTiles(int level)
 		{
-			Point Size = new Point();
 			int[,] tiles = new int[0, 0];
 
 			switch (level)
