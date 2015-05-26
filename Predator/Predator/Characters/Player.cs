@@ -1017,7 +1017,7 @@ namespace Predator.Characters
                 JumpbackTimer -= gameTime.ElapsedGameTime.Milliseconds;
 
                 Movement = -1;
-                velocity = new Vector2(MaxMoveSpeed * ((float)gameTime.ElapsedGameTime.TotalSeconds) * Movement, -(MoveAcceleration * ((float)gameTime.ElapsedGameTime.TotalSeconds * 6)));
+                velocity = new Vector2(MoveAcceleration * ((float)gameTime.ElapsedGameTime.TotalSeconds + 0.1f) * Movement, -(MoveAcceleration * ((float)gameTime.ElapsedGameTime.TotalSeconds * 6)));
             }
 		}
 

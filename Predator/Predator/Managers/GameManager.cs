@@ -390,7 +390,7 @@ namespace Predator.Managers
 			CheckpointTexture = Game.Content.Load<Texture2D>(@"images\objects\checkpoint");
 
 			// Levels
-			TestLevelTextureMap = Game.Content.Load<Texture2D>(@"levels\testlevel");
+			TestLevelTextureMap = Game.Content.Load<Texture2D>(@"levels\City_1");
 
 			// Sprite sheets
 			CrawlerAnimationSet.Add(new Sprite.AnimationSet("IDLE", CrawlerTexture, new Point(122, 65), new Point(1, 1), new Point(0, 0), 16000, false));
@@ -665,6 +665,26 @@ namespace Predator.Managers
 						po.Update(gameTime);
 					}
 				}
+
+				if (Player.isDead)
+				{
+					playerDeathTimer -= gameTime.ElapsedGameTime.Milliseconds;
+
+					if (LastCheckpoint > 0)
+					{
+						if (playerDeathTimer < 0)
+						{
+							Player.Position = ListOfCheckpoints[LastCheckpoint];
+						}
+					}
+					else
+					{
+						if (playerDeathTimer < 0)
+						{
+							RegenerateMap();
+						}
+					}
+				}
 				#endregion
 
 			}
@@ -687,6 +707,10 @@ namespace Predator.Managers
 				myGame.debugStrings[3] = debugTable.ReturnStringSegment(2, 0);
 				myGame.debugStrings[4] = debugTable.ReturnStringSegment(2, 1) + "Position[0]=(" + ListOfCheckpoints[0].X + "," + ListOfCheckpoints[0].Y + ") Position[1]=(" + ListOfCheckpoints[1].X + "," + ListOfCheckpoints[1].Y + ")";
 				myGame.debugStrings[5] = debugTable.ReturnStringSegment(2, 2) + "CurrentCheckPoint=" + LastCheckpoint + " CheckPointIndex[0]=" + (PlaceableObjectsList[0] as CheckPoint).CheckpointIndex + " CheckPointIndex[1]=" + (PlaceableObjectsList[1] as CheckPoint).CheckpointIndex + " Index=" + checkpointNum;
+				if (LastCheckpoint > 0)
+				{
+					myGame.debugStrings[5] = debugTable.ReturnStringSegment(2, 2) + "Cords=(" + ListOfCheckpoints[LastCheckpoint - 1].X + "," + ListOfCheckpoints[LastCheckpoint - 1].Y + ")";
+				}
 			}
 			#endregion
 
@@ -830,15 +854,15 @@ namespace Predator.Managers
 			{
 				case 0:
 					tiles = MapHelper.ImgToLevel(TestLevelTextureMap);
-					Size = new Point(tiles.GetLength(1), tiles.GetLength(0));
+					Size = new Point(tiles.GetLength(0), tiles.GetLength(1));
 					break;
 			}
 
 			Camera.Size = new Point(Size.X * 35, Size.Y * 35);
 
-			for (int x = 0; x < Size.Y; x++)
+			for (int x = 0; x < Size.X; x++)
 			{
-				for (int y = 0; y < Size.X; y++)
+				for (int y = 0; y < Size.Y; y++)
 				{
 					if (tiles[x, y] == 77)
 					{
@@ -897,7 +921,7 @@ namespace Predator.Managers
 					}
 					if (tiles[x, y] > 25)
 					{
-						tiles[y, x] = 0;
+						tiles[x, y] = 0;
 					}
 
 					if (tiles[x, y] > 0 && tiles[x, y] < 25)
