@@ -111,6 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Characters\Enemy.cs" />
+    <Compile Include="Managers\IntroManager.cs" />
     <Compile Include="Other\CheckPoint.cs" />
     <Compile Include="Other\ExpPickup.cs" />
     <Compile Include="Managers\GameManager.cs" />

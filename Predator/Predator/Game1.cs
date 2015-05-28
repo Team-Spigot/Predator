@@ -35,6 +35,7 @@ namespace Predator
 			STATS,
 			LOSE,
 			WIN,
+            INTRO,
 			CREDITS
 		}
 
@@ -127,6 +128,7 @@ namespace Predator
 		/// The GameLevels for the game.
 		/// </summary>
 		public GameLevels currentGameLevel;
+        public IntroManager introManager;
 		#endregion
 
 		#region Fonts
@@ -265,6 +267,8 @@ namespace Predator
 			statManager = new StatManager(this);
 			loseManager = new LoseManager(this);
 			optionsManager = new OptionsManager(this);
+            introManager = new IntroManager(this);
+            
 
 			Components.Add(splashScreenManager);
 			Components.Add(mainMenuManager);
@@ -273,6 +277,7 @@ namespace Predator
 			Components.Add(statManager);
 			Components.Add(loseManager);
 			Components.Add(optionsManager);
+            Components.Add(introManager);
 
 			mapScreenManager.Enabled = false;
 			mapScreenManager.Visible = false;
@@ -458,6 +463,8 @@ namespace Predator
 				statManager.Visible = false;
 				loseManager.Enabled = false;
 				loseManager.Visible = false;
+                introManager.Enabled = false;
+                introManager.Visible = false;
 			}
 
 			switch (currentGameLevel)
@@ -491,7 +498,11 @@ namespace Predator
 				case GameLevels.LOSE:
 					loseManager.Enabled = true;
 					loseManager.Visible = true;
-					break;
+                    break;
+                case GameLevels.INTRO:
+                    introManager.Enabled =true;
+                    introManager.Visible = true;
+                    break;
 				case GameLevels.WIN:
 					break;
 				case GameLevels.CREDITS:

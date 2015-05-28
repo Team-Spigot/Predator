@@ -14,7 +14,8 @@ namespace VoidEngine.VGame
 		{
 			Passable,
 			Impassable,
-			Platform
+			Platform,
+			Water
 		}
 
 		public TileCollisions TileType;

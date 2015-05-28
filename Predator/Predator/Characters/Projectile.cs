@@ -117,7 +117,7 @@ namespace Predator.Characters
 
 		protected override void AddAnimations(Texture2D texture)
 		{
-			AddAnimation("IDLE", texture, new Point(40, 24), new Point(3, 1), new Point(0, 0), 50, false);
+			AddAnimation("IDLE", texture, new Point(40, 50), new Point(3, 1), new Point(0, 0), 50, false);
 			SetAnimation("IDLE");
 
 			base.AddAnimations(texture);

@@ -310,22 +310,38 @@ namespace VoidEngine.Helpers
 				{
 					tempIntArray[y, x] = 1;
 				}
-				if (tempColorArray[i] == new Color(0, 255, 255))
+				if (tempColorArray[i] == new Color(0, 114, 70))
 				{
-					tempIntArray[y, x] = 77;
+					tempIntArray[y, x] = 2;
 				}
 				if (tempColorArray[i] == new Color(255, 255, 0))
 				{
 					tempIntArray[y, x] = 25;
 				}
-				if (tempColorArray[i] == new Color(255, 0, 0))
+				if (tempColorArray[i] == new Color(0, 255, 255))
+				{
+					tempIntArray[y, x] = 77;
+				}
+				if (tempColorArray[i] == new Color(68, 255, 78))
+				{
+					tempIntArray[y, x] = 78;
+				}
+				if (tempColorArray[i] == new Color(174, 85, 167))
 				{
 					tempIntArray[y, x] = 79;
+				}
+				if (tempColorArray[i] == new Color(255, 193, 86))
+				{
+					tempIntArray[y, x] = 80;
 				}
 				if (tempColorArray[i] == new Color(249, 0, 0))
 				{
 					tempIntArray[y, x] = 81;
 				}
+                if (tempColorArray[i] == new Color(255, 142, 217))
+                {
+                    tempIntArray[y, x] = 82;
+                }
 			}
 
 			return tempIntArray;
