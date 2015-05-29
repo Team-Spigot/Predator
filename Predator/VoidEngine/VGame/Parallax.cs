@@ -108,7 +108,7 @@ namespace VoidEngine.VGame
 		/// <param name="spriteBatch"></param>
 		public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
 		{
-			Rectangle rectBg = new Rectangle((int)(((texture.Width - camera.viewportSize.X) / camera.Size.X) + camera.Position.X), (int)0, (int)texture.Width, (int)texture.Height);
+			Rectangle rectBg = new Rectangle((int)(((texture.Width - camera.Size.X) * multiplier.X) + camera.Position.X), (int)0, (int)texture.Width, (int)texture.Height);
 			spriteBatch.Draw(texture, new Rectangle(0, 0, (int)camera.viewportSize.X, (int)camera.viewportSize.Y), rectBg, Color.White);
 		}
 	}

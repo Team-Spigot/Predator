@@ -15,6 +15,7 @@ namespace VoidEngine.Helpers
 		/// '.' and ',' return 0.
 		/// '1'-'9', 'a'-'z', 'A'-'Z', and all symbols on a english keyboard
 		/// except ' and " will return 1 to 84 respectifully.
+		/// </summary>
 		public static uint[,] GetTileArray(List<string> lines)
 		{
 			uint[,] tileArray = new uint[lines[0].Length, lines.Count];
@@ -314,6 +315,14 @@ namespace VoidEngine.Helpers
 				{
 					tempIntArray[y, x] = 2;
 				}
+				if (tempColorArray[i] == new Color(200, 200, 200))
+				{
+					tempIntArray[y, x] = 3;
+				}
+				if (tempColorArray[i] == new Color(64, 64, 64))
+				{
+					tempIntArray[y, x] = 4;
+				}
 				if (tempColorArray[i] == new Color(255, 255, 0))
 				{
 					tempIntArray[y, x] = 25;
@@ -338,10 +347,10 @@ namespace VoidEngine.Helpers
 				{
 					tempIntArray[y, x] = 81;
 				}
-                if (tempColorArray[i] == new Color(255, 142, 217))
-                {
-                    tempIntArray[y, x] = 82;
-                }
+				if (tempColorArray[i] == new Color(255, 142, 217))
+				{
+					tempIntArray[y, x] = 82;
+				}
 			}
 
 			return tempIntArray;

@@ -35,7 +35,7 @@ namespace Predator
 			STATS,
 			LOSE,
 			WIN,
-            INTRO,
+			INTRO,
 			CREDITS
 		}
 
@@ -128,7 +128,7 @@ namespace Predator
 		/// The GameLevels for the game.
 		/// </summary>
 		public GameLevels currentGameLevel;
-        public IntroManager introManager;
+		public IntroManager introManager;
 		#endregion
 
 		#region Fonts
@@ -138,6 +138,7 @@ namespace Predator
 		public SpriteFont segoeUIMono;
 		public SpriteFont segoeUIRegular;
 		public SpriteFont grimGhostRegular;
+		public SpriteFont streetSoulRegular;
 		#endregion
 
 		#region Debug Stuff
@@ -222,7 +223,7 @@ namespace Predator
 		}
 		#endregion
 
-        public Random rng = new Random();
+		public Random rng = new Random();
 		/// <summary>
 		/// Creates the game.
 		/// </summary>
@@ -267,8 +268,8 @@ namespace Predator
 			statManager = new StatManager(this);
 			loseManager = new LoseManager(this);
 			optionsManager = new OptionsManager(this);
-            introManager = new IntroManager(this);
-            
+			introManager = new IntroManager(this);
+
 
 			Components.Add(splashScreenManager);
 			Components.Add(mainMenuManager);
@@ -277,7 +278,7 @@ namespace Predator
 			Components.Add(statManager);
 			Components.Add(loseManager);
 			Components.Add(optionsManager);
-            Components.Add(introManager);
+			Components.Add(introManager);
 
 			mapScreenManager.Enabled = false;
 			mapScreenManager.Visible = false;
@@ -313,6 +314,7 @@ namespace Predator
 			segoeUIBold = Content.Load<SpriteFont>(@"fonts\segoeuibold");
 			segoeUIItalic = Content.Load<SpriteFont>(@"fonts\segoeuiitalic");
 			grimGhostRegular = Content.Load<SpriteFont>(@"fonts\grimghostregular");
+			streetSoulRegular = Content.Load<SpriteFont>(@"fonts\streetsoulregular");
 		}
 
 		/// <summary>
@@ -463,8 +465,8 @@ namespace Predator
 				statManager.Visible = false;
 				loseManager.Enabled = false;
 				loseManager.Visible = false;
-                introManager.Enabled = false;
-                introManager.Visible = false;
+				introManager.Enabled = false;
+				introManager.Visible = false;
 			}
 
 			switch (currentGameLevel)
@@ -498,11 +500,11 @@ namespace Predator
 				case GameLevels.LOSE:
 					loseManager.Enabled = true;
 					loseManager.Visible = true;
-                    break;
-                case GameLevels.INTRO:
-                    introManager.Enabled =true;
-                    introManager.Visible = true;
-                    break;
+					break;
+				case GameLevels.INTRO:
+					introManager.Enabled = true;
+					introManager.Visible = true;
+					break;
 				case GameLevels.WIN:
 					break;
 				case GameLevels.CREDITS:

@@ -40,7 +40,7 @@ namespace Predator.Other
 			Color = color;
 			CheckpointIndex = index;
 
-			Offset = new Vector2(0, 35);
+			Offset = new Vector2(11, 0);
 
 			inbounds = new Rectangle(0, 0, 35, 70);
 		}
@@ -75,9 +75,9 @@ namespace Predator.Other
 
 		protected override void AddAnimations(Texture2D texture)
 		{
-			AddAnimation("IDLE", texture, new Point(35, 105), new Point(0, 0), new Point(0, 0), 1600, false);
-			AddAnimation("ACTIVE", texture, new Point(35, 105), new Point(0, 0), new Point(35, 0), 1600, false);
-			AddAnimation("SAVING", texture, new Point(35, 105), new Point(3, 0), new Point(70, 0), 500, true);
+			AddAnimation("IDLE", texture, new Point(70, 70), new Point(0, 0), new Point(0, 0), 1600, false);
+			AddAnimation("ACTIVE", texture, new Point(70, 70), new Point(0, 0), new Point(840, 0), 500, true);
+			AddAnimation("SAVING", texture, new Point(70, 70), new Point(4, 0), new Point(70, 0), 500, true);
 		}
 	}
 }

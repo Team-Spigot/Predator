@@ -27,7 +27,8 @@ namespace Predator.Managers
 		/// <summary>
 		/// Loads the line texture.
 		/// </summary>
-		public Texture2D line;
+		public Texture2D lineTexture;
+		Texture2D mapBackdrop;
 		Texture2D mapBackground;
 		Texture2D mapHudTexture;
 		Texture2D buttonTexture;
@@ -49,9 +50,15 @@ namespace Predator.Managers
 
 		List<Sprite.AnimationSet> buttonAnimationSet;
 
-		Button level1Button;
-		Button level2Button;
-		//Button level3Button;
+		Button sewer1Button; //Level Select 1
+		Button sewer2Button;//Level Select 2
+		Button City1Button;//Level Select 3
+		Button City2Button;//Level Select 4
+		Button BridgeButton;//Level Select 5
+		Button HQ1Button;//Level Select 6
+		Button BossButton;//Level Select 7
+
+		Button StartButton;
 		Button backButton;
 		Button hudBackButton;
 
@@ -113,16 +120,19 @@ namespace Predator.Managers
 		{
 			spriteBatch = new SpriteBatch(myGame.GraphicsDevice);
 
-			line = Game.Content.Load<Texture2D>(@"images\other\line");
-			mapBackground = Game.Content.Load<Texture2D>(@"images\gui\map\PIECE_OF_SHITEV2");
-			buttonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\mapButtonTest");
-			hudBackButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\mapButtonTest");
-			backButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\mapButtonTest");
+			lineTexture = Game.Content.Load<Texture2D>(@"images\other\line");
+			mapBackground = Game.Content.Load<Texture2D>(@"images\gui\map\mapBackground");
+			mapBackdrop = Game.Content.Load<Texture2D>(@"images\gui\map\mapBackdrop");
+			buttonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\mapButtons");
+			hudBackButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\mapButtons");
+			backButtonTexture = Game.Content.Load<Texture2D>(@"images\gui\map\mapButtons");
 
 			mapHudTexture = Game.Content.Load<Texture2D>(@"images\gui\map\mapHud");
 
-			camera = new Camera(myGame.GraphicsDevice.Viewport, new Point(2048, 1536), 1f);
+			camera = new Camera(myGame.GraphicsDevice.Viewport, new Point(mapBackground.Width, mapBackground.Height), 1f);
 			camera.Position = new Vector2(512, 256);
+
+			camera.Zoom = 0.5f;
 
 			// The Map Buttons
 			buttonAnimationSet.Add(new Sprite.AnimationSet("IDLE", buttonTexture, new Point(20, 20), new Point(1, 1), new Point(0, 0), 16000, false));
@@ -137,8 +147,17 @@ namespace Predator.Managers
 			buttonAnimationSet.Add(new Sprite.AnimationSet("HOVER", buttonTexture, new Point(20, 20), new Point(1, 1), new Point(20, 0), 16000, false));
 			buttonAnimationSet.Add(new Sprite.AnimationSet("PRESSED", buttonTexture, new Point(20, 20), new Point(1, 1), new Point(40, 0), 16000, false));
 
-			level1Button = new Button(new Vector2(700, 400), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, buttonAnimationSet);
-			level2Button = new Button(new Vector2(100, 120), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, buttonAnimationSet);
+			sewer1Button = new Button(buttonTexture, new Vector2(50 + 110, 50 + 1250), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, camera);
+			sewer2Button = new Button(buttonTexture, new Vector2(50 + 475, 50 + 1120), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, camera);
+			City1Button = new Button(buttonTexture, new Vector2(50 + 950, 50 + 1100), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, camera);
+			City2Button = new Button(buttonTexture, new Vector2(50 + 1300, 50 + 646), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, camera);
+			BridgeButton = new Button(buttonTexture, new Vector2(50 + 1655, 50 + 840), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, camera);
+			HQ1Button = new Button(buttonTexture, new Vector2(50 + 1886, 50 + 518), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, camera);
+			BossButton = new Button(buttonTexture, new Vector2(50 + 1805, 50 + 120), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, camera);
+			backButton = new Button(buttonTexture, new Vector2(50 + 50, 50 + 700), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White);
+			hudBackButton = new Button(buttonTexture, new Vector2(50 + 100, 50 + 700), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, camera);
+
+			StartButton = new Button(myGame.mainMenuManager.ButtonTexture, new Vector2(HudScroll + 55, 150), myGame.segoeUIRegular, 1f, Color.White, "START", Color.White);
 
 			backButton = new Button(new Vector2(50, 700), myGame.segoeUIRegular, 1f, Color.Black, "", Color.White, buttonAnimationSet);
 
@@ -160,7 +179,7 @@ namespace Predator.Managers
 			{
 				isTransitioningOut = false;
 
-				TransitionAlpha += 1.0f / (float)gameTime.ElapsedGameTime.Milliseconds;
+				TransitionAlpha += 0.05f;
 
 				if (TransitionAlpha > 1.0f)
 				{
@@ -173,7 +192,7 @@ namespace Predator.Managers
 			{
 				isTransitioningIn = false;
 
-				TransitionAlpha -= 1.0f / (float)gameTime.ElapsedGameTime.Milliseconds;
+				TransitionAlpha -= 0.05f;
 
 				if (TransitionAlpha <= 0.0f)
 				{
@@ -196,9 +215,9 @@ namespace Predator.Managers
 				camera.Position -= Direction * Speed;
 
 			}
-			if (camera.Zoom <= 1.0f)
+			if (camera.Zoom <= 0.5f)
 			{
-				camera.Zoom = 1.0f;
+				camera.Zoom = 0.5f;
 				camera.Position = new Vector2(0, 0);
 				isZoomingOut = false;
 			}
@@ -224,35 +243,62 @@ namespace Predator.Managers
 			switch (levelSelect)
 			{
 				case 1:
-					if (camera.Position.X - level1Button.Position.X >= 100 && camera.Position.Y - level1Button.Position.Y <= 100)
+					if (camera.Position.X - sewer1Button.Position.X >= 100 && camera.Position.Y - sewer1Button.Position.Y <= 100)
 					{
 						Speed = 0.0f;
 					}
 					break;
 				case 2:
-					if (camera.Position.X - level2Button.Position.X <= 100 && camera.Position.Y - level1Button.Position.Y <= 100)
+					if (camera.Position.X - sewer2Button.Position.X <= 100 && camera.Position.Y - sewer2Button.Position.Y <= 100)
 					{
 						Speed = 0.0f;
 					}
 					break;
-				/*
 				case 3:
-					if (camera.Position.X - level3Button.GetPosition.X >= 150 && camera.Position.Y - level1Button.GetPosition.Y <= 50)
+					if (camera.Position.X - City1Button.Position.X >= 100 && camera.Position.Y - City1Button.Position.Y <= 100)
 					{
 						Speed = 0.0f;
 					}
 					break;
-				*/
+				case 4:
+					if (camera.Position.X - City2Button.Position.X <= 100 && camera.Position.Y - City2Button.Position.Y <= 100)
+					{
+						Speed = 0.0f;
+					}
+					break;
+				case 5:
+					if (camera.Position.X - BridgeButton.Position.X >= 100 && camera.Position.Y - BridgeButton.Position.Y <= 100)
+					{
+						Speed = 0.0f;
+					}
+					break;
+				case 6:
+					if (camera.Position.X - HQ1Button.Position.X <= 100 && camera.Position.Y - HQ1Button.Position.Y <= 100)
+					{
+						Speed = 0.0f;
+					}
+					break;
+				case 7:
+					if (camera.Position.X - BossButton.Position.X <= 100 && camera.Position.Y - BossButton.Position.Y <= 100)
+					{
+						Speed = 0.0f;
+					}
+					break;
 			}
 			if (levelPullUp == false)
 			{
 				Vector2 tempDirection;
 
-				level1Button.Update(gameTime);
-				level2Button.Update(gameTime);
+				sewer1Button.Update(gameTime);
+				sewer2Button.Update(gameTime);
+				City1Button.Update(gameTime);
+				City2Button.Update(gameTime);
+				BridgeButton.Update(gameTime);
+				HQ1Button.Update(gameTime);
+				BossButton.Update(gameTime);
 
 				backButton.Update(gameTime);
-				if (level1Button.Clicked()) // Zooming into zone 1
+				if (sewer1Button.Clicked()) // Zooming into zone 1
 				{
 					Speed = 10.0f;
 					levelSelect = 1;
@@ -260,10 +306,10 @@ namespace Predator.Managers
 					levelPullUp = true;
 					isZoomingIn = true;
 					isZoomingOut = false;
-					tempDirection = new Vector2(level1Button.Position.X - camera.Position.X, level1Button.Position.Y - camera.Position.Y);
+					tempDirection = new Vector2(sewer1Button.Position.X - camera.Position.X, sewer1Button.Position.Y - camera.Position.Y);
 					Direction = CollisionHelper.UnitVector(tempDirection);
 				}
-				if (level2Button.Clicked()) // Zooming into zone 2
+				if (sewer2Button.Clicked()) // Zooming into zone 2
 				{
 					Speed = 10.0f;
 					levelSelect = 2;
@@ -271,10 +317,64 @@ namespace Predator.Managers
 					levelPullUp = true;
 					isZoomingIn = true;
 					isZoomingOut = false;
-					tempDirection = new Vector2(level2Button.Position.X - camera.Position.X, level2Button.Position.Y - camera.Position.Y);
+					tempDirection = new Vector2(sewer2Button.Position.X - camera.Position.X, sewer2Button.Position.Y - camera.Position.Y);
 					Direction = CollisionHelper.UnitVector(tempDirection);
 				}
-
+				if (City1Button.Clicked()) // Zooming into zone 2
+				{
+					Speed = 10.0f;
+					levelSelect = 3;
+					isHudScrollingIn = true;
+					levelPullUp = true;
+					isZoomingIn = true;
+					isZoomingOut = false;
+					tempDirection = new Vector2(City1Button.Position.X - camera.Position.X, City1Button.Position.Y - camera.Position.Y);
+					Direction = CollisionHelper.UnitVector(tempDirection);
+				}
+				if (City2Button.Clicked()) // Zooming into zone 2
+				{
+					Speed = 10.0f;
+					levelSelect = 4;
+					isHudScrollingIn = true;
+					levelPullUp = true;
+					isZoomingIn = true;
+					isZoomingOut = false;
+					tempDirection = new Vector2(City2Button.Position.X - camera.Position.X, City2Button.Position.Y - camera.Position.Y);
+					Direction = CollisionHelper.UnitVector(tempDirection);
+				}
+				if (BridgeButton.Clicked()) // Zooming into zone 2
+				{
+					Speed = 10.0f;
+					levelSelect = 5;
+					isHudScrollingIn = true;
+					levelPullUp = true;
+					isZoomingIn = true;
+					isZoomingOut = false;
+					tempDirection = new Vector2(BridgeButton.Position.X - camera.Position.X, BridgeButton.Position.Y - camera.Position.Y);
+					Direction = CollisionHelper.UnitVector(tempDirection);
+				}
+				if (HQ1Button.Clicked()) // Zooming into zone 2
+				{
+					Speed = 10.0f;
+					levelSelect = 6;
+					isHudScrollingIn = true;
+					levelPullUp = true;
+					isZoomingIn = true;
+					isZoomingOut = false;
+					tempDirection = new Vector2(HQ1Button.Position.X - camera.Position.X, HQ1Button.Position.Y - camera.Position.Y);
+					Direction = CollisionHelper.UnitVector(tempDirection);
+				}
+				if (BossButton.Clicked()) // Zooming into zone 2
+				{
+					Speed = 10.0f;
+					levelSelect = 6;
+					isHudScrollingIn = true;
+					levelPullUp = true;
+					isZoomingIn = true;
+					isZoomingOut = false;
+					tempDirection = new Vector2(BossButton.Position.X - camera.Position.X, BossButton.Position.Y - camera.Position.Y);
+					Direction = CollisionHelper.UnitVector(tempDirection);
+				}
 				if (backButton.Clicked())
 				{
 					isTransitioningOut = true;
@@ -285,6 +385,8 @@ namespace Predator.Managers
 				Vector2 tempDirection;
 
 				hudBackButton.Update(gameTime);
+				StartButton.Update(gameTime);
+				StartButton.Position = new Vector2(HudScroll + 55, 150);
 
 				if (hudBackButton.Clicked())
 				{
@@ -297,30 +399,84 @@ namespace Predator.Managers
 					{
 						case 1:
 							Speed = 10.0f;
-							tempDirection = new Vector2(camera.Position.X - level1Button.Position.X, camera.Position.Y - level1Button.Position.Y);
+							tempDirection = new Vector2(camera.Position.X - sewer1Button.Position.X, camera.Position.Y - sewer1Button.Position.Y);
 							Direction = CollisionHelper.UnitVector(tempDirection);
 							break;
 						case 2:
 							Speed = 10.0f;
-							tempDirection = new Vector2(camera.Position.X - level2Button.Position.X, camera.Position.Y - level2Button.Position.Y);
+							tempDirection = new Vector2(camera.Position.X - sewer2Button.Position.X, camera.Position.Y - sewer2Button.Position.Y);
+							Direction = CollisionHelper.UnitVector(tempDirection);
+							break;
+						case 3:
+							Speed = 10.0f;
+							tempDirection = new Vector2(camera.Position.X - City1Button.Position.X, camera.Position.Y - City1Button.Position.Y);
+							Direction = CollisionHelper.UnitVector(tempDirection);
+							break;
+						case 4:
+							Speed = 10.0f;
+							tempDirection = new Vector2(camera.Position.X - City2Button.Position.X, camera.Position.Y - City2Button.Position.Y);
+							Direction = CollisionHelper.UnitVector(tempDirection);
+							break;
+						case 5:
+							Speed = 10.0f;
+							tempDirection = new Vector2(camera.Position.X - BridgeButton.Position.X, camera.Position.Y - BridgeButton.Position.Y);
+							Direction = CollisionHelper.UnitVector(tempDirection);
+							break;
+						case 6:
+							Speed = 10.0f;
+							tempDirection = new Vector2(camera.Position.X - HQ1Button.Position.X, camera.Position.Y - HQ1Button.Position.Y);
+							Direction = CollisionHelper.UnitVector(tempDirection);
+							break;
+						case 7:
+							Speed = 10.0f;
+							tempDirection = new Vector2(camera.Position.X - BossButton.Position.X, camera.Position.Y - BossButton.Position.Y);
 							Direction = CollisionHelper.UnitVector(tempDirection);
 							break;
 					}
 				}
+
+				if (StartButton.Clicked())
+				{
+					switch (levelSelect)
+					{
+						case 1:
+							myGame.gameManager.CurrentLevel = 1;
+							myGame.gameManager.LevelLoaded = false;
+							isTransitioningOut = true;
+							break;
+						case 2:
+							myGame.gameManager.CurrentLevel = 2;
+							myGame.gameManager.LevelLoaded = false;
+							isTransitioningOut = true;
+							break;
+						case 3:
+							myGame.gameManager.CurrentLevel = 3;
+							myGame.gameManager.LevelLoaded = false;
+							isTransitioningOut = true;
+							break;
+						case 4:
+							myGame.gameManager.CurrentLevel = 4;
+							myGame.gameManager.LevelLoaded = false;
+							isTransitioningOut = true;
+							break;
+						case 5:
+							myGame.gameManager.CurrentLevel = 5;
+							myGame.gameManager.LevelLoaded = false;
+							isTransitioningOut = true;
+							break;
+						case 6:
+							myGame.gameManager.CurrentLevel = 6;
+							myGame.gameManager.LevelLoaded = false;
+							isTransitioningOut = true;
+							break;
+						case 7:
+							myGame.gameManager.CurrentLevel = 7;
+							myGame.gameManager.LevelLoaded = false;
+							isTransitioningOut = true;
+							break;
+					}
+				}
 			}
-
-			debugStrings[0] = "IsTransitioningIn=" + isTransitioningIn + " IsTransitioningOut=" + isTransitioningOut + " TranitionAlpha=" + TransitionAlpha;
-
-			debugLabel.Text = debugStrings[0] + "\n" +
-							  debugStrings[1] + "\n" +
-							  debugStrings[2] + "\n" +
-							  debugStrings[3] + "\n" +
-							  debugStrings[4] + "\n" +
-							  debugStrings[5] + "\n" +
-							  debugStrings[6] + "\n" +
-							  debugStrings[7] + "\n" +
-							  debugStrings[8] + "\n" +
-							  debugStrings[9];
 
 			base.Update(gameTime);
 		}
@@ -334,19 +490,21 @@ namespace Predator.Managers
 			{
 				if (!isTransitioningIn && !isTransitioningOut)
 				{
-					spriteBatch.Draw(mapBackground, Vector2.Zero, Color.White);
-					level1Button.Draw(gameTime, spriteBatch);
-					level2Button.Draw(gameTime, spriteBatch);
+					spriteBatch.Draw(mapBackdrop, new Rectangle(0, 0, camera.Size.X, camera.Size.Y), Color.White);
+					spriteBatch.Draw(mapBackground, new Rectangle(50, 50, (int)(mapBackground.Width - 100), (int)(mapBackground.Height - 100)), Color.White);
+					sewer1Button.Draw(gameTime, spriteBatch);
+					sewer2Button.Draw(gameTime, spriteBatch);
+					City1Button.Draw(gameTime, spriteBatch);
+					City2Button.Draw(gameTime, spriteBatch);
+					HQ1Button.Draw(gameTime, spriteBatch);
+					BossButton.Draw(gameTime, spriteBatch);
+					BridgeButton.Draw(gameTime, spriteBatch);
 				}
 			}
 			spriteBatch.End();
 
 			spriteBatch.Begin();
 			{
-				if (isTransitioningIn || isTransitioningOut)
-				{
-					spriteBatch.Draw(line, new Rectangle(0, 0, myGame.WindowSize.X, myGame.WindowSize.X), new Color(0, 0, 0, TransitionAlpha));
-				}
 				if (!isTransitioningIn && !isTransitioningOut)
 				{
 					spriteBatch.Draw(mapHudTexture, new Vector2(HudScroll, 0), Color.White);
@@ -358,10 +516,24 @@ namespace Predator.Managers
 					if (levelPullUp == true)
 					{
 						hudBackButton.Draw(gameTime, spriteBatch);
+						StartButton.Draw(gameTime, spriteBatch);
 					}
 				}
 
-				debugLabel.Draw(gameTime, spriteBatch);
+				if (isTransitioningIn || isTransitioningOut)
+				{
+					spriteBatch.Draw(lineTexture, new Rectangle(0, 0, myGame.WindowSize.X, myGame.WindowSize.X), new Color(0, 0, 0, TransitionAlpha));
+				}
+
+				if (myGame.IsGameDebug)
+				{
+					debugLabel.Draw(gameTime, spriteBatch);
+
+					spriteBatch.Draw(lineTexture, new Rectangle((int)sewer1Button.Position.X, (int)sewer1Button.Position.Y, 1000, 1), Color.Red);
+					spriteBatch.Draw(lineTexture, new Rectangle((int)sewer1Button.Position.X, (int)sewer1Button.Position.Y, 1, 1000), Color.Red);
+					spriteBatch.Draw(lineTexture, new Rectangle((int)(sewer1Button.Position.X / camera.Zoom), (int)(sewer1Button.Position.Y / camera.Zoom), 1000, 1), Color.Blue);
+					spriteBatch.Draw(lineTexture, new Rectangle((int)(sewer1Button.Position.X / camera.Zoom), (int)(sewer1Button.Position.Y / camera.Zoom), 1, 1000), Color.Blue);
+				}
 			}
 			spriteBatch.End();
 

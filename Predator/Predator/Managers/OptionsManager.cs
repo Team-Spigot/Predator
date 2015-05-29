@@ -260,7 +260,10 @@ namespace Predator.Managers
 				DecWindowSizeButton.Draw(gameTime, spriteBatch);
 				IncWindowSizeButton.Draw(gameTime, spriteBatch);
 
-				spriteBatch.DrawString(myGame.segoeUIMonoDebug, "Index=" + WindowIndex, new Vector2(0, 0), Color.White);
+				if (myGame.IsGameDebug)
+				{
+					spriteBatch.DrawString(myGame.segoeUIMonoDebug, "Index=" + WindowIndex, new Vector2(0, 0), Color.White);
+				}
 			}
 			spriteBatch.End();
 

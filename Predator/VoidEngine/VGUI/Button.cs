@@ -51,7 +51,7 @@ namespace VoidEngine.VGUI
 		public Vector2 RelitiveCenter;
 
 		Camera Camera;
-
+		public bool HasCamera;
 		/// <summary>
 		/// Creates a button.
 		/// When creating the button's animation set,
@@ -107,6 +107,7 @@ namespace VoidEngine.VGUI
 		{
 			Color = color;
 			this.Camera = camera;
+			HasCamera = true;
 			AnimationSets = animationSetList;
 			Label = new Label(new Vector2(position.X + ((animationSetList[0].frameSize.X - font.MeasureString(text).X) / 2), position.Y + ((animationSetList[0].frameSize.Y - font.MeasureString(text).Y) / 2)), font, scale, fontColor, text);
 		}
@@ -126,6 +127,7 @@ namespace VoidEngine.VGUI
 		{
 			Color = buttonColor;
 			this.Camera = camera;
+			HasCamera = true;
 			AddAnimations(texture);
 			Label = new Label(new Vector2(position.X + (((texture.Width / 3) - font.MeasureString(text).X) / 2), position.Y + ((texture.Height - font.MeasureString(text).Y) / 2)), font, scale, fontColor, text);
 		}
@@ -157,7 +159,7 @@ namespace VoidEngine.VGUI
 		{
 			MouseState mState = Mouse.GetState();
 
-			if (Camera != null)
+			if (HasCamera == true)
 			{
 				CollisionBounds = new Rectangle((int)(position.X * Camera.Zoom), (int)(position.Y * Camera.Zoom), (int)(CurrentAnimation.frameSize.X * Camera.Zoom), (int)(CurrentAnimation.frameSize.Y * Camera.Zoom));
 			}

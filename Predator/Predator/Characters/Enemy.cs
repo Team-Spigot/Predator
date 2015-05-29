@@ -233,7 +233,7 @@ namespace Predator.Characters
         /// <param name="gameTime">The game time that the game uses.</param>
         public override void Update(GameTime gameTime)
         {
-            EStrength = (EStrength * 3) * myGame.gameManager.CurrentLevel;
+            EStrength = (EStrength * 3) * myGame.gameManager.EnemyLevel;
             KeyboardState = Keyboard.GetState();
             if (Math.Abs(Movement) < 0.5f)
             {

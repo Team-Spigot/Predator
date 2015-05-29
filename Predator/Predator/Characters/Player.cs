@@ -802,15 +802,15 @@ namespace Predator.Characters
             {
                 Movement += 1.0f;
             }
-            if (KeyboardState.IsKeyDown(Keys.P))
+			if (KeyboardState.IsKeyDown(Keys.P) && myGame.IsGameDebug)
             {
                 MainHP += 1;
             }
-            if (KeyboardState.IsKeyDown(Keys.L))
+			if (KeyboardState.IsKeyDown(Keys.L) && myGame.IsGameDebug)
             {
                 MainHP -= 1;
             }
-            if (KeyboardState.IsKeyDown(Keys.N))
+			if (KeyboardState.IsKeyDown(Keys.N) && myGame.IsGameDebug)
             {
                 Movement = -1;
                 velocity = new Vector2(MoveAcceleration * (float)gameTime.ElapsedGameTime.TotalSeconds * Movement);
@@ -819,7 +819,7 @@ namespace Predator.Characters
 
 			MouseState mouseState = Mouse.GetState();
 
-			if (mouseState.LeftButton == ButtonState.Pressed)
+			if (mouseState.LeftButton == ButtonState.Pressed && myGame.IsGameDebug)
 			{
 				//if (new Rectangle(mouseState.X, mouseState.Y, 1, 1).Intersects(BoundingCollisions))
 				{
@@ -1113,7 +1113,12 @@ namespace Predator.Characters
                     {
 						position.X = t.BoundingCollisions.Left - BoundingCollisions.Width - 1;
                         DebugBlock = t.BoundingCollisions;
-                    }
+					}
+					if (BoundingCollisions.TouchLeftOf(t.BoundingCollisions) && t.TileType == Tile.TileCollisions.Passable)
+					{
+						myGame.mapScreenManager.isTransitioningIn = true;
+						myGame.SetCurrentLevel(Game1.GameLevels.MAP);
+					}
                     if (BoundingCollisions.TouchRightOf(t.BoundingCollisions) && t.TileType == Tile.TileCollisions.Impassable)
                     {
 						position.X = t.BoundingCollisions.Right + 1;
@@ -1151,31 +1156,38 @@ namespace Predator.Characters
                 }
             }
 
-            foreach (Rectangle r in myGame.gameManager.MapBoundries)
+            for (int i = 0; i < myGame.gameManager.MapBoundries.Count; i++)
             {
-                if (r.TouchBottomOf(BoundingCollisions))
+				if (myGame.gameManager.MapBoundries[i].TouchTopOf(BoundingCollisions))
                 {
                     FellFromBottom = true;
-                    DebugBlock = r;
+					DebugBlock = myGame.gameManager.MapBoundries[i];
+					position.Y = myGame.gameManager.MapBoundries[i].Bottom - BoundingCollisions.Height;
                 }
-                if (r.TouchRightOf(BoundingCollisions))
-                {
-                    position.X = r.Left - BoundingCollisions.Width - 1;
-                    DebugBlock = r;
+				if (myGame.gameManager.MapBoundries[i].TouchRightOf(BoundingCollisions))
+				{
+					if (i == 1)
+					{
+						myGame.mapScreenManager.isTransitioningIn = true;
+						myGame.SetCurrentLevel(Game1.GameLevels.MAP);
+					}
+
+                    position.X = myGame.gameManager.MapBoundries[i].Left - BoundingCollisions.Width - 1;
+					DebugBlock = myGame.gameManager.MapBoundries[i];
                 }
-                else if (r.TouchLeftOf(BoundingCollisions))
-                {
-                    position.X = r.Right + 1;
-                    DebugBlock = r;
+				if (myGame.gameManager.MapBoundries[i].TouchLeftOf(BoundingCollisions))
+				{
+					position.X = myGame.gameManager.MapBoundries[i].Right + 1;
+					DebugBlock = myGame.gameManager.MapBoundries[i];
                 }
-                if (r.TouchTopOf(BoundingCollisions))
+				if (myGame.gameManager.MapBoundries[i].TouchBottomOf(BoundingCollisions))
                 {
                     IsJumping = false;
                     JumpTime = 0;
-                    position.Y = r.Bottom + 2;
-                    DebugBlock = r;
+					position.Y = myGame.gameManager.MapBoundries[i].Top - BoundingCollisions.Height;
+					DebugBlock = myGame.gameManager.MapBoundries[i];
                 }
-            }
+			}
         }
 
         /// <summary>
