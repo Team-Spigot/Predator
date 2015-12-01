@@ -1,12 +1,9 @@
+
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2013 for Windows Desktop
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Predator", "Predator\Predator\Predator.csproj", "{6F62084C-F4D8-43AF-86D1-C269681D32F6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PredatorContent", "Predator\PredatorContent\PredatorContent.contentproj", "{75375C7F-59D4-4A63-82A3-06EB1AC29893}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoidEngine", "Predator\VoidEngine\VoidEngine.csproj", "{CF9853A6-A986-4FAD-A2E6-6FE5307EDF2F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Predator", "Predator\Predator.csproj", "{6F62084C-F4D8-43AF-86D1-C269681D32F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,14 +15,9 @@ Global
 		{6F62084C-F4D8-43AF-86D1-C269681D32F6}.Debug|x86.Build.0 = Debug|x86
 		{6F62084C-F4D8-43AF-86D1-C269681D32F6}.Release|x86.ActiveCfg = Release|x86
 		{6F62084C-F4D8-43AF-86D1-C269681D32F6}.Release|x86.Build.0 = Release|x86
-		{75375C7F-59D4-4A63-82A3-06EB1AC29893}.Debug|x86.ActiveCfg = Debug|x86
-		{75375C7F-59D4-4A63-82A3-06EB1AC29893}.Release|x86.ActiveCfg = Release|x86
-		{CF9853A6-A986-4FAD-A2E6-6FE5307EDF2F}.Debug|x86.ActiveCfg = Debug|x86
-		{CF9853A6-A986-4FAD-A2E6-6FE5307EDF2F}.Debug|x86.Build.0 = Debug|x86
-		{CF9853A6-A986-4FAD-A2E6-6FE5307EDF2F}.Release|x86.ActiveCfg = Release|x86
-		{CF9853A6-A986-4FAD-A2E6-6FE5307EDF2F}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
+

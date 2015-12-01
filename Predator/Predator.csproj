@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6F62084C-F4D8-43AF-86D1-C269681D32F6}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Aura</RootNamespace>
+    <AssemblyName>Aura</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <MonoGamePlatform>Windows</MonoGamePlatform>
+    <MonoGameContentBuilderExe>
+    </MonoGameContentBuilderExe>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Windows\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;WINDOWS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Windows\Release\</OutputPath>
+    <DefineConstants>TRACE;WINDOWS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Predator.Program</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>
+    </ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Characters\Enemy.cs" />
+    <Compile Include="Characters\HealthBar.cs" />
+    <Compile Include="Characters\Player.cs" />
+    <Compile Include="Characters\Projectile.cs" />
+    <Compile Include="Game1.cs" />
+    <Compile Include="Game\Maps.cs" />
+    <Compile Include="Managers\GameManager.cs" />
+    <Compile Include="Managers\IntroManager.cs" />
+    <Compile Include="Managers\LoseManager.cs" />
+    <Compile Include="Managers\MainMenuManager.cs" />
+    <Compile Include="Managers\MapScreenManager.cs" />
+    <Compile Include="Managers\OptionsManager.cs" />
+    <Compile Include="Managers\SplashScreenManager.cs" />
+    <Compile Include="Managers\StatManager.cs" />
+    <Compile Include="Other\CheckPoint.cs" />
+    <Compile Include="Other\ExpPickup.cs" />
+    <Compile Include="Other\FileManager.cs" />
+    <Compile Include="Other\HealthPickUp.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SlimeBullet.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MonoGame.Framework">
+      <HintPath>$(MSBuildProgramFiles32)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoGame.Framework.Net, Version=3.4.0.456, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="VoidEngine, Version=0.0.1.2, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\VoidEngine.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <MonoGameContentReference Include="Content\Content.mgcb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\Images\enemy\crawler1.png" />
+    <Content Include="Content\Images\enemy\Crawler_Sprite_sheet.png" />
+    <Content Include="Content\Images\enemy\spitter1.png" />
+    <Content Include="Content\Images\enemy\Spit_Glob.png" />
+    <Content Include="Content\Images\enemy\tempEnemy.png" />
+    <Content Include="Content\Images\game\backgrounds\cityBuildingBackground.png" />
+    <Content Include="Content\Images\game\backgrounds\cityFogBackground.png" />
+    <Content Include="Content\Images\game\backgrounds\citySkyBackground.png" />
+    <Content Include="Content\Images\game\backgrounds\funBackground.png" />
+    <Content Include="Content\Images\game\backgrounds\hqBackground.png" />
+    <Content Include="Content\Images\game\backgrounds\hqForeground.png" />
+    <Content Include="Content\Images\game\backgrounds\sewerBackground.png" />
+    <Content Include="Content\Images\game\backgrounds\sewerBackgroundG.png" />
+    <Content Include="Content\Images\game\drops\healthDrop.png" />
+    <Content Include="Content\Images\game\drops\xpDrop.png" />
+    <Content Include="Content\Images\game\drops\XPSprite.png" />
+    <Content Include="Content\Images\game\particles\tempParticle.png" />
+    <Content Include="Content\Images\gui\deathMenu\buttons1.png" />
+    <Content Include="Content\Images\gui\deathMenu\menu.png" />
+    <Content Include="Content\Images\gui\game\healthBarBack.png" />
+    <Content Include="Content\Images\gui\game\healthBarFore.png" />
+    <Content Include="Content\Images\gui\game\healthBarOverBack.png" />
+    <Content Include="Content\Images\gui\game\healthBarOverFore.png" />
+    <Content Include="Content\Images\gui\game\healthBG.png" />
+    <Content Include="Content\Images\gui\game\healthFG.png" />
+    <Content Include="Content\Images\gui\game\healthOHBG.png" />
+    <Content Include="Content\Images\gui\game\healthOHFG.png" />
+    <Content Include="Content\Images\gui\game\quitButton1.png" />
+    <Content Include="Content\Images\gui\game\quitMenu.png" />
+    <Content Include="Content\Images\gui\global\arrowButton1.png" />
+    <Content Include="Content\Images\gui\global\arrowButton2.png" />
+    <Content Include="Content\Images\gui\global\button1.png" />
+    <Content Include="Content\Images\gui\global\button2.png" />
+    <Content Include="Content\Images\gui\global\checkbox1.png" />
+    <Content Include="Content\Images\gui\global\exitButton.png" />
+    <Content Include="Content\Images\gui\mainMenu\mainMenu.png" />
+    <Content Include="Content\Images\gui\mainMenu\quitButton.png" />
+    <Content Include="Content\Images\gui\mainMenu\spigot.png" />
+    <Content Include="Content\Images\gui\mainMenu\startButton.png" />
+    <Content Include="Content\Images\gui\mainMenu\title.png" />
+    <Content Include="Content\Images\gui\map\mapBackdrop.png" />
+    <Content Include="Content\Images\gui\map\mapBackground.png" />
+    <Content Include="Content\Images\gui\map\mapButtons.png" />
+    <Content Include="Content\Images\gui\map\mapButtonTest.png" />
+    <Content Include="Content\Images\gui\map\mapHud.png" />
+    <Content Include="Content\Images\gui\map\tempMapButton.png" />
+    <Content Include="Content\Images\gui\map\tempMapHud.png" />
+    <Content Include="Content\Images\gui\map\tempMapScreen.png" />
+    <Content Include="Content\Images\gui\statsMenu\agilitySym.png" />
+    <Content Include="Content\Images\gui\statsMenu\backButton.png" />
+    <Content Include="Content\Images\gui\statsMenu\defenseSym.png" />
+    <Content Include="Content\Images\gui\statsMenu\exitButton.png" />
+    <Content Include="Content\Images\gui\statsMenu\Exitbuttonsprite.png" />
+    <Content Include="Content\Images\gui\statsMenu\Icon+Sprite.png" />
+    <Content Include="Content\Images\gui\statsMenu\Menu#3.png" />
+    <Content Include="Content\Images\gui\statsMenu\menu.png" />
+    <Content Include="Content\Images\gui\statsMenu\minusBtn.jpg" />
+    <Content Include="Content\Images\gui\statsMenu\plusBtn.jpg" />
+    <Content Include="Content\Images\gui\statsMenu\plusButton.png" />
+    <Content Include="Content\Images\gui\statsMenu\strengthSym.png" />
+    <Content Include="Content\Images\objects\checkpoint.png" />
+    <Content Include="Content\Images\other\Back_PARA.png" />
+    <Content Include="Content\Images\other\Back_PARA_Minus_Spray.png" />
+    <Content Include="Content\Images\other\HealthDrop.png" />
+    <Content Include="Content\Images\other\line.png" />
+    <Content Include="Content\Images\other\testParticle.png" />
+    <Content Include="Content\Images\player\attacktemp.png" />
+    <Content Include="Content\Images\player\Player_Spritesheet.png" />
+    <Content Include="Content\Images\player\temp.png" />
+    <Content Include="Content\Images\tiles\airTiles.png" />
+    <Content Include="Content\Images\tiles\concreteTiles.png" />
+    <Content Include="Content\Images\tiles\fadeTiles.png" />
+    <Content Include="Content\Images\tiles\ladderTiles.png" />
+    <Content Include="Content\Images\tiles\sewerTiles.png" />
+    <Content Include="Content\Images\tiles\tempTiles.png" />
+    <Content Include="Content\Images\tiles\waterTiles.png" />
+    <Content Include="Content\Levels\Bridge.png" />
+    <Content Include="Content\Levels\City_1.png" />
+    <Content Include="Content\Levels\City_2.png" />
+    <Content Include="Content\Levels\HQ_1.png" />
+    <Content Include="Content\Levels\Sewer_1.png" />
+    <Content Include="Content\Levels\Sewer_2.png" />
+    <Content Include="Content\Levels\testlevel.png" />
+    <Content Include="Game.ico" />
+    <Content Include="VoidEngine.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Content\Fonts\grimghostregular.spritefont" />
+    <None Include="Content\Fonts\segoeuibold.spritefont" />
+    <None Include="Content\Fonts\segoeuiitalic.spritefont" />
+    <None Include="Content\Fonts\segoeuimono.spritefont" />
+    <None Include="Content\Fonts\segoeuimonodebug.spritefont" />
+    <None Include="Content\Fonts\segoeuiregular.spritefont" />
+    <None Include="Content\Fonts\streetsoulregular.spritefont" />
+    <None Include="Content\Images\player\temp.xcf" />
+    <None Include="Content\Images\tiles\tempTiles.xcf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Content\Audio\Sounds\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
