@@ -8,8 +8,8 @@
     <ProjectGuid>{6F62084C-F4D8-43AF-86D1-C269681D32F6}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Aura</RootNamespace>
-    <AssemblyName>Aura</AssemblyName>
+    <RootNamespace>Predator</RootNamespace>
+    <AssemblyName>Predator</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MonoGamePlatform>Windows</MonoGamePlatform>
     <MonoGameContentBuilderExe>
